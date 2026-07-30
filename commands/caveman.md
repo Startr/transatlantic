@@ -1,6 +1,6 @@
 ---
-description: Switch caveman intensity level (lite/full/ultra/wenyan)
-argument-hint: "[lite|full|ultra|wenyan]"
+description: "Legacy alias for /transatlantic (lite→transatlantic, full→telegraph, ultra→morse)"
+argument-hint: "[lite|full|ultra|liner|plain|transatlantic|aviation|telegraph|morse]"
 ---
 
-Switch to caveman $ARGUMENTS mode. If no level specified, use full. Respond terse like smart caveman — drop articles, filler, pleasantries. Fragments OK. Technical terms exact. Code unchanged. Pattern: [thing] [action] [reason]. [next step].
+Legacy alias. Switch to the transatlantic level matching $ARGUMENTS: lite maps to transatlantic, full maps to telegraph, ultra maps to morse; new level names pass through unchanged. If no level specified, use the configured default. Speak in that level's register — see the level table in the transatlantic skill.

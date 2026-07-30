@@ -45,9 +45,9 @@ function test(name, fn) {
 
 console.log('repo-local config resolution tests\n');
 
-test('returns "full" when no env, no repo config, no user config', (tmp) => {
+test('returns "transatlantic" when no env, no repo config, no user config', (tmp) => {
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'full');
+  assert.strictEqual(getDefaultMode(), 'transatlantic');
 });
 
 test('reads .caveman/config.json in cwd', (tmp) => {
@@ -55,14 +55,14 @@ test('reads .caveman/config.json in cwd', (tmp) => {
   fs.writeFileSync(path.join(tmp, '.caveman', 'config.json'),
     JSON.stringify({ defaultMode: 'lite' }));
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'lite');
+  assert.strictEqual(getDefaultMode(), 'transatlantic');
 });
 
 test('reads .caveman.json in cwd', (tmp) => {
   fs.writeFileSync(path.join(tmp, '.caveman.json'),
     JSON.stringify({ defaultMode: 'ultra' }));
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'ultra');
+  assert.strictEqual(getDefaultMode(), 'morse');
 });
 
 test('.caveman/config.json wins over .caveman.json at same level', (tmp) => {
@@ -72,7 +72,7 @@ test('.caveman/config.json wins over .caveman.json at same level', (tmp) => {
   fs.writeFileSync(path.join(tmp, '.caveman.json'),
     JSON.stringify({ defaultMode: 'ultra' }));
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'lite');
+  assert.strictEqual(getDefaultMode(), 'transatlantic');
 });
 
 test('walks up from nested cwd to find repo config', (tmp) => {
@@ -82,7 +82,7 @@ test('walks up from nested cwd to find repo config', (tmp) => {
   const nested = path.join(tmp, 'a', 'b', 'c');
   fs.mkdirSync(nested, { recursive: true });
   process.chdir(nested);
-  assert.strictEqual(getDefaultMode(), 'wenyan-lite');
+  assert.strictEqual(getDefaultMode(), 'transatlantic');
 });
 
 test('env var beats repo-local config', (tmp) => {
@@ -91,7 +91,7 @@ test('env var beats repo-local config', (tmp) => {
     JSON.stringify({ defaultMode: 'lite' }));
   process.chdir(tmp);
   process.env.CAVEMAN_DEFAULT_MODE = 'ultra';
-  assert.strictEqual(getDefaultMode(), 'ultra');
+  assert.strictEqual(getDefaultMode(), 'morse');
 });
 
 test('repo-local config beats user config', (tmp) => {
@@ -105,7 +105,7 @@ test('repo-local config beats user config', (tmp) => {
     JSON.stringify({ defaultMode: 'lite' }));
   process.chdir(tmp);
   try {
-    assert.strictEqual(getDefaultMode(), 'lite');
+    assert.strictEqual(getDefaultMode(), 'transatlantic');
   } finally {
     fs.rmSync(path.join(tmpHome, 'caveman'), { recursive: true, force: true });
   }
@@ -127,14 +127,14 @@ test('invalid mode in repo config falls through to default', (tmp) => {
   fs.writeFileSync(path.join(tmp, '.caveman.json'),
     JSON.stringify({ defaultMode: 'definitely-not-a-mode' }));
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'full');
+  assert.strictEqual(getDefaultMode(), 'transatlantic');
 });
 
 test('malformed JSON in repo config falls through to default', (tmp) => {
   fs.mkdirSync(path.join(tmp, '.caveman'));
   fs.writeFileSync(path.join(tmp, '.caveman', 'config.json'), '{ not json');
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'full');
+  assert.strictEqual(getDefaultMode(), 'transatlantic');
 });
 
 test('refuses symlinked .caveman.json (symmetric with readFlag policy)', (tmp) => {
@@ -148,7 +148,7 @@ test('refuses symlinked .caveman.json (symmetric with readFlag policy)', (tmp) =
     return;
   }
   process.chdir(tmp);
-  assert.strictEqual(getDefaultMode(), 'full');
+  assert.strictEqual(getDefaultMode(), 'transatlantic');
 });
 
 test('findRepoConfigPath returns null outside any repo', (tmp) => {

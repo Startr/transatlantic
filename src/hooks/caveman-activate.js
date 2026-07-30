@@ -49,12 +49,12 @@ safeWriteFlag(flagPath, mode);
 const INDEPENDENT_MODES = new Set(['commit', 'review', 'compress']);
 
 if (INDEPENDENT_MODES.has(mode)) {
-  process.stdout.write('CAVEMAN MODE ACTIVE — level: ' + mode + '. Behavior defined by /caveman-' + mode + ' skill.');
+  process.stdout.write('TRANSATLANTIC MODE ACTIVE — level: ' + mode + '. Behavior defined by /caveman-' + mode + ' skill.');
   process.exit(0);
 }
 
-// Resolve the canonical label for wenyan alias
-const modeLabel = mode === 'wenyan' ? 'wenyan-full' : mode;
+// getDefaultMode() already normalizes legacy names onto the canonical ladder.
+const modeLabel = mode;
 
 // Read SKILL.md — the single source of truth for caveman behavior.
 // Candidate locations, tried in order (#587/#589 — the old single '..' path
@@ -115,28 +115,27 @@ if (skillContent) {
     return acc;
   }, []);
 
-  output = 'CAVEMAN MODE ACTIVE — level: ' + modeLabel + '\n\n' + filtered.join('\n');
+  output = 'TRANSATLANTIC MODE ACTIVE — level: ' + modeLabel + '\n\n' + filtered.join('\n');
 } else {
   // Fallback when SKILL.md is not found (standalone hook install without skills dir).
   // This is the minimum viable ruleset — better than nothing.
   output =
-    'CAVEMAN MODE ACTIVE — level: ' + modeLabel + '\n\n' +
-    'Respond terse like smart caveman. All technical substance stay. Only fluff die.\n\n' +
+    'TRANSATLANTIC MODE ACTIVE — level: ' + modeLabel + '\n\n' +
+    'Speak in the transatlantic register: clear, measured, clipped. Every technical fact stays. Only noise dies.\n\n' +
     '## Persistence\n\n' +
-    'ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift. Still active if unsure. Off only: "stop caveman" / "normal mode".\n\n' +
-    'Current level: **' + modeLabel + '**. Switch: `/caveman lite|full|ultra`.\n\n' +
+    'ACTIVE EVERY RESPONSE. No revert after many turns. No drift back to verbose. Still active if unsure. Off only: "stop transatlantic" / "stop caveman" / "normal mode".\n\n' +
+    'Current level: **' + modeLabel + '**. Switch: `/transatlantic liner|plain|transatlantic|aviation|telegraph|morse`.\n\n' +
     '## Rules\n\n' +
-    'Drop: articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries (sure/certainly/of course/happy to), hedging. ' +
-    'Fragments OK. Short synonyms (big not extensive, fix not "implement a solution for"). Technical terms exact. Code blocks unchanged. Errors quoted exact.\n\n' +
-    "Preserve user's dominant language. User write Portuguese → reply Portuguese caveman. Compress the style, not the language. Technical terms, code, API names, commands, error strings stay verbatim.\n\n" +
-    'No self-reference. Never name or announce the style. No "caveman mode on" tags. Output caveman-only.\n\n' +
-    'Pattern: `[thing] [action] [reason]. [next step].`\n\n' +
-    'Not: "Sure! I\'d be happy to help you with that. The issue you\'re experiencing is likely caused by..."\n' +
-    'Yes: "Bug in auth middleware. Token expiry check use `<` not `<=`. Fix:"\n\n' +
+    'Cut filler (just/really/basically/actually/simply), pleasantries (sure/certainly/of course/happy to), hedging, and rhetorical padding. ' +
+    'Front-load the answer. Never center-embed — split nested clauses into separate sentences. Prefer common words. ' +
+    'At telegraph/morse levels only: drop articles, fragments OK, short synonyms. ' +
+    'Technical terms exact. Code blocks unchanged. Errors quoted exact.\n\n' +
+    "Preserve the user's dominant language. Compress the style, not the language. Technical terms, code, API names, commands, error strings stay verbatim.\n\n" +
+    'No self-reference. Never name or announce the style. No mode tags in output.\n\n' +
     '## Auto-Clarity\n\n' +
-    'Drop caveman for: security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, user asks to clarify or repeats question. Resume caveman after clear part done.\n\n' +
+    'Rise to plain full-grammar prose for: security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, user asks to clarify or repeats question. Resume the active level after.\n\n' +
     '## Boundaries\n\n' +
-    'Code/commits/PRs: write normal. "stop caveman" or "normal mode": revert. Level persist until changed or session end.';
+    'Code/commits/PRs: write normal. "stop transatlantic", "stop caveman", or "normal mode": revert. Level persists until changed or session end.';
 }
 
 // 3. Detect missing statusline config — nudge Claude to help set it up
@@ -159,8 +158,8 @@ try {
     const statusLineSnippet =
       '"statusLine": { "type": "command", "command": ' + JSON.stringify(command) + ' }';
     output += "\n\n" +
-      "STATUSLINE SETUP NEEDED: The caveman plugin includes a statusline badge showing active mode " +
-      "(e.g. [CAVEMAN], [CAVEMAN:ULTRA]). It is not configured yet. " +
+      "STATUSLINE SETUP NEEDED: The transatlantic plugin includes a statusline badge showing the active level " +
+      "(e.g. [TRANSATLANTIC], [TRANSATLANTIC:MORSE]). It is not configured yet. " +
       "To enable, add this to " + path.join(claudeDir, 'settings.json') + ": " +
       statusLineSnippet + " " +
       "Proactively offer to set this up for the user on first interaction.";

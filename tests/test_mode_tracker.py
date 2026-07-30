@@ -100,7 +100,7 @@ class ModeTrackerTests(unittest.TestCase):
         # deactivation regex matched "caveman and stop" and deleted the flag.
         self.flag.write_text("full")
         self.send("enable caveman and stop apologizing")
-        self.assertEqual(self.flag_value(), "full")
+        self.assertEqual(self.flag_value(), "transatlantic")
 
     def test_question_does_not_activate(self):
         self.send("what is caveman mode?")
@@ -114,29 +114,29 @@ class ModeTrackerTests(unittest.TestCase):
 
     def test_unscoped_brevity_activates(self):
         self.send("be brief")
-        self.assertEqual(self.flag_value(), "full")
+        self.assertEqual(self.flag_value(), "transatlantic")
 
     def test_activate_caveman_still_works(self):
         self.send("activate caveman")
-        self.assertEqual(self.flag_value(), "full")
+        self.assertEqual(self.flag_value(), "transatlantic")
 
     def test_turn_on_caveman_mode_still_works(self):
         self.send("turn on caveman mode")
-        self.assertEqual(self.flag_value(), "full")
+        self.assertEqual(self.flag_value(), "transatlantic")
 
     def test_talk_like_caveman_still_works(self):
         self.send("talk like a caveman")
-        self.assertEqual(self.flag_value(), "full")
+        self.assertEqual(self.flag_value(), "transatlantic")
 
     def test_bare_caveman_mode_still_works(self):
         self.send("caveman mode")
-        self.assertEqual(self.flag_value(), "full")
+        self.assertEqual(self.flag_value(), "transatlantic")
 
     # ── slash commands ──────────────────────────────────────────────────
 
     def test_slash_caveman_level_switch(self):
         self.send("/caveman ultra")
-        self.assertEqual(self.flag_value(), "ultra")
+        self.assertEqual(self.flag_value(), "morse")
 
     def test_slash_caveman_off(self):
         self.flag.write_text("full")
@@ -150,15 +150,15 @@ class ModeTrackerTests(unittest.TestCase):
         self.send("/caveman-commit")
         self.assertEqual(self.flag_value(), "commit")
         r = self.send("ordinary follow-up question")
-        self.assertEqual(self.flag_value(), "ultra")
-        self.assertIn("CAVEMAN MODE ACTIVE (ultra)", r.stdout)
+        self.assertEqual(self.flag_value(), "morse")
+        self.assertIn("TRANSATLANTIC MODE ACTIVE (morse)", r.stdout)
 
     def test_commit_with_no_prior_mode_deactivates_after(self):
         self.send("/caveman-commit")
         self.assertEqual(self.flag_value(), "commit")
         r = self.send("ordinary follow-up question")
         self.assertIsNone(self.flag_value())
-        self.assertNotIn("CAVEMAN MODE ACTIVE", r.stdout)
+        self.assertNotIn("TRANSATLANTIC MODE ACTIVE", r.stdout)
 
     def test_chained_independent_modes_keep_original_prev(self):
         self.flag.write_text("wenyan-ultra")
@@ -166,7 +166,7 @@ class ModeTrackerTests(unittest.TestCase):
         self.send("/caveman-review")
         self.assertEqual(self.flag_value(), "review")
         self.send("ordinary follow-up question")
-        self.assertEqual(self.flag_value(), "wenyan-ultra")
+        self.assertEqual(self.flag_value(), "transatlantic")
 
     def test_namespaced_commit_and_review_recognized(self):
         # Pre-fix: only compress and stats had the /caveman:caveman- variant.
@@ -180,7 +180,7 @@ class ModeTrackerTests(unittest.TestCase):
     def test_no_reinforcement_during_independent_turn(self):
         self.flag.write_text("full")
         r = self.send("/caveman-commit")
-        self.assertNotIn("CAVEMAN MODE ACTIVE", r.stdout)
+        self.assertNotIn("TRANSATLANTIC MODE ACTIVE", r.stdout)
 
     def test_deactivation_clears_saved_prev(self):
         self.flag.write_text("ultra")

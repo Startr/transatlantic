@@ -10,13 +10,15 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { readFlag, appendFlag, readHistory, safeWriteFlag, VALID_MODES, MODE_LOG_BASENAME } = require('./caveman-config');
+const { readFlag, appendFlag, readHistory, safeWriteFlag, VALID_MODES, MODE_LOG_BASENAME, normalizeMode } = require('./caveman-config');
 
 // Mean per-task savings from benchmarks/results/*.json (avg_savings: 65 across
-// 10 tasks, sonnet-4-20250514). Only 'full' has measured data; lite / ultra /
-// wenyan modes show no estimate until benchmarked. Add an entry here when a new
-// run is committed.
-const COMPRESSION = { 'full': 0.65 };
+// 10 tasks, sonnet-4-20250514). Measured against the legacy caveman 'full'
+// register, which maps to 'telegraph' on the transatlantic ladder (readFlag
+// normalizes old flag values, so the lookup key is the canonical name). Other
+// levels show no estimate until benchmarked. Add an entry here when a new run
+// is committed.
+const COMPRESSION = { 'telegraph': 0.65 };
 
 // Approximate Anthropic public output-token pricing, USD per million.
 // Match by model id prefix so this stays correct across point releases
@@ -214,7 +216,12 @@ function attributeByMode({ messages, modeLog, mode, flagMtimeMs, outputTokens })
 
   const byMode = {};
   let unknownTokens = 0;
-  const add = (key, tokens) => { byMode[key] = (byMode[key] || 0) + tokens; };
+  // Mode-log entries written by an older hook may carry legacy caveman names;
+  // collapse them onto the canonical ladder so COMPRESSION lookups match.
+  const add = (key, tokens) => {
+    const k = key === 'none' ? 'none' : (normalizeMode(key) || key);
+    byMode[k] = (byMode[k] || 0) + tokens;
+  };
   for (const m of msgs) {
     if (m.ts == null) { unknownTokens += m.outputTokens; continue; }
     let active;
@@ -418,7 +425,7 @@ function formatStats({ outputTokens, cacheReadTokens, turns, mode, model, sessio
               `Est. tokens saved:     ${estSaved.toLocaleString()} (~${Math.round(ratio * 100)}% of output)\n` +
               usdLine).replace(/\n$/, '');
   } else if (mode && mode !== 'off') {
-    savings = `No savings estimate for '${mode}' mode — only 'full' has benchmark data.`;
+    savings = `No savings estimate for '${mode}' mode — only 'telegraph' (legacy caveman full) has benchmark data.`;
   } else {
     savings = 'Caveman not active this session.';
   }

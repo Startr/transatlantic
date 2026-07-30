@@ -158,7 +158,7 @@ class HookScriptTests(unittest.TestCase):
             result = self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
 
             self.assertNotIn("STATUSLINE SETUP NEEDED", result.stdout)
-            self.assertEqual((claude_dir / ".caveman-active").read_text(), "full")
+            self.assertEqual((claude_dir / ".caveman-active").read_text(), "transatlantic")
 
     # Regression for #587/#589 — hook at <root>/src/hooks/ must resolve SKILL.md
     # at <root>/skills/caveman/, not the nonexistent <root>/src/skills/.
@@ -170,9 +170,9 @@ class HookScriptTests(unittest.TestCase):
             result = self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
 
             # Intensity table exists only in SKILL.md, never in the fallback
-            self.assertIn("## Intensity", result.stdout)
+            self.assertIn("## Levels", result.stdout)
             # Default mode is full — table filtered to the active level's row
-            self.assertIn("| **full** |", result.stdout)
+            self.assertIn("| **transatlantic** |", result.stdout)
             self.assertNotIn("| **lite** |", result.stdout)
 
     def test_activate_finds_skill_beside_config_dir_hooks(self):

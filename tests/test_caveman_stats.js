@@ -74,12 +74,12 @@ test('skips estimate for non-full modes', (tmp) => {
     { type: 'assistant', message: { usage: { output_tokens: 100 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'ultra');
+  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'morse');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
   });
-  assert.match(out, /No savings estimate for 'ultra' mode/);
+  assert.match(out, /No savings estimate for 'morse' mode/);
 });
 
 test('reports no-session when no .jsonl exists', (tmp) => {
@@ -222,7 +222,7 @@ test('appends to lifetime history on each run', (tmp) => {
   assert.strictEqual(entry.session_id, 's');
   assert.strictEqual(entry.output_tokens, 350);
   assert.strictEqual(entry.est_saved_tokens, 650);
-  assert.strictEqual(entry.mode, 'full');
+  assert.strictEqual(entry.mode, 'telegraph');
   assert.strictEqual(entry.model, 'claude-sonnet-4-7');
 });
 
@@ -367,7 +367,7 @@ test('statusline.sh appends savings when CAVEMAN_STATUSLINE_SAVINGS=1', (tmp) =>
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, CAVEMAN_STATUSLINE_SAVINGS: '1' },
   });
-  assert.match(out, /\[CAVEMAN\]/);
+  assert.match(out, /\[TRANSATLANTIC/);
   assert.match(out, /⛏ 2\.8k/);
 });
 
@@ -382,7 +382,7 @@ test('statusline.sh renders savings by default when env var is unset', (tmp) => 
   const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'caveman-statusline.sh')], {
     encoding: 'utf8', env,
   });
-  assert.match(out, /\[CAVEMAN\]/);
+  assert.match(out, /\[TRANSATLANTIC/);
   assert.match(out, /⛏ 2\.8k/);
 });
 
@@ -396,7 +396,7 @@ test('statusline.sh omits savings when CAVEMAN_STATUSLINE_SAVINGS=0', (tmp) => {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, CAVEMAN_STATUSLINE_SAVINGS: '0' },
   });
-  assert.match(out, /\[CAVEMAN\]/);
+  assert.match(out, /\[TRANSATLANTIC/);
   assert.doesNotMatch(out, /⛏/);
 });
 
@@ -412,7 +412,7 @@ test('statusline.sh omits savings when suffix file is missing (fresh install)', 
   const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'caveman-statusline.sh')], {
     encoding: 'utf8', env,
   });
-  assert.match(out, /\[CAVEMAN\]/);
+  assert.match(out, /\[TRANSATLANTIC/);
   assert.doesNotMatch(out, /⛏/);
 });
 
@@ -560,7 +560,7 @@ test('attributes tokens to the mode active when each message happened (#601)', (
   assert.doesNotMatch(out, /1,207/);
   assert.match(out, /Mode changed mid-session/);
   assert.match(out, /caveman off:\s+300 tokens \(no benchmark estimate\)/);
-  assert.match(out, /full:\s+350 tokens \(est\. 650 saved\)/);
+  assert.match(out, /telegraph:\s+350 tokens \(est\. 650 saved\)/);
   // The lifetime history row records the attributed figure, not the inflated one.
   const hist = fs.readFileSync(path.join(claudeDir, '.caveman-history.jsonl'), 'utf8')
     .split('\n').filter(Boolean).map(l => JSON.parse(l));
@@ -585,7 +585,7 @@ test('credits caveman spans even after mode is turned off mid-session (#601)', (
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
   });
   assert.doesNotMatch(out, /Caveman not active this session/);
-  assert.match(out, /full:\s+350 tokens \(est\. 650 saved\)/);
+  assert.match(out, /telegraph:\s+350 tokens \(est\. 650 saved\)/);
   assert.match(out, /Est\. tokens saved:\s+650\b/);
 });
 
@@ -604,14 +604,16 @@ test('mode tracker logs timestamped transitions, deduping unchanged modes (#601)
   run('/caveman ultra');
   run('/caveman ultra'); // unchanged — must not append a duplicate row
   assert.strictEqual(rows().length, 1);
-  assert.strictEqual(rows()[0].mode, 'ultra');
-  assert.strictEqual(rows()[0].prev, 'full');
+  assert.strictEqual(rows()[0].mode, 'morse');
+  // The seeded flag says legacy 'full'; readFlag normalizes it to 'telegraph'
+  // before the transition is logged.
+  assert.strictEqual(rows()[0].prev, 'telegraph');
   assert.ok(Number.isFinite(rows()[0].ts));
 
   run('/caveman off'); // deactivation is a transition too
   assert.strictEqual(rows().length, 2);
   assert.strictEqual(rows()[1].mode, null);
-  assert.strictEqual(rows()[1].prev, 'ultra');
+  assert.strictEqual(rows()[1].prev, 'morse');
 });
 
 test('excludes tokens that predate a mid-session flag write with no log (#601)', (tmp) => {

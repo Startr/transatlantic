@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execFileSync } = require('child_process');
-const { getDefaultMode, safeWriteFlag, readFlag, recordModeChange, VALID_MODES } = require('./caveman-config');
+const { getDefaultMode, safeWriteFlag, readFlag, recordModeChange, normalizeMode } = require('./caveman-config');
 
 // Modes handled by their own slash commands (/caveman-commit, etc.) — not
 // selectable via /caveman <arg>.
@@ -36,14 +36,14 @@ process.stdin.on('end', () => {
     // "turn off" phrasing missed the "turn X off" word order entirely, and
     // the activation regex then re-armed caveman at the default level).
     const wantsOff =
-      /\b(stop|disable|deactivate|quit|exit|kill)\s+(the\s+)?caveman\b/.test(prompt) ||
-      /\bcaveman(\s+mode)?\s+(off|stop|disabled?)\b/.test(prompt) ||
-      /\bturn\s+off\s+(the\s+)?caveman\b/.test(prompt) ||
+      /\b(stop|disable|deactivate|quit|exit|kill)\s+(the\s+)?(caveman|transatlantic)\b/.test(prompt) ||
+      /\b(caveman|transatlantic)(\s+mode)?\s+(off|stop|disabled?)\b/.test(prompt) ||
+      /\bturn\s+off\s+(the\s+)?(caveman|transatlantic)\b/.test(prompt) ||
       // "normal mode" only as a command (prompt-initial, optionally led by a
       // switch-back verb) or with caveman context — never mid-sentence for
       // e.g. vim's normal mode ("how do I exit vim normal mode").
       /^(please\s+)?(go\s+|back\s+to\s+|switch\s+(back\s+)?to\s+|return\s+to\s+)?normal\s+mode\b/.test(prompt) ||
-      (/\bnormal\s+mode\b/.test(prompt) && /\bcaveman\b/.test(prompt));
+      (/\bnormal\s+mode\b/.test(prompt) && /\b(caveman|transatlantic)\b/.test(prompt));
 
     // Questions about caveman are not activation commands
     // ("what is caveman mode?", "does caveman lite drop articles?").
@@ -57,10 +57,10 @@ process.stdin.on('end', () => {
     // ("be brief in the summary"), which is a one-off instruction, not a
     // session-wide mode switch.
     if (!wantsOff && !isQuestion) {
-      if (/\b(activate|enable|start|turn on|use|switch to|want|give me)\b[^.]{0,40}\bcaveman\b/.test(prompt) ||
+      if (/\b(activate|enable|start|turn on|use|switch to|want|give me)\b[^.]{0,40}\b(caveman|transatlantic)\b/.test(prompt) ||
           /\btalk like\b[^.]{0,40}\bcaveman\b/.test(prompt) ||
-          /\bcaveman\s+mode\s+(on|please|now)\b/.test(prompt) ||
-          /^caveman(\s+mode)?\s*[.!]*$/.test(prompt) ||
+          /\b(caveman|transatlantic)\s+mode\s+(on|please|now)\b/.test(prompt) ||
+          /^(caveman|transatlantic)(\s+mode)?\s*[.!]*$/.test(prompt) ||
           /\b(less tokens|fewer tokens|be brief|be terse|shorter answers)\b(?!\s+(in|for|on|about|when|during|with)\b)/.test(prompt)) {
         const mode = getDefaultMode();
         if (mode !== 'off') {
@@ -102,9 +102,9 @@ process.stdin.on('end', () => {
     // — SKILL.md promises "Level persist until changed or session end", and a
     // one-shot skill invocation should not count as "changed" forever.
     let setIndependentThisTurn = false;
-    if (prompt.startsWith('/caveman')) {
+    if (prompt.startsWith('/caveman') || prompt.startsWith('/transatlantic') || prompt.startsWith('/ta ') || prompt === '/ta') {
       const parts = prompt.split(/\s+/);
-      const cmd = parts[0]; // /caveman, /caveman-commit, /caveman-review, etc.
+      const cmd = parts[0]; // /transatlantic, /caveman, /caveman-commit, etc.
       const arg = parts[1] || '';
 
       let mode = null;
@@ -112,23 +112,29 @@ process.stdin.on('end', () => {
       // Marketplace plugin installs surface commands namespaced as
       // /caveman:caveman-<name> — accept both forms for every skill (#599:
       // only compress and stats had the namespaced variant).
+      const LEVEL_CMDS = new Set([
+        '/transatlantic', '/transatlantic:transatlantic', '/transatlantic:ta', '/ta',
+        // While the plugin manifest is still named "caveman", the transatlantic
+        // command file surfaces namespaced as /caveman:transatlantic.
+        '/caveman:transatlantic',
+        '/caveman', '/caveman:caveman' // legacy
+      ]);
       if (cmd === '/caveman-commit' || cmd === '/caveman:caveman-commit') {
         mode = 'commit';
       } else if (cmd === '/caveman-review' || cmd === '/caveman:caveman-review') {
         mode = 'review';
       } else if (cmd === '/caveman-compress' || cmd === '/caveman:caveman-compress') {
         mode = 'compress';
-      } else if (cmd === '/caveman' || cmd === '/caveman:caveman') {
-        // Bare /caveman → activate at configured default
+      } else if (LEVEL_CMDS.has(cmd)) {
+        // Bare command → activate at configured default
         if (!arg) {
           mode = getDefaultMode();
         } else if (arg === 'off' || arg === 'stop' || arg === 'disable') {
           mode = 'off';
-        } else if (arg === 'wenyan-full') {
-          // Canonical alias — config stores as 'wenyan'
-          mode = 'wenyan';
-        } else if (VALID_MODES.includes(arg) && !INDEPENDENT_MODES.has(arg)) {
-          mode = arg;
+        } else if (!INDEPENDENT_MODES.has(arg)) {
+          // normalizeMode maps legacy names (lite/full/ultra/wenyan-*) onto
+          // the canonical ladder and rejects unknown args with null.
+          mode = normalizeMode(arg);
         }
         // Unknown arg → mode stays null, flag untouched (no silent overwrite)
       }
@@ -190,13 +196,26 @@ process.stdin.on('end', () => {
       }
     }
 
+    // Per-level attention anchor. The full ruleset comes from SessionStart;
+    // this one-liner must match the active level's register — telling the
+    // model to drop articles while "liner" is active would fight the skill.
+    const REINFORCEMENT = {
+      liner: "Classy humanized prose. Full natural voice, varied sentence rhythm, no machine-writing tells, no filler.",
+      plain: "Plain language. Short declarative sentences, common words, active voice, front-load the point.",
+      transatlantic: "Newsreel voice. Full grammar, one idea per sentence. Cut filler/hedging/pleasantries/padding.",
+      aviation: "Controlled technical English. Sentences max ~20 words, one instruction per sentence, imperative mood, one term one meaning.",
+      telegraph: "Telegraphic register. Drop articles, fragments OK, short synonyms.",
+      morse: "Bare keywords, minimal glue words. State each fact once."
+    };
+
     if (activeMode && !INDEPENDENT_MODES.has(activeMode)) {
+      const anchor = REINFORCEMENT[activeMode] ||
+        "Cut filler/hedging/pleasantries. Keep all technical substance.";
       process.stdout.write(JSON.stringify({
         hookSpecificOutput: {
           hookEventName: "UserPromptSubmit",
-          additionalContext: "CAVEMAN MODE ACTIVE (" + activeMode + "). " +
-            "Drop articles/filler/pleasantries/hedging. Fragments OK. " +
-            "Code/commits/security: write normal."
+          additionalContext: "TRANSATLANTIC MODE ACTIVE (" + activeMode + "). " +
+            anchor + " Code/commits/security: write normal."
         }
       }));
     }

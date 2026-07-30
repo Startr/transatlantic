@@ -20,10 +20,37 @@ const path = require('path');
 const os = require('os');
 
 const VALID_MODES = [
-  'off', 'lite', 'full', 'ultra',
+  'off',
+  // Transatlantic ladder — most readable to most compressed
+  // (research basis: docs/research/level-ladder.md)
+  'liner', 'plain', 'transatlantic', 'aviation', 'telegraph', 'morse',
+  // Legacy caveman names — accepted on read/args, normalized before write
+  'lite', 'full', 'ultra',
   'wenyan-lite', 'wenyan', 'wenyan-full', 'wenyan-ultra',
+  // Independent one-shot skill modes
   'commit', 'review', 'compress'
 ];
+
+// Legacy name → canonical ladder level. Old flag files, configs, and
+// /caveman args keep working; everything is normalized before it is written
+// or acted on. Wenyan levels are deprecated in the fork and fall back to the
+// default voice.
+const LEGACY_ALIASES = {
+  lite: 'transatlantic',
+  full: 'telegraph',
+  ultra: 'morse',
+  wenyan: 'transatlantic',
+  'wenyan-lite': 'transatlantic',
+  'wenyan-full': 'transatlantic',
+  'wenyan-ultra': 'transatlantic'
+};
+
+function normalizeMode(mode) {
+  if (!mode) return null;
+  const m = String(mode).toLowerCase();
+  if (!VALID_MODES.includes(m)) return null;
+  return LEGACY_ALIASES[m] || m;
+}
 
 function getConfigDir() {
   if (process.env.XDG_CONFIG_HOME) {
@@ -77,9 +104,8 @@ function readModeFromConfigFile(configPath) {
   try {
     const raw = fs.readFileSync(configPath, 'utf8');
     const config = JSON.parse(raw);
-    if (config && config.defaultMode &&
-        VALID_MODES.includes(String(config.defaultMode).toLowerCase())) {
-      return String(config.defaultMode).toLowerCase();
+    if (config && config.defaultMode) {
+      return normalizeMode(config.defaultMode);
     }
   } catch (e) {
     // Missing / unreadable / invalid JSON → caller falls through
@@ -89,9 +115,9 @@ function readModeFromConfigFile(configPath) {
 
 function getDefaultMode() {
   // 1. Environment variable (highest priority)
-  const envMode = process.env.CAVEMAN_DEFAULT_MODE;
-  if (envMode && VALID_MODES.includes(envMode.toLowerCase())) {
-    return envMode.toLowerCase();
+  const envMode = normalizeMode(process.env.CAVEMAN_DEFAULT_MODE);
+  if (envMode) {
+    return envMode;
   }
 
   // 2. Repo-local config (checked-in, per-project default)
@@ -106,7 +132,7 @@ function getDefaultMode() {
   if (userMode) return userMode;
 
   // 4. Default
-  return 'full';
+  return 'transatlantic';
 }
 
 // Symlink-safe flag file write.
@@ -204,8 +230,8 @@ function safeWriteFlag(flagPath, content) {
 // reader — statusline, per-turn reinforcement — would slurp that content and
 // either echo it to the terminal or inject it into model context.
 //
-// MAX_FLAG_BYTES is a hard cap. The longest legitimate value is "wenyan-ultra"
-// (12 bytes); 64 leaves slack without enabling exfil.
+// MAX_FLAG_BYTES is a hard cap. The longest legitimate value is
+// "transatlantic" (13 bytes); 64 leaves slack without enabling exfil.
 const MAX_FLAG_BYTES = 64;
 
 function readFlag(flagPath) {
@@ -233,8 +259,9 @@ function readFlag(flagPath) {
     }
 
     const raw = out.trim().toLowerCase();
-    if (!VALID_MODES.includes(raw)) return null;
-    return raw;
+    // Whitelist first, then collapse legacy names so every reader sees only
+    // canonical ladder levels even when an old flag file is still on disk.
+    return normalizeMode(raw);
   } catch (e) {
     return null;
   }
@@ -345,4 +372,4 @@ function readHistory(filePath) {
   }
 }
 
-module.exports = { getDefaultMode, getConfigDir, getConfigPath, findRepoConfigPath, VALID_MODES, safeWriteFlag, readFlag, appendFlag, readHistory, recordModeChange, MODE_LOG_BASENAME };
+module.exports = { getDefaultMode, getConfigDir, getConfigPath, findRepoConfigPath, VALID_MODES, LEGACY_ALIASES, normalizeMode, safeWriteFlag, readFlag, appendFlag, readHistory, recordModeChange, MODE_LOG_BASENAME };

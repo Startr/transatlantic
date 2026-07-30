@@ -10,7 +10,7 @@ const path = require('path');
 const os = require('os');
 const assert = require('assert');
 
-const { safeWriteFlag, readFlag, VALID_MODES } = require('../src/hooks/caveman-config');
+const { safeWriteFlag, readFlag, VALID_MODES, normalizeMode } = require('../src/hooks/caveman-config');
 
 let passed = 0;
 let failed = 0;
@@ -71,7 +71,7 @@ test('readFlag works through symlinked parent directory', (tmp) => {
   fs.writeFileSync(realFlagPath, 'lite', { mode: 0o600 });
 
   const result = readFlag(path.join(symlinkDir, '.caveman-active'));
-  assert.strictEqual(result, 'lite');
+  assert.strictEqual(result, 'transatlantic');
 });
 
 test('safeWriteFlag then readFlag round-trip through symlink', (tmp) => {
@@ -85,7 +85,7 @@ test('safeWriteFlag then readFlag round-trip through symlink', (tmp) => {
 
   // Read back through the same symlink path
   const result = readFlag(flagPath);
-  assert.strictEqual(result, 'wenyan-ultra');
+  assert.strictEqual(result, 'transatlantic');
 });
 
 test('refuses flag file that is itself a symlink (even through symlinked parent)', (tmp) => {
@@ -143,10 +143,10 @@ test('overwrites existing flag through symlinked parent', (tmp) => {
   const flagPath = path.join(symlinkDir, '.caveman-active');
 
   safeWriteFlag(flagPath, 'lite');
-  assert.strictEqual(readFlag(flagPath), 'lite');
+  assert.strictEqual(readFlag(flagPath), 'transatlantic');
 
   safeWriteFlag(flagPath, 'ultra');
-  assert.strictEqual(readFlag(flagPath), 'ultra');
+  assert.strictEqual(readFlag(flagPath), 'morse');
 });
 
 test('creates parent directory via mkdirSync even when it does not exist yet', (tmp) => {
@@ -186,7 +186,9 @@ test('all valid modes round-trip through symlinked parent', (tmp) => {
   for (const mode of VALID_MODES) {
     safeWriteFlag(flagPath, mode);
     const read = readFlag(flagPath);
-    assert.strictEqual(read, mode, `mode '${mode}' did not round-trip`);
+    // readFlag normalizes legacy caveman names onto the canonical ladder,
+    // so the round-trip expectation is the normalized form.
+    assert.strictEqual(read, normalizeMode(mode), `mode '${mode}' did not round-trip`);
   }
 });
 

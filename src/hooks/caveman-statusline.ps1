@@ -28,15 +28,27 @@ try {
 $Mode = $Mode.ToLowerInvariant()
 $Mode = ($Mode -replace '[^a-z0-9-]', '')
 
-$Valid = @('off','lite','full','ultra','wenyan-lite','wenyan','wenyan-full','wenyan-ultra','commit','review','compress')
+$Valid = @('off','liner','plain','transatlantic','aviation','telegraph','morse','lite','full','ultra','wenyan-lite','wenyan','wenyan-full','wenyan-ultra','commit','review','compress')
 if (-not ($Valid -contains $Mode)) { exit 0 }
 
+# Collapse legacy caveman names onto the canonical ladder — mirrors
+# normalizeMode() in caveman-config.js and the .sh counterpart.
+switch ($Mode) {
+    'lite'         { $Mode = 'transatlantic' }
+    'wenyan'       { $Mode = 'transatlantic' }
+    'wenyan-lite'  { $Mode = 'transatlantic' }
+    'wenyan-full'  { $Mode = 'transatlantic' }
+    'wenyan-ultra' { $Mode = 'transatlantic' }
+    'full'         { $Mode = 'telegraph' }
+    'ultra'        { $Mode = 'morse' }
+}
+
 $Esc = [char]27
-if ([string]::IsNullOrEmpty($Mode) -or $Mode -eq "full") {
-    [Console]::Write("${Esc}[38;5;172m[CAVEMAN]${Esc}[0m")
+if ([string]::IsNullOrEmpty($Mode) -or $Mode -eq "transatlantic") {
+    [Console]::Write("${Esc}[38;5;74m[TRANSATLANTIC]${Esc}[0m")
 } else {
     $Suffix = $Mode.ToUpperInvariant()
-    [Console]::Write("${Esc}[38;5;172m[CAVEMAN:$Suffix]${Esc}[0m")
+    [Console]::Write("${Esc}[38;5;74m[TRANSATLANTIC:$Suffix]${Esc}[0m")
 }
 
 # Savings suffix: on by default. Opt out via CAVEMAN_STATUSLINE_SAVINGS=0.
@@ -54,7 +66,7 @@ if ($env:CAVEMAN_STATUSLINE_SAVINGS -ne "0") {
                 $Savings = (Get-Content -LiteralPath $SavingsFile -Encoding UTF8 -Raw -ErrorAction Stop).TrimEnd()
                 $Savings = ($Savings -replace '[\x00-\x1F]', '')
                 if ($Savings.Length -gt 0) {
-                    [Console]::Write(" ${Esc}[38;5;172m$Savings${Esc}[0m")
+                    [Console]::Write(" ${Esc}[38;5;74m$Savings${Esc}[0m")
                 }
             }
         } catch {}
