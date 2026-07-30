@@ -114,9 +114,10 @@ process.stdin.on('end', () => {
       // only compress and stats had the namespaced variant).
       const LEVEL_CMDS = new Set([
         '/transatlantic', '/transatlantic:transatlantic', '/transatlantic:ta', '/ta',
-        // While the plugin manifest is still named "caveman", the transatlantic
-        // command file surfaces namespaced as /caveman:transatlantic.
-        '/caveman:transatlantic',
+        // Under the renamed plugin the legacy caveman command file surfaces
+        // as /transatlantic:caveman; the reverse form existed while the
+        // manifest was still named "caveman". Accept every spelling.
+        '/transatlantic:caveman', '/caveman:transatlantic',
         '/caveman', '/caveman:caveman' // legacy
       ]);
       if (cmd === '/caveman-commit' || cmd === '/caveman:caveman-commit') {

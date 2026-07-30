@@ -1,5 +1,5 @@
 ---
-name: caveman
+name: transatlantic
 description: >
   Transatlantic — research-backed prose control for AI agents. Six levels from classy
   humanized prose (liner) to bare keywords (morse), each grounded in published evidence

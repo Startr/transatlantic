@@ -20,34 +20,28 @@ to bare keywords (morse). Level ladder and citations:
 
 ## In Progress
 
-- [ ] **Fork Bootstrap**: Land the six-level ladder on branch `transatlantic` (Alexander)
-  - [x] Deep-research pass: 29 sources, adversarially verified, synthesized
-  - [x] Level-ladder design doc with full bibliography and refuted-claims section
-  - [x] SKILL.md rewritten around liner/plain/transatlantic/aviation/telegraph/morse
-  - [x] Hooks wired: normalizeMode aliases, default transatlantic, per-level reinforcement
-  - [x] Statusline badges + stats attribution updated, all test suites green
-  - [x] Local machine swapped to fork (installPath + statusline + bare user commands)
-  - [ ] Commit the branch work (use `~/bin/ai-coauthor` trailer)
+- [ ] **Plugin Rename**: `caveman` to `transatlantic` #critical
+  - [x] `.claude-plugin/plugin.json` + `marketplace.json` renamed — commands now `/transatlantic:*`
+  - [x] Local machine rewired (`enabledPlugins` + `installed_plugins` keys, backups kept)
+  - [x] Skill frontmatter name to `transatlantic`; tracker accepts every namespaced form
+  - [ ] Decide flag-file name: keep `.caveman-active` or migrate with fallback read
+- [ ] **Docs Rewrite in Liner Voice**: README is the product front door
+  - [x] README: liner voice, ladder table, research section with citations, honest pre-release install, benchmark table relabeled telegraph, upstream credits (original preserved at `docs/research/README-caveman-upstream.md`)
+  - [ ] INSTALL.md per-agent matrix
+  - [ ] AGENTS.md / GEMINI.md autodiscovery files
+  - [ ] `src/rules/caveman-activate.md` always-on rule body
+  - [ ] OpenClaw bootstrap snippet — sentinel string changes with rebrand, keep markers
+  - [ ] CLAUDE.md maintainer instructions updated for the fork
 
 ## TODO
 
 ### Rebrand Sweep
 
-- [ ] **Plugin Rename**: `caveman` to `transatlantic` in `.claude-plugin/plugin.json` #critical
-  - [ ] Rename fixes command namespacing — `/transatlantic:transatlantic` instead of `/caveman:transatlantic`
-  - [ ] Update `enabledPlugins` key and marketplace.json
-  - [ ] Decide flag-file name: keep `.caveman-active` or migrate with fallback read
 - [ ] **Package & Installer Rename**: npm identity and install paths
-  - [ ] `package.json` name to `transatlantic` (npm name verified free 2026-07-30)
+  - [x] `package.json` name to `transatlantic`, bins `transatlantic` + `caveman`, upstream repo fields dropped until org repo exists
   - [ ] `bin/install.js` PROVIDERS strings, hook file paths, uninstall marker
   - [ ] `install.sh` / `install.ps1` shim references
   - [ ] Keep `CAVEMAN_DEFAULT_MODE` env var accepted as legacy alias
-- [ ] **Docs Rewrite in Liner Voice**: README is the product front door
-  - [ ] README: before/after examples per level, keep install table short
-  - [ ] INSTALL.md per-agent matrix
-  - [ ] AGENTS.md / GEMINI.md autodiscovery files
-  - [ ] `src/rules/caveman-activate.md` always-on rule body
-  - [ ] OpenClaw bootstrap snippet — sentinel string changes with rebrand, keep markers
 - [ ] **CI Sync Workflow**: `.github/workflows/sync-skill.yml` paths after renames
   - [ ] Mirror dir `plugins/caveman/` to `plugins/transatlantic/`
   - [ ] Release ZIP name `dist/caveman.skill`
@@ -83,7 +77,7 @@ to bare keywords (morse). Level ladder and citations:
   - [ ] Migrate any inline tags in source to `TODO:` / `FIXME:` / `BUG:` vocabulary
   - [ ] Scan repo with TodoScope and verify the board matches this file
 - [ ] **Startr Alignment Follow-ups**: Scaffold landed 2026-07-30 (Makefile + allowlist .gitignore, verified)
-  - [ ] Remove stale dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) — CLAUDE.md says remove on sight
+  - [x] Stale dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) — verified absent from this clone, nothing to remove
   - [ ] Decide fate of upstream `context/refs/` gitignore entry after fork cleanup
 
 ## Backlog
@@ -104,3 +98,4 @@ _No known bugs. Use `# BUG:` inline tags to flag defects in source._
 - [x] **Bare Command Fix**: `/transatlantic` and `/ta` as user-scope commands; tracker accepts all namespaced forms
 - [x] **Startr Scaffold**: Universal Makefile (help/vars/verify/git-flow-next/things_clean) + `.gitignore` converted to `.*` allowlist, both verified (`make verify` OK, no tracked files hidden)
 - [x] **TodoScope Bootstrap**: TODO.md + `.todoscope-exclude.csv` created to convention
+- [x] **Fork Bootstrap**: Six-level ladder landed on branch `transatlantic` — research pass, ladder doc, SKILL.md, hooks, statusline, stats, tests green, local machine swapped, committed (8bf3f4c, 86a708d, 25671de)

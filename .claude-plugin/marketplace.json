@@ -1,15 +1,15 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "caveman",
-  "description": "Ultra-compressed communication mode for Claude Code. Cuts 65% of output tokens (measured) while keeping full technical accuracy.",
+  "name": "transatlantic",
+  "description": "Research-backed prose levels for Claude Code. Concise output that stays readable — every level cited to published evidence on clear, compressed writing.",
   "owner": {
-    "name": "Julius Brussee",
-    "url": "https://github.com/JuliusBrussee"
+    "name": "Sage.is",
+    "url": "https://sage.is"
   },
   "plugins": [
     {
-      "name": "caveman",
-      "description": "Talk like caveman. Cut 65% output tokens (measured). Keep all technical accuracy.",
+      "name": "transatlantic",
+      "description": "Six prose registers from classy humanized (liner) to bare keywords (morse). Default cuts filler, keeps grammar — the researched sweet spot between concise and readable.",
       "source": "./",
       "category": "productivity"
     }
