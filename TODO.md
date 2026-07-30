@@ -1,0 +1,106 @@
+# Transatlantic — Roadmap
+
+Fork of [caveman](https://github.com/JuliusBrussee/caveman) rebranding to
+**transatlantic**: research-backed prose levels from classy humanized (liner)
+to bare keywords (morse). Level ladder and citations:
+`docs/research/level-ladder.md`.
+
+> **Convention** — Sections below map to kanban columns. Inline source-code
+> tags use the same vocabulary so items stay cross-referenced between this
+> file and the codebase. `KANBAN.canvas` auto-generates from this file and
+> inline tags — do not hand-edit it.
+>
+> | Column      | Markdown section  | Inline tag  |
+> |-------------|-------------------|-------------|
+> | Backlog     | `## Backlog`      |             |
+> | TODO        | `## TODO`         | `# TODO:`   |
+> | In Progress | `## In Progress`  | `# FIXME:`  |
+> | Bugs        | `## Bugs`         | `# BUG:`    |
+> | Done        | `- [x]` items / `## Done` | —   |
+
+## In Progress
+
+- [ ] **Fork Bootstrap**: Land the six-level ladder on branch `transatlantic` (Alexander)
+  - [x] Deep-research pass: 29 sources, adversarially verified, synthesized
+  - [x] Level-ladder design doc with full bibliography and refuted-claims section
+  - [x] SKILL.md rewritten around liner/plain/transatlantic/aviation/telegraph/morse
+  - [x] Hooks wired: normalizeMode aliases, default transatlantic, per-level reinforcement
+  - [x] Statusline badges + stats attribution updated, all test suites green
+  - [x] Local machine swapped to fork (installPath + statusline + bare user commands)
+  - [ ] Commit the branch work (use `~/bin/ai-coauthor` trailer)
+
+## TODO
+
+### Rebrand Sweep
+
+- [ ] **Plugin Rename**: `caveman` to `transatlantic` in `.claude-plugin/plugin.json` #critical
+  - [ ] Rename fixes command namespacing — `/transatlantic:transatlantic` instead of `/caveman:transatlantic`
+  - [ ] Update `enabledPlugins` key and marketplace.json
+  - [ ] Decide flag-file name: keep `.caveman-active` or migrate with fallback read
+- [ ] **Package & Installer Rename**: npm identity and install paths
+  - [ ] `package.json` name to `transatlantic` (npm name verified free 2026-07-30)
+  - [ ] `bin/install.js` PROVIDERS strings, hook file paths, uninstall marker
+  - [ ] `install.sh` / `install.ps1` shim references
+  - [ ] Keep `CAVEMAN_DEFAULT_MODE` env var accepted as legacy alias
+- [ ] **Docs Rewrite in Liner Voice**: README is the product front door
+  - [ ] README: before/after examples per level, keep install table short
+  - [ ] INSTALL.md per-agent matrix
+  - [ ] AGENTS.md / GEMINI.md autodiscovery files
+  - [ ] `src/rules/caveman-activate.md` always-on rule body
+  - [ ] OpenClaw bootstrap snippet — sentinel string changes with rebrand, keep markers
+- [ ] **CI Sync Workflow**: `.github/workflows/sync-skill.yml` paths after renames
+  - [ ] Mirror dir `plugins/caveman/` to `plugins/transatlantic/`
+  - [ ] Release ZIP name `dist/caveman.skill`
+- [ ] **Repo & Distribution**: New home under the team org
+  - [ ] Create GitHub repo (org: Sage.is or Startr — decide)
+  - [ ] Init git-flow branches `develop` + `master` — Makefile release_finish pushes to both
+  - [ ] Point local clone `origin` at the org repo (Makefile OWNER self-corrects from remote)
+  - [ ] Reserve npm name `transatlantic`
+  - [ ] Point marketplace source at the new repo
+  - [ ] Update `enabledPlugins` key on user machines after plugin rename (`caveman@caveman` to new id)
+- [ ] **Installer Ships the Full Local Setup**: Everything hand-done on this machine, automated
+  - [ ] Install bare user-scope commands (`~/.claude/commands/transatlantic.md`, `ta.md`) — plugin commands are always namespaced, bare form needs user scope
+  - [ ] Wire statusline into `settings.json` via `bin/lib/settings.js` (hand-added 2026-07-30)
+  - [ ] Document the dev-mode install (installPath pointed at clone) and its marketplace-update revert risk
+
+### Evidence Debt
+
+- [ ] **Benchmark the New Levels**: Real numbers only — never estimate #critical
+  - [ ] Run `benchmarks/` per level: liner, plain, transatlantic, aviation, telegraph, morse
+  - [ ] Update `COMPRESSION` map in `src/hooks/caveman-stats.js` from results
+  - [ ] Regenerate README benchmark table from committed results
+- [ ] **Eval the New Levels**: Three-arm harness (baseline / terse / skill)
+  - [ ] Regenerate `evals/snapshots/results.json` for the new SKILL.md
+  - [ ] Verify honest delta (skill vs terse) holds per level
+- [ ] **Compression Boundary in caveman-compress**: Enforce the research finding
+  - [ ] Skill must refuse telegraph/morse register for LLM context files (memory, CLAUDE.md)
+  - [ ] Default compress target: transatlantic register
+
+### Alignment Cleanup
+
+- [ ] **TodoScope Alignment**: Finish convention adoption
+  - [ ] Review `.todoscope-exclude.csv` paths (plugins/ mirror excluded on purpose)
+  - [ ] Migrate any inline tags in source to `TODO:` / `FIXME:` / `BUG:` vocabulary
+  - [ ] Scan repo with TodoScope and verify the board matches this file
+- [ ] **Startr Alignment Follow-ups**: Scaffold landed 2026-07-30 (Makefile + allowlist .gitignore, verified)
+  - [ ] Remove stale dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) — CLAUDE.md says remove on sight
+  - [ ] Decide fate of upstream `context/refs/` gitignore entry after fork cleanup
+
+## Backlog
+
+- [ ] **Liner Validation Eval**: Anti-AI-tell rules are convention, not experiment — build an eval that scores burstiness/tell-frequency so the level earns its citations
+- [ ] **Surprisal Tooling**: Explore scoring output with a small LM (surprisal beats Flesch as a readability predictor — open question S5 in the ladder doc)
+- [ ] **Wenyan Decision**: Deprecated in fork — decide whether to upstream the wenyan levels back to caveman or drop entirely
+- [ ] **Per-Level Stats**: Statusline savings attribution once per-level benchmarks exist
+- [ ] **Cavecrew Rename**: Decide subagent family name for the transatlantic brand
+
+## Bugs
+
+_No known bugs. Use `# BUG:` inline tags to flag defects in source._
+
+## Done
+
+- [x] **Name Research**: npm/GitHub availability probe — `transatlantic` free on npm, `pico` taken (2026-07-30)
+- [x] **Bare Command Fix**: `/transatlantic` and `/ta` as user-scope commands; tracker accepts all namespaced forms
+- [x] **Startr Scaffold**: Universal Makefile (help/vars/verify/git-flow-next/things_clean) + `.gitignore` converted to `.*` allowlist, both verified (`make verify` OK, no tracked files hidden)
+- [x] **TodoScope Bootstrap**: TODO.md + `.todoscope-exclude.csv` created to convention

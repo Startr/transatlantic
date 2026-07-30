@@ -1,0 +1,12 @@
+path,reason
+node_modules,dependency cache
+dist,generated files
+plugins,CI-mirrored plugin distribution — synced copies not sources
+.junie,stale dotdir leftover
+.kiro,stale dotdir leftover
+.roo,stale dotdir leftover
+.agents,stale dotdir leftover
+evals/snapshots,committed eval snapshots — data not code
+benchmarks/results,committed benchmark data — data not code
+__pycache__,Python bytecode cache
+.venv,virtual environment
