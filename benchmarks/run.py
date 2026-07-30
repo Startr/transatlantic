@@ -3,6 +3,7 @@
 
 import argparse
 import hashlib
+import re
 import json
 import os
 import statistics
@@ -50,8 +51,34 @@ def load_prompts():
     return data["prompts"]
 
 
-def load_caveman_system():
-    return SKILL_PATH.read_text()
+LEVELS = ["liner", "plain", "transatlantic", "aviation", "telegraph", "morse"]
+
+
+def filter_skill(body, level):
+    """Mirror caveman-activate.js: keep only the chosen level's intensity
+    table row and example lines; everything else passes through."""
+    out = []
+    for line in body.splitlines():
+        row = re.match(r"^\|\s*\*\*(\S+?)\*\*\s*\|", line)
+        if row:
+            if row.group(1) == level:
+                out.append(line)
+            continue
+        ex = re.match(r"^- (\S+?):\s", line)
+        if ex:
+            if ex.group(1) == level:
+                out.append(line)
+            continue
+        out.append(line)
+    return "\n".join(out)
+
+
+def load_caveman_system(level):
+    body = re.sub(r"^---[\s\S]*?---\s*", "", SKILL_PATH.read_text())
+    return (
+        "TRANSATLANTIC MODE ACTIVE — level: " + level + "\n\n"
+        + filter_skill(body, level)
+    )
 
 
 def sha256_file(path):
@@ -190,7 +217,7 @@ def format_table(rows, summary):
     return "\n".join(lines)
 
 
-def save_results(results, rows, summary, model, trials, skill_hash):
+def save_results(results, rows, summary, model, trials, skill_hash, level="telegraph"):
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     output = {
         "metadata": {
@@ -198,6 +225,7 @@ def save_results(results, rows, summary, model, trials, skill_hash):
             "model": model,
             "date": datetime.now(timezone.utc).isoformat(),
             "trials": trials,
+            "level": level,
             "skill_md_sha256": skill_hash,
         },
         "summary": summary,
@@ -251,6 +279,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Print config, no API calls")
     parser.add_argument("--update-readme", action="store_true", help="Update README.md benchmark table")
     parser.add_argument("--model", default="claude-sonnet-4-20250514", help="Model to use")
+    parser.add_argument("--level", default="transatlantic", choices=LEVELS,
+                        help="Ladder level to benchmark (default: transatlantic)")
     args = parser.parse_args()
 
     prompts = load_prompts()
@@ -259,20 +289,21 @@ def main():
         dry_run(prompts, args.model, args.trials)
         return
 
-    caveman_system = load_caveman_system()
+    caveman_system = load_caveman_system(args.level)
     skill_hash = sha256_file(SKILL_PATH)
 
     client = anthropic.Anthropic()
 
     print(f"Running benchmarks: {len(prompts)} prompts x 2 modes x {args.trials} trials", file=sys.stderr)
     print(f"Model: {args.model}", file=sys.stderr)
+    print(f"Level: {args.level}", file=sys.stderr)
     print(file=sys.stderr)
 
     results = run_benchmarks(client, args.model, prompts, caveman_system, args.trials)
     rows, summary = compute_stats(results)
     table_md = format_table(rows, summary)
 
-    json_path = save_results(results, rows, summary, args.model, args.trials, skill_hash)
+    json_path = save_results(results, rows, summary, args.model, args.trials, skill_hash, args.level)
     print(f"\nResults saved to {json_path}", file=sys.stderr)
 
     if args.update_readme:

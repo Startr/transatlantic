@@ -60,7 +60,10 @@ to bare keywords (morse). Level ladder and citations:
 ### Evidence Debt
 
 - [ ] **Benchmark the New Levels**: Real numbers only — never estimate #critical
-  - [ ] Run `benchmarks/` per level: liner, plain, transatlantic, aviation, telegraph, morse
+  - [x] `--level` flag added to `benchmarks/run.py` (filters SKILL.md like the SessionStart hook; level recorded in results metadata)
+  - [x] `benchmarks/README.md` — bring-your-own-key invitation with contribution flow and house rules
+  - [x] CLI-only eval path: `evals/level_run.py` + `level_measure.py` (no API key; tiktoken ratios, kept separate from API numbers)
+  - [ ] First community/API runs per level committed to `benchmarks/results/`
   - [ ] Update `COMPRESSION` map in `src/hooks/caveman-stats.js` from results
   - [ ] Regenerate README benchmark table from committed results
 - [ ] **Eval the New Levels**: Three-arm harness (baseline / terse / skill)

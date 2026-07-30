@@ -110,7 +110,7 @@ Real token counts from the Claude API, committed and reproducible in [`benchmark
 | **Average** | **1214** | **294** | **65%** |
 <!-- BENCHMARK-TABLE-END -->
 
-Per-level numbers for the new ladder are on the roadmap and will be published the same way: measured, committed, never estimated.
+Per-level numbers for the new ladder are being collected the same way: measured, committed, never estimated. **You can contribute a run with your own API key** — one level costs pennies and takes minutes. The how and the house rules live in [benchmarks/README.md](./benchmarks/README.md).
 
 > [!IMPORTANT]
 > **Honest number warning.** These levels shrink **output** tokens. Input and reasoning tokens are untouched, and the skill itself adds ~1–1.5k input tokens per turn, so whole-session savings run smaller than the output number. The primary win is readability and speed; cost is the bonus. Full accounting in **[docs/HONEST-NUMBERS.md](./docs/HONEST-NUMBERS.md)**.
