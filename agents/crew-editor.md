@@ -1,9 +1,9 @@
 ---
-name: cavecrew-builder
+name: crew-editor
 description: >
   Surgical 1-2 file edit. Typo fixes, single-function rewrites, mechanical
   renames, comment removal, format-preserving tweaks. Hard refuses 3+ file
-  scope. Returns caveman diff receipt. Use when scope is bounded and
+  scope. Returns compact diff receipt. Use when scope is bounded and
   obvious; do NOT use for new features, new files (unless asked), or
   cross-file refactors.
 tools: [Read, Edit, Write, Grep, Glob]

@@ -5,8 +5,8 @@ on:
     branches: [main]
     paths:
       - skills/transatlantic/SKILL.md
-      - skills/cavecrew/SKILL.md
-      - agents/cavecrew-*.md
+      - skills/crew/SKILL.md
+      - agents/crew-*.md
       - skills/ta-compress/SKILL.md
       - skills/ta-compress/scripts/**
 
@@ -43,13 +43,13 @@ jobs:
           cp -r skills/ta-compress/scripts plugins/transatlantic/skills/ta-compress/scripts
           rm -rf plugins/transatlantic/skills/ta-compress/scripts/__pycache__
 
-      - name: Sync cavecrew skill + agents to plugin
+      - name: Sync crew skill + agents to plugin
         run: |
-          mkdir -p plugins/transatlantic/skills/cavecrew plugins/transatlantic/agents
-          cp skills/cavecrew/SKILL.md plugins/transatlantic/skills/cavecrew/SKILL.md
-          cp agents/cavecrew-investigator.md plugins/transatlantic/agents/cavecrew-investigator.md
-          cp agents/cavecrew-builder.md plugins/transatlantic/agents/cavecrew-builder.md
-          cp agents/cavecrew-reviewer.md plugins/transatlantic/agents/cavecrew-reviewer.md
+          mkdir -p plugins/transatlantic/skills/crew plugins/transatlantic/agents
+          cp skills/crew/SKILL.md plugins/transatlantic/skills/crew/SKILL.md
+          cp agents/crew-locator.md plugins/transatlantic/agents/crew-locator.md
+          cp agents/crew-editor.md plugins/transatlantic/agents/crew-editor.md
+          cp agents/crew-reviewer.md plugins/transatlantic/agents/crew-reviewer.md
 
       - name: Rebuild transatlantic.skill ZIP
         run: mkdir -p dist && cd skills && zip -r ../dist/transatlantic.skill transatlantic/
@@ -60,10 +60,10 @@ jobs:
             skills/ta-compress/ \
             plugins/transatlantic/skills/ta-compress/ \
             plugins/transatlantic/skills/transatlantic/SKILL.md \
-            plugins/transatlantic/skills/cavecrew/SKILL.md \
-            plugins/transatlantic/agents/cavecrew-investigator.md \
-            plugins/transatlantic/agents/cavecrew-builder.md \
-            plugins/transatlantic/agents/cavecrew-reviewer.md \
+            plugins/transatlantic/skills/crew/SKILL.md \
+            plugins/transatlantic/agents/crew-locator.md \
+            plugins/transatlantic/agents/crew-editor.md \
+            plugins/transatlantic/agents/crew-reviewer.md \
             dist/transatlantic.skill
           git diff --staged --quiet && exit 0
           git commit -m "chore: sync SKILL.md copies [skip ci]"

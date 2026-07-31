@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Tests for src/hooks/cavecrew-model-overrides.js
-// Run: node tests/test_cavecrew_model_overrides.js
+// Tests for src/hooks/crew-model-overrides.js
+// Run: node tests/test_crew_model_overrides.js
 
 'use strict';
 
@@ -10,7 +10,7 @@ const os   = require('os');
 const assert = require('assert');
 
 const { patchFrontmatterModel, resolvePluginRoot, applyOverrides, AGENT_ENV_MAP } =
-  require('../src/hooks/cavecrew-model-overrides');
+  require('../src/hooks/crew-model-overrides');
 
 let passed = 0;
 let failed = 0;
@@ -33,7 +33,7 @@ console.log('\npatchFrontmatterModel\n');
 
 const REVIEWER_FM = [
   '---',
-  'name: cavecrew-reviewer',
+  'name: crew-reviewer',
   'description: >',
   '  Reviewer subagent.',
   'tools: [Read, Grep, Bash]',
@@ -52,14 +52,14 @@ test('replaces existing model: haiku with sonnet in reviewer', () => {
 
 test('preserves all other frontmatter lines', () => {
   const out = patchFrontmatterModel(REVIEWER_FM, 'opus');
-  assert.ok(out.includes('name: cavecrew-reviewer'), 'name line lost');
+  assert.ok(out.includes('name: crew-reviewer'), 'name line lost');
   assert.ok(out.includes('tools: [Read, Grep, Bash]'), 'tools line lost');
   assert.ok(out.includes('description: >'), 'description block lost');
 });
 
 const INVESTIGATOR_FM = [
   '---',
-  'name: cavecrew-investigator',
+  'name: crew-locator',
   'tools: [Read, Grep, Glob, Bash]',
   'model: haiku',
   '---',
@@ -76,7 +76,7 @@ test('replaces existing model: haiku with opus in investigator', () => {
 
 const BUILDER_FM = [
   '---',
-  'name: cavecrew-builder',
+  'name: crew-editor',
   'description: >',
   '  Builder subagent.',
   'tools: [Read, Edit, Write, Grep, Glob]',
@@ -177,65 +177,65 @@ function withTmpPlugin(fn) {
   }
 }
 
-test('replaces reviewer model when CAVECREW_REVIEWER_MODEL set', () => {
+test('replaces reviewer model when CREW_REVIEWER_MODEL set', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), REVIEWER_FM, 'utf8');
-    applyOverrides(root, { CAVECREW_REVIEWER_MODEL: 'sonnet' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-reviewer.md'), REVIEWER_FM, 'utf8');
+    applyOverrides(root, { CREW_REVIEWER_MODEL: 'sonnet' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-reviewer.md'), 'utf8');
     assert.ok(out.includes('model: sonnet'), 'reviewer model not patched');
   });
 });
 
-test('replaces investigator model when CAVECREW_INVESTIGATOR_MODEL set', () => {
+test('replaces investigator model when CREW_LOCATOR_MODEL set', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-investigator.md'), INVESTIGATOR_FM, 'utf8');
-    applyOverrides(root, { CAVECREW_INVESTIGATOR_MODEL: 'opus' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-investigator.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-locator.md'), INVESTIGATOR_FM, 'utf8');
+    applyOverrides(root, { CREW_LOCATOR_MODEL: 'opus' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-locator.md'), 'utf8');
     assert.ok(out.includes('model: opus'), 'investigator model not patched');
   });
 });
 
-test('inserts builder model when CAVECREW_BUILDER_MODEL set and no model line', () => {
+test('inserts builder model when CREW_EDITOR_MODEL set and no model line', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-builder.md'), BUILDER_FM, 'utf8');
-    applyOverrides(root, { CAVECREW_BUILDER_MODEL: 'sonnet' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-builder.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-editor.md'), BUILDER_FM, 'utf8');
+    applyOverrides(root, { CREW_EDITOR_MODEL: 'sonnet' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-editor.md'), 'utf8');
     assert.ok(out.includes('model: sonnet'), 'builder model not inserted');
   });
 });
 
 test('blank env var is no-op', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), REVIEWER_FM, 'utf8');
-    applyOverrides(root, { CAVECREW_REVIEWER_MODEL: '' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-reviewer.md'), REVIEWER_FM, 'utf8');
+    applyOverrides(root, { CREW_REVIEWER_MODEL: '' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-reviewer.md'), 'utf8');
     assert.strictEqual(out, REVIEWER_FM, 'blank env var should be no-op');
   });
 });
 
 test('whitespace-only env var is no-op', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), REVIEWER_FM, 'utf8');
-    applyOverrides(root, { CAVECREW_REVIEWER_MODEL: '   ' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-reviewer.md'), REVIEWER_FM, 'utf8');
+    applyOverrides(root, { CREW_REVIEWER_MODEL: '   ' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-reviewer.md'), 'utf8');
     assert.strictEqual(out, REVIEWER_FM, 'whitespace env var should be no-op');
   });
 });
 
 test('env var with newline in value is ignored', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), REVIEWER_FM, 'utf8');
-    applyOverrides(root, { CAVECREW_REVIEWER_MODEL: 'so\nnnet' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-reviewer.md'), REVIEWER_FM, 'utf8');
+    applyOverrides(root, { CREW_REVIEWER_MODEL: 'so\nnnet' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-reviewer.md'), 'utf8');
     assert.strictEqual(out, REVIEWER_FM, 'newline in value should be ignored');
   });
 });
 
 test('env var with control character in value is ignored', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), REVIEWER_FM, 'utf8');
-    applyOverrides(root, { CAVECREW_REVIEWER_MODEL: 'son\x00net' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-reviewer.md'), REVIEWER_FM, 'utf8');
+    applyOverrides(root, { CREW_REVIEWER_MODEL: 'son\x00net' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-reviewer.md'), 'utf8');
     assert.strictEqual(out, REVIEWER_FM, 'control char in value should be ignored');
   });
 });
@@ -244,7 +244,7 @@ test('missing agent file is silent no-op', () => {
   withTmpPlugin((root) => {
     // agents dir exists but reviewer file does not
     assert.doesNotThrow(() => {
-      applyOverrides(root, { CAVECREW_REVIEWER_MODEL: 'sonnet' });
+      applyOverrides(root, { CREW_REVIEWER_MODEL: 'sonnet' });
     });
   });
 });
@@ -253,7 +253,7 @@ test('missing agents dir (non-plugin layout) is silent no-op', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'caveman-nolayout-'));
   try {
     assert.doesNotThrow(() => {
-      applyOverrides(tmp, { CAVECREW_REVIEWER_MODEL: 'sonnet' });
+      applyOverrides(tmp, { CREW_REVIEWER_MODEL: 'sonnet' });
     });
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
@@ -262,9 +262,9 @@ test('missing agents dir (non-plugin layout) is silent no-op', () => {
 
 test('unset env vars → files untouched', () => {
   withTmpPlugin((root, agentsDir) => {
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), REVIEWER_FM, 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-reviewer.md'), REVIEWER_FM, 'utf8');
     applyOverrides(root, {});
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), 'utf8');
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-reviewer.md'), 'utf8');
     assert.strictEqual(out, REVIEWER_FM, 'file should be unchanged when env unset');
   });
 });
@@ -272,9 +272,9 @@ test('unset env vars → files untouched', () => {
 test('body content preserved after model patch', () => {
   withTmpPlugin((root, agentsDir) => {
     const content = REVIEWER_FM + '\n\n## Extra\n\nExtra section body.\n';
-    fs.writeFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), content, 'utf8');
-    applyOverrides(root, { CAVECREW_REVIEWER_MODEL: 'sonnet' });
-    const out = fs.readFileSync(path.join(agentsDir, 'cavecrew-reviewer.md'), 'utf8');
+    fs.writeFileSync(path.join(agentsDir, 'crew-reviewer.md'), content, 'utf8');
+    applyOverrides(root, { CREW_REVIEWER_MODEL: 'sonnet' });
+    const out = fs.readFileSync(path.join(agentsDir, 'crew-reviewer.md'), 'utf8');
     assert.ok(out.includes('## Extra'), 'extra body section lost');
     assert.ok(out.includes('Extra section body.'), 'body text lost');
   });

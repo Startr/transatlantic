@@ -1,9 +1,9 @@
 ---
-name: cavecrew-investigator
+name: crew-locator
 description: >
   Read-only code locator. Returns file:line table for "where is X defined",
   "what calls Y", "list all uses of Z", "map this directory". Output is
-  caveman-compressed so the main thread eats ~60% fewer tokens than
+  compressed to the transatlantic register so the main thread eats ~60% fewer tokens than
   vanilla Explore. Refuses to suggest fixes.
 tools: [Read, Grep, Glob, Bash]
 model: haiku

@@ -42,10 +42,8 @@ to bare keywords (morse). Level ladder and citations:
   - [x] `package.json` name to `transatlantic`, bins `transatlantic` + `caveman`, upstream repo fields dropped until org repo exists
   - [ ] `bin/install.js` PROVIDERS strings, hook file paths, uninstall marker
   - [ ] `install.sh` / `install.ps1` shim references
-  - [ ] Keep `CAVEMAN_DEFAULT_MODE` env var accepted as legacy alias
-- [ ] **CI Sync Workflow**: `.github/workflows/sync-skill.yml` paths after renames
-  - [ ] Mirror dir `plugins/caveman/` to `plugins/transatlantic/`
-  - [ ] Release ZIP name `dist/caveman.skill`
+  - [x] `CAVEMAN_DEFAULT_MODE` accepted as legacy alias of `TRANSATLANTIC_DEFAULT_MODE`
+- [x] **CI Sync Workflow**: `.github/workflows/sync-skill.yml` updated — mirror dir `plugins/transatlantic/`, skill dirs `skills/transatlantic` + `skills/ta-*` + `skills/crew`, release ZIP `dist/transatlantic.skill`
 - [ ] **Repo & Distribution**: New home under the team org
   - [ ] Create GitHub repo (org: Sage.is or Startr — decide)
   - [ ] Init git-flow branches `develop` + `master` — Makefile release_finish pushes to both
@@ -90,9 +88,9 @@ to bare keywords (morse). Level ladder and citations:
 
 - [ ] **Liner Validation Eval**: Anti-AI-tell rules are convention, not experiment — build an eval that scores burstiness/tell-frequency so the level earns its citations
 - [ ] **Surprisal Tooling**: Explore scoring output with a small LM (surprisal beats Flesch as a readability predictor — open question S5 in the ladder doc)
-- [ ] **Wenyan Decision**: Deprecated in fork — decide whether to upstream the wenyan levels back to caveman or drop entirely
+- [x] **Wenyan Decision**: Reinstated as a first-class annex (wenyan-lite / wenyan / wenyan-ultra) — Chinese stays, cave goes (2026-07-31)
 - [ ] **Per-Level Stats**: Statusline savings attribution once per-level benchmarks exist
-- [ ] **Cavecrew Rename**: Decide subagent family name for the transatlantic brand (only remaining user-facing cave branding; internal file names like `caveman-config.js` and the `.caveman-active` flag are tracked separately)
+- [x] **Crew Rename**: `crew-locator` / `crew-editor` / `crew-reviewer` (was cavecrew-*). Three-agent research pass (sea literature, cable-ship history, CRM/naming studies) concluded: metaphor names the ship, function names the crew — job-shaped identifiers route better for humans and the LLM router. Ship lore lives in docs. Legacy `CAVECREW_*` env vars accepted
 - [ ] **Wenyan Benchmarks**: The annex claims densest register per token — measure it (eval + API runs)
 
 ## Bugs

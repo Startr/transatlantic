@@ -18,7 +18,7 @@ const settingsPath = path.join(claudeDir, 'settings.json');
 // Apply per-agent model overrides from env vars before emitting rules.
 // Best-effort: any error is swallowed so SessionStart is never blocked.
 try {
-  const { applyOverrides, resolvePluginRoot } = require('./cavecrew-model-overrides');
+  const { applyOverrides, resolvePluginRoot } = require('./crew-model-overrides');
   applyOverrides(resolvePluginRoot(__dirname));
 } catch (e) {}
 

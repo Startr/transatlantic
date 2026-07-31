@@ -36,8 +36,15 @@ several identities have moved; where they conflict, this section wins:
 - **Numbers stay real**: per-level eval snapshot at `evals/snapshots/levels.json`;
   API benchmarks accept community keys (`benchmarks/README.md`,
   `run.py --level`). Never estimate.
+- **Crew subagents renamed** (research-backed, 2026-07-31): `crew-locator`
+  (was cavecrew-investigator), `crew-editor` (was cavecrew-builder),
+  `crew-reviewer` (was cavecrew-reviewer); skill dir `skills/crew`. Functional
+  names chosen deliberately — CRM/agent-routing research says job-shaped names
+  route better for both humans and the LLM router; the ship metaphor lives in
+  docs, not identifiers. Model override env vars: `CREW_LOCATOR_MODEL`,
+  `CREW_EDITOR_MODEL`, `CREW_REVIEWER_MODEL` (legacy `CAVECREW_*` accepted).
 - Not yet done: org repo + remote move, npm publish, installer string sweep,
-  `plugins/caveman/` mirror rename, CI workflow path updates. See `TODO.md`.
+  CI workflow path updates. See `TODO.md`.
 
 ## README is a product artifact
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// cavecrew model overrides — patch installed agent frontmatter from env vars.
+// crew model overrides — patch installed agent frontmatter from env vars.
 //
 // Called by caveman-activate.js early in SessionStart so users can pin
 // per-agent models without shadow-copying entire agent files.
 //
 // Env vars:
-//   CAVECREW_REVIEWER_MODEL    → agents/cavecrew-reviewer.md
-//   CAVECREW_BUILDER_MODEL     → agents/cavecrew-builder.md
-//   CAVECREW_INVESTIGATOR_MODEL → agents/cavecrew-investigator.md
+//   CREW_REVIEWER_MODEL (legacy CAVECREW_REVIEWER_MODEL) → agents/crew-reviewer.md
+//   CREW_EDITOR_MODEL (legacy CAVECREW_BUILDER_MODEL) → agents/crew-editor.md
+//   CREW_LOCATOR_MODEL (legacy CAVECREW_INVESTIGATOR_MODEL) → agents/crew-locator.md
 //
 // Rules:
 //   - Unset / blank → no-op.
@@ -21,9 +21,9 @@ const fs = require('fs');
 const path = require('path');
 
 const AGENT_ENV_MAP = [
-  { envVar: 'CAVECREW_REVIEWER_MODEL',     file: path.join('agents', 'cavecrew-reviewer.md') },
-  { envVar: 'CAVECREW_BUILDER_MODEL',      file: path.join('agents', 'cavecrew-builder.md') },
-  { envVar: 'CAVECREW_INVESTIGATOR_MODEL', file: path.join('agents', 'cavecrew-investigator.md') },
+  { envVar: 'CREW_REVIEWER_MODEL',  legacyEnvVar: 'CAVECREW_REVIEWER_MODEL',     file: path.join('agents', 'crew-reviewer.md') },
+  { envVar: 'CREW_EDITOR_MODEL',    legacyEnvVar: 'CAVECREW_BUILDER_MODEL',      file: path.join('agents', 'crew-editor.md') },
+  { envVar: 'CREW_LOCATOR_MODEL',   legacyEnvVar: 'CAVECREW_INVESTIGATOR_MODEL', file: path.join('agents', 'crew-locator.md') },
 ];
 
 // Return the plugin root directory given the hooks directory path.
@@ -77,8 +77,8 @@ function patchFrontmatterModel(content, modelValue) {
 // `env` defaults to process.env; pass an object in tests.
 function applyOverrides(pluginRoot, env) {
   const envArg = env || process.env;
-  for (const { envVar, file } of AGENT_ENV_MAP) {
-    const raw = envArg[envVar];
+  for (const { envVar, legacyEnvVar, file } of AGENT_ENV_MAP) {
+    const raw = envArg[envVar] || (legacyEnvVar && envArg[legacyEnvVar]);
     if (!raw || !raw.trim()) continue;
 
     const modelValue = raw.trim();
