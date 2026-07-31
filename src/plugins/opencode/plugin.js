@@ -69,7 +69,7 @@ function loadConfig() {
 }
 const config = loadConfig();
 
-const { getDefaultMode, safeWriteFlag, readFlag, VALID_MODES } = config;
+const { getDefaultMode, safeWriteFlag, readFlag, VALID_MODES, normalizeMode } = config;
 
 // Modes handled by independent skills — not selectable via /caveman <arg>.
 const INDEPENDENT_MODES = new Set(['commit', 'review', 'compress']);
@@ -87,10 +87,21 @@ function opencodeConfigDir() {
 
 const flagPath = path.join(opencodeConfigDir(), '.caveman-active');
 
+// Per-level attention anchor — must match the active level's register.
+const REINFORCEMENT = {
+  liner: 'Classy humanized prose. Full natural voice, varied sentence rhythm, no machine-writing tells, no filler.',
+  plain: 'Plain language. Short declarative sentences, common words, active voice, front-load the point.',
+  transatlantic: 'Newsreel voice. Full grammar, one idea per sentence. Cut filler/hedging/pleasantries/padding.',
+  aviation: 'Controlled technical English. Sentences max ~20 words, one instruction per sentence, imperative mood.',
+  telegraph: 'Telegraphic register. Drop articles, fragments OK, short synonyms.',
+  morse: 'Bare keywords, minimal glue words. State each fact once.'
+};
+
 function reinforcementLine(mode) {
-  return 'CAVEMAN MODE ACTIVE (' + mode + '). ' +
-    'Drop articles/filler/pleasantries/hedging. Fragments OK. ' +
-    'Code/commits/security: write normal.';
+  const anchor = REINFORCEMENT[mode] ||
+    'Cut filler/hedging/pleasantries. Keep all technical substance.';
+  return 'TRANSATLANTIC MODE ACTIVE (' + mode + '). ' + anchor +
+    ' Code/commits/security: write normal.';
 }
 
 // Parse a prompt for slash-command activation or natural-language toggles.
@@ -124,8 +135,10 @@ function parseModeChange(promptRaw) {
   if (tpl) {
     const arg = tpl[1] || '';
     if (arg === 'off' || arg === 'stop' || arg === 'disable') return 'off';
-    if (arg === 'wenyan-full') return 'wenyan';
-    if (VALID_MODES.includes(arg) && !INDEPENDENT_MODES.has(arg)) return arg;
+    if (!INDEPENDENT_MODES.has(arg)) {
+      const m = normalizeMode(arg);
+      if (m) return m;
+    }
     return getDefaultMode();
   }
 
@@ -151,8 +164,10 @@ function parseModeChange(promptRaw) {
     if (cmd === '/transatlantic' || cmd === '/ta' || cmd === '/caveman') {
       if (!arg)                                     return getDefaultMode();
       if (arg === 'off' || arg === 'stop' || arg === 'disable') return 'off';
-      if (arg === 'wenyan-full')                    return 'wenyan';
-      if (VALID_MODES.includes(arg) && !INDEPENDENT_MODES.has(arg)) return arg;
+      if (!INDEPENDENT_MODES.has(arg)) {
+        const m = normalizeMode(arg);
+        if (m) return m;
+      }
       // Unknown arg — leave flag alone. No silent overwrite.
       return null;
     }

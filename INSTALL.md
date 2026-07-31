@@ -1,18 +1,10 @@
 # Install transatlantic
 
 > [!NOTE]
-> **Pre-release fork.** This is the transatlantic fork of caveman, in active
-> development. The one-liners below still point at the upstream caveman repo
-> and install the upstream version. Until the fork lands in its permanent
-> home, install transatlantic from a local clone:
->
-> ```bash
-> git clone https://github.com/Startr/transatlantic.git && cd transatlantic
-> node bin/install.js
-> ```
->
-> The per-agent matrix below describes the mechanism accurately for both
-> versions; only the source URLs change at release.
+> Transatlantic is the research-backed successor to the caveman plugin.
+> Legacy caveman installs upgrade in place; typed `/caveman` commands keep
+> working and map onto the new ladder. Not yet on npm — every path below
+> installs straight from this repository.
 
 One install. Works for every AI coding agent on your machine.
 
@@ -23,16 +15,16 @@ If you just want it to work, run the one-liner. If you want to know what gets to
 **macOS / Linux / WSL / Git Bash**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Startr/transatlantic/master/install.sh | bash
 ```
 
 **Windows (PowerShell 5.1+)**
 
 ```powershell
-irm https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/Startr/transatlantic/master/install.ps1 | iex
 ```
 
-> Piping a script straight into a shell runs it sight-unseen. If you'd rather read it first, download then run: `curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh -o install.sh` (review it) `&& bash install.sh`. The installer downloads hook files from a pinned release tag and verifies them against a committed SHA-256 manifest before writing.
+> Piping a script straight into a shell runs it sight-unseen. If you'd rather read it first, download then run: `curl -fsSL https://raw.githubusercontent.com/Startr/transatlantic/master/install.sh -o install.sh` (review it) `&& bash install.sh`. The installer downloads hook files from a pinned release tag and verifies them against a committed SHA-256 manifest before writing.
 
 What it does:
 
@@ -44,7 +36,7 @@ What it does:
 Want to preview before installing? Use `--dry-run`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/install.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/Startr/transatlantic/master/install.sh | bash -s -- --dry-run
 ```
 
 ## Per-agent install
@@ -53,45 +45,45 @@ If you want to install for one agent (or want to know exactly what command runs 
 
 | Agent | Install command | Auto-activates? |
 |---|---|:-:|
-| **Claude Code** | `claude plugin marketplace add JuliusBrussee/caveman && claude plugin install caveman@caveman` | Yes |
-| **Gemini CLI** | `gemini extensions install https://github.com/JuliusBrussee/caveman` | Yes |
-| **opencode** | `node bin/install.js --only opencode` *(or `npx -y github:JuliusBrussee/caveman -- --only opencode`)* | Yes (plugin + AGENTS.md) |
-| **OpenClaw** | `npx -y github:JuliusBrussee/caveman -- --only openclaw` | Yes (workspace skill + SOUL.md) |
-| **Hermes Agent** | `npx -y github:JuliusBrussee/caveman -- --only hermes` *(or `node bin/install.js --only hermes` from a clone)* | Yes (native skills, enabled on load) |
-| **Codex CLI** | `npx skills add JuliusBrussee/caveman -a codex` | Per-session: `/caveman` |
-| **Cursor** | `npx skills add JuliusBrussee/caveman -a cursor` | Per-session by default; `--with-init` for an always-on rule file |
-| **Windsurf** | `npx skills add JuliusBrussee/caveman -a windsurf` | Per-session by default; `--with-init` for an always-on rule file |
-| **Cline** | `npx skills add JuliusBrussee/caveman -a cline` | Per-session by default; `--with-init` for an always-on rule file |
-| **GitHub Copilot** *(soft probe)* | `npx -y github:JuliusBrussee/caveman -- --only copilot --with-init` | Repo-wide instructions via `--with-init` |
-| **Continue** | `npx skills add JuliusBrussee/caveman -a continue` | No — say `/caveman` |
-| **Kilo Code** | `npx skills add JuliusBrussee/caveman -a kilo` | No |
-| **Roo Code** | `npx skills add JuliusBrussee/caveman -a roo` | No |
-| **Augment Code** | `npx skills add JuliusBrussee/caveman -a augment` | No |
-| **Aider Desk** | `npx skills add JuliusBrussee/caveman -a aider-desk` | No |
-| **Sourcegraph Amp** | `npx skills add JuliusBrussee/caveman -a amp` | No |
-| **IBM Bob** | `npx skills add JuliusBrussee/caveman -a bob` | No |
-| **Crush** | `npx skills add JuliusBrussee/caveman -a crush` | No |
-| **Devin (terminal)** | `npx skills add JuliusBrussee/caveman -a devin` | No |
-| **Droid (Factory)** | `npx skills add JuliusBrussee/caveman -a droid` | No |
-| **ForgeCode** | `npx skills add JuliusBrussee/caveman -a forgecode` | No |
-| **Block Goose** | `npx skills add JuliusBrussee/caveman -a goose` | No |
-| **iFlow CLI** | `npx skills add JuliusBrussee/caveman -a iflow-cli` | No |
-| **Kiro CLI** | `npx skills add JuliusBrussee/caveman -a kiro-cli` | No |
-| **Mistral Vibe** | `npx skills add JuliusBrussee/caveman -a mistral-vibe` | No |
-| **OpenHands** | `npx skills add JuliusBrussee/caveman -a openhands` | No |
-| **Qwen Code** | `npx skills add JuliusBrussee/caveman -a qwen-code` | No |
-| **Atlassian Rovo Dev** | `npx skills add JuliusBrussee/caveman -a rovodev` | No |
-| **Tabnine CLI** | `npx skills add JuliusBrussee/caveman -a tabnine-cli` | No |
-| **Trae** | `npx skills add JuliusBrussee/caveman -a trae` | No |
-| **Warp** | `npx skills add JuliusBrussee/caveman -a warp` | No |
-| **Replit Agent** | `npx skills add JuliusBrussee/caveman -a replit` | No |
-| **JetBrains Junie** *(soft probe)* | `npx skills add JuliusBrussee/caveman -a junie` | No |
-| **Qoder** *(soft probe)* | `npx skills add JuliusBrussee/caveman -a qoder` | No |
-| **Google Antigravity** *(soft probe)* | `npx skills add JuliusBrussee/caveman -a antigravity` | No |
+| **Claude Code** | `claude plugin marketplace add Startr/transatlantic && claude plugin install transatlantic@transatlantic` | Yes |
+| **Gemini CLI** | `gemini extensions install https://github.com/Startr/transatlantic` | Yes |
+| **opencode** | `node bin/install.js --only opencode` *(or `npx -y github:Startr/transatlantic -- --only opencode`)* | Yes (plugin + AGENTS.md) |
+| **OpenClaw** | `npx -y github:Startr/transatlantic -- --only openclaw` | Yes (workspace skill + SOUL.md) |
+| **Hermes Agent** | `npx -y github:Startr/transatlantic -- --only hermes` *(or `node bin/install.js --only hermes` from a clone)* | Yes (native skills, enabled on load) |
+| **Codex CLI** | `npx skills add Startr/transatlantic -a codex` | Per-session: `/transatlantic` |
+| **Cursor** | `npx skills add Startr/transatlantic -a cursor` | Per-session by default; `--with-init` for an always-on rule file |
+| **Windsurf** | `npx skills add Startr/transatlantic -a windsurf` | Per-session by default; `--with-init` for an always-on rule file |
+| **Cline** | `npx skills add Startr/transatlantic -a cline` | Per-session by default; `--with-init` for an always-on rule file |
+| **GitHub Copilot** *(soft probe)* | `npx -y github:Startr/transatlantic -- --only copilot --with-init` | Repo-wide instructions via `--with-init` |
+| **Continue** | `npx skills add Startr/transatlantic -a continue` | No — say `/transatlantic` |
+| **Kilo Code** | `npx skills add Startr/transatlantic -a kilo` | No |
+| **Roo Code** | `npx skills add Startr/transatlantic -a roo` | No |
+| **Augment Code** | `npx skills add Startr/transatlantic -a augment` | No |
+| **Aider Desk** | `npx skills add Startr/transatlantic -a aider-desk` | No |
+| **Sourcegraph Amp** | `npx skills add Startr/transatlantic -a amp` | No |
+| **IBM Bob** | `npx skills add Startr/transatlantic -a bob` | No |
+| **Crush** | `npx skills add Startr/transatlantic -a crush` | No |
+| **Devin (terminal)** | `npx skills add Startr/transatlantic -a devin` | No |
+| **Droid (Factory)** | `npx skills add Startr/transatlantic -a droid` | No |
+| **ForgeCode** | `npx skills add Startr/transatlantic -a forgecode` | No |
+| **Block Goose** | `npx skills add Startr/transatlantic -a goose` | No |
+| **iFlow CLI** | `npx skills add Startr/transatlantic -a iflow-cli` | No |
+| **Kiro CLI** | `npx skills add Startr/transatlantic -a kiro-cli` | No |
+| **Mistral Vibe** | `npx skills add Startr/transatlantic -a mistral-vibe` | No |
+| **OpenHands** | `npx skills add Startr/transatlantic -a openhands` | No |
+| **Qwen Code** | `npx skills add Startr/transatlantic -a qwen-code` | No |
+| **Atlassian Rovo Dev** | `npx skills add Startr/transatlantic -a rovodev` | No |
+| **Tabnine CLI** | `npx skills add Startr/transatlantic -a tabnine-cli` | No |
+| **Trae** | `npx skills add Startr/transatlantic -a trae` | No |
+| **Warp** | `npx skills add Startr/transatlantic -a warp` | No |
+| **Replit Agent** | `npx skills add Startr/transatlantic -a replit` | No |
+| **JetBrains Junie** *(soft probe)* | `npx skills add Startr/transatlantic -a junie` | No |
+| **Qoder** *(soft probe)* | `npx skills add Startr/transatlantic -a qoder` | No |
+| **Google Antigravity** *(soft probe)* | `npx skills add Startr/transatlantic -a antigravity` | No |
 
 "Soft probe" = installer won't auto-detect these without `--only <id>` because there's no reliable always-on signal (Copilot subscription state is auth-gated; the others have no CLI / config-dir-only). Pass the flag when you want them.
 
-For "auto-activates? No" agents, type `/caveman` once per session (or use natural-language triggers like "talk like caveman", "caveman mode").
+For "auto-activates? No" agents, type `/transatlantic` once per session (or say "transatlantic mode").
 
 **Finding a profile slug for `npx skills add ... -a <profile>`?** Either read the table above, or print the live matrix from the installer:
 
@@ -101,7 +93,7 @@ For "auto-activates? No" agents, type `/caveman` once per session (or use natura
 bash install.sh --list             # macOS / Linux / WSL, from a local clone
 pwsh install.ps1 --list            # Windows / PowerShell, from a local clone
 node bin/install.js --list         # any platform, from a local clone
-npx -y github:JuliusBrussee/caveman -- --list   # no clone needed
+npx -y github:Startr/transatlantic -- --list   # no clone needed
 ```
 
 Each row prints the agent id, profile slug (where applicable), and whether it was auto-detected on your machine. Full agent matrix (with detection rules) is also defined in `bin/install.js` under the `PROVIDERS` array.
@@ -112,7 +104,7 @@ If you'd rather see exactly what runs:
 
 ```bash
 # Clone the repo
-git clone https://github.com/JuliusBrussee/caveman.git
+git clone https://github.com/Startr/transatlantic.git
 cd caveman
 
 # Preview every command the installer would run
@@ -154,7 +146,7 @@ For agents without a hook system (Cursor, Windsurf, Cline, Copilot, and friends)
 node bin/install.js --with-init
 
 # Or pull the rule body straight in (manual)
-curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/rules/caveman-activate.md \
+curl -fsSL https://raw.githubusercontent.com/Startr/transatlantic/master/src/rules/caveman-activate.md \
   > .cursor/rules/caveman.mdc   # or .windsurf/rules/caveman.md, .clinerules/caveman.md, .github/copilot-instructions.md
 ```
 
@@ -190,7 +182,7 @@ Statusline should show `[TRANSATLANTIC]` (steel blue) at the bottom of Claude Co
 ## Uninstall
 
 ```bash
-npx -y github:JuliusBrussee/caveman -- --uninstall
+npx -y github:Startr/transatlantic -- --uninstall
 ```
 
 What it removes:
@@ -217,7 +209,7 @@ Open your agent in this repo and say:
 
 Agent read repo. Agent run install. Caveman make agent talk less — agent first job is install caveman to talk less. Snake eat tail.
 
-Still broken? [Open an issue](https://github.com/JuliusBrussee/caveman/issues).
+Still broken? [Open an issue](https://github.com/Startr/transatlantic/issues).
 
 **"I ran the installer but Claude Code isn't talking caveman."**
 
@@ -272,4 +264,4 @@ No telemetry. No analytics. Run from a clone or via npx, the installer's own cod
 
 ---
 
-Stuck? Open an issue: <https://github.com/JuliusBrussee/caveman/issues>
+Stuck? Open an issue: <https://github.com/Startr/transatlantic/issues>

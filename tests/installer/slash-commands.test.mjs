@@ -24,31 +24,31 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(HERE, '..', '..');
 const COMMANDS_DIR = path.join(REPO_ROOT, 'commands');
-const STATS_TOML = path.join(COMMANDS_DIR, 'caveman-stats.toml');
+const STATS_TOML = path.join(COMMANDS_DIR, 'ta-stats.toml');
 
 // Mirrors the live regex in src/hooks/caveman-mode-tracker.js (the
 // `statsMatch` line). Anything that fails this here would also fail in
 // production, so the test stays representative if the hook regex shifts.
-const HOOK_STATS_REGEX = /^\/caveman(?::caveman)?-stats(?:\s+(.*))?$/m;
+const HOOK_STATS_REGEX = /^\/(?:ta-stats|transatlantic:ta-stats|caveman(?::caveman)?-stats|transatlantic:caveman-stats)(?:\s+(.*))?$/m;
 
-test('#470 commands/caveman-stats.toml exists so Claude Code registers /caveman-stats', () => {
+test('#470 commands/ta-stats.toml exists so Claude Code registers /caveman-stats', () => {
   assert.ok(
     fs.existsSync(STATS_TOML),
     `Missing ${path.relative(REPO_ROOT, STATS_TOML)} — Claude Code rejects /caveman-stats as "Unknown command" before the UserPromptSubmit hook can intercept (issue #470).`,
   );
 });
 
-test('#470 caveman-stats.toml declares a non-empty description for the slash-command picker', () => {
+test('#470 ta-stats.toml declares a non-empty description for the slash-command picker', () => {
   const body = fs.readFileSync(STATS_TOML, 'utf8');
   const descMatch = body.match(/^\s*description\s*=\s*"([^"\n]+)"/m);
-  assert.ok(descMatch, 'caveman-stats.toml must declare a description = "..." line');
+  assert.ok(descMatch, 'ta-stats.toml must declare a description = "..." line');
   assert.ok(descMatch[1].trim().length > 0, 'description must not be empty');
 });
 
-test('#470 caveman-stats.toml prompt is intercepted by the mode-tracker regex', () => {
+test('#470 ta-stats.toml prompt is intercepted by the mode-tracker regex', () => {
   const body = fs.readFileSync(STATS_TOML, 'utf8');
   const promptMatch = body.match(/^\s*prompt\s*=\s*"([^"\n]+)"/m);
-  assert.ok(promptMatch, 'caveman-stats.toml must declare a prompt = "..." line');
+  assert.ok(promptMatch, 'ta-stats.toml must declare a prompt = "..." line');
   const prompt = promptMatch[1].replace(/\{\{args\}\}/g, '').trim();
   assert.match(
     prompt,
@@ -61,7 +61,7 @@ test('#470 caveman-stats.toml prompt is intercepted by the mode-tracker regex', 
 
 // Every command documented for Claude Code. Each needs a .md (Claude Code)
 // AND a .toml (Gemini extension) sibling — the formats coexist in commands/.
-const DOCUMENTED_COMMANDS = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-stats', 'caveman-init'];
+const DOCUMENTED_COMMANDS = ['transatlantic', 'ta', 'ta-commit', 'ta-review', 'ta-stats', 'ta-compress', 'ta-help', 'ta-init'];
 
 for (const name of DOCUMENTED_COMMANDS) {
   test(`#571 commands/${name}.md exists so Claude Code registers /${name}`, () => {
@@ -89,8 +89,8 @@ for (const name of DOCUMENTED_COMMANDS) {
   });
 }
 
-test('#571 caveman-stats.md body is intercepted by the mode-tracker regex', () => {
-  const body = fs.readFileSync(path.join(COMMANDS_DIR, 'caveman-stats.md'), 'utf8');
+test('#571 ta-stats.md body is intercepted by the mode-tracker regex', () => {
+  const body = fs.readFileSync(path.join(COMMANDS_DIR, 'ta-stats.md'), 'utf8');
   const prompt = body.replace(/^---\n[\s\S]*?\n---\n/, '').replace(/\$ARGUMENTS/g, '').trim();
   assert.match(
     prompt,
@@ -111,9 +111,9 @@ test('#571 command .md bodies use $ARGUMENTS, never the TOML {{args}} placeholde
 
 // #603: the init command must not depend on a repo-relative path — installed
 // users run it from their own project, where src/tools/ does not exist.
-test('#603 caveman-init command bodies do not run src/tools blindly', () => {
+test('#603 ta-init command bodies do not run src/tools blindly', () => {
   for (const ext of ['md', 'toml']) {
-    const body = fs.readFileSync(path.join(COMMANDS_DIR, `caveman-init.${ext}`), 'utf8');
+    const body = fs.readFileSync(path.join(COMMANDS_DIR, `ta-init.${ext}`), 'utf8');
     if (body.includes('src/tools/caveman-init.js')) {
       assert.ok(
         /raw\.githubusercontent\.com.*caveman-init\.js/.test(body),

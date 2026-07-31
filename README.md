@@ -36,15 +36,22 @@ Same fix each time. The default reads like a good newsroom edit; telegraph reads
 
 ## Install
 
-> [!NOTE]
-> **Pre-release.** Transatlantic is in active development on this fork and isn't published to npm or a marketplace yet. Today's install path is from a local clone; the one-command installers return when the project lands in its permanent home.
+One command finds every agent on your machine and wires each one:
 
 ```bash
-git clone https://github.com/Startr/transatlantic.git && cd transatlantic
-node bin/install.js          # detects your agents, wires each one
+# macOS · Linux · WSL
+curl -fsSL https://raw.githubusercontent.com/Startr/transatlantic/master/install.sh | bash
 ```
 
-Needs Node ≥18. Safe to re-run. `node bin/install.js --uninstall` removes everything it added.
+```bash
+# Or from a clone, same result
+git clone https://github.com/Startr/transatlantic.git && cd transatlantic
+node bin/install.js
+```
+
+On Claude Code specifically, the plugin path also works: `claude plugin marketplace add Startr/transatlantic && claude plugin install transatlantic@transatlantic`. The full per-agent matrix (Cursor, Windsurf, Cline, Gemini, 30+ more) lives in [INSTALL.md](./INSTALL.md).
+
+Needs Node ≥18. Safe to re-run. `node bin/install.js --uninstall` removes everything it added. Not on npm yet; everything installs straight from this repository.
 
 **Turn it on:** it's on by default from message one on Claude Code. Switch levels with `/transatlantic <level>` (or the short form `/ta <level>`). **Turn it off:** say "normal mode". The legacy `/caveman` commands still work and map onto the new ladder.
 

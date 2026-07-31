@@ -65,22 +65,22 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
     assert.notEqual(r.status, 2, `argv error: ${r.stderr}`);
 
     const ocDir = path.join(xdg, 'opencode');
-    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'caveman', 'plugin.js')), 'plugin.js missing');
-    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'caveman', 'package.json')), 'plugin package.json missing');
-    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'caveman', 'caveman-config.cjs')), 'caveman-config.cjs sibling missing');
+    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic', 'plugin.js')), 'plugin.js missing');
+    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic', 'package.json')), 'plugin package.json missing');
+    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic', 'caveman-config.cjs')), 'caveman-config.cjs sibling missing');
 
-    for (const f of ['caveman.md', 'caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md', 'caveman-help.md']) {
+    for (const f of ['transatlantic.md', 'ta-commit.md', 'ta-review.md', 'ta-compress.md', 'ta-stats.md', 'ta-help.md']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'commands', f)), `command ${f} missing`);
     }
-    for (const f of ['cavecrew-investigator.md', 'cavecrew-builder.md', 'cavecrew-reviewer.md']) {
+    for (const f of ['crew-locator.md', 'crew-editor.md', 'crew-reviewer.md']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'agents', f)), `agent ${f} missing`);
     }
-    for (const name of ['caveman', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew']) {
+    for (const name of ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'skills', name, 'SKILL.md')), `skill ${name}/SKILL.md missing`);
     }
     assert.ok(fs.existsSync(path.join(ocDir, 'AGENTS.md')), 'AGENTS.md missing');
     const agentsBody = fs.readFileSync(path.join(ocDir, 'AGENTS.md'), 'utf8');
-    assert.match(agentsBody, /Respond terse like smart caveman/);
+    assert.match(agentsBody, /Speak in the transatlantic register/);
     // Block must be wrapped in begin/end markers so uninstall can isolate it
     // from user-authored content above and below.
     assert.match(agentsBody, /<!-- caveman-begin -->/);
@@ -114,7 +114,7 @@ test('opencode idempotent install does not duplicate plugin entries', () => {
 
     // AGENTS.md should not have the ruleset duplicated either.
     const agentsMd = fs.readFileSync(path.join(xdg, 'opencode', 'AGENTS.md'), 'utf8');
-    const sentinelCount = (agentsMd.match(/Respond terse like smart caveman/g) || []).length;
+    const sentinelCount = (agentsMd.match(/Speak in the transatlantic register/g) || []).length;
     assert.equal(sentinelCount, 1, `expected 1 sentinel, got ${sentinelCount}`);
   } finally {
     fs.rmSync(xdg, { recursive: true, force: true });
@@ -131,7 +131,7 @@ test('opencode re-install preserves user edits to plugin.js without --force', ()
     const r1 = runInstaller(['--only', 'opencode'], env);
     assert.notEqual(r1.status, 2);
 
-    const pluginPath = path.join(xdg, 'opencode', 'plugins', 'caveman', 'plugin.js');
+    const pluginPath = path.join(xdg, 'opencode', 'plugins', 'transatlantic', 'plugin.js');
     const tweak = '\n// USER-TWEAK-DO-NOT-OVERWRITE\n';
     fs.appendFileSync(pluginPath, tweak);
     const beforeBytes = fs.readFileSync(pluginPath, 'utf8');
@@ -176,7 +176,7 @@ test('opencode uninstall strips fenced AGENTS.md block, preserving user prefix a
     const after = fs.readFileSync(agentsMd, 'utf8');
     assert.doesNotMatch(after, /<!-- caveman-begin -->/, 'caveman block should be stripped');
     assert.doesNotMatch(after, /<!-- caveman-end -->/, 'caveman end marker should be stripped');
-    assert.doesNotMatch(after, /Respond terse like smart caveman/, 'caveman body should be stripped');
+    assert.doesNotMatch(after, /Speak in the transatlantic register/, 'caveman body should be stripped');
     assert.match(after, /# my project/, 'user prefix should survive');
     assert.match(after, /use 2-space indent/, 'user prefix body should survive');
     assert.match(after, /## extra/, 'user suffix should survive');
@@ -230,10 +230,10 @@ test('opencode uninstall removes plugin dir, command/agent/skill files, prunes o
     assert.notEqual(r2.status, 2);
 
     const ocDir = path.join(xdg, 'opencode');
-    assert.equal(fs.existsSync(path.join(ocDir, 'plugins', 'caveman')), false, 'plugin dir survived');
-    assert.equal(fs.existsSync(path.join(ocDir, 'commands', 'caveman.md')), false, 'caveman.md command survived');
-    assert.equal(fs.existsSync(path.join(ocDir, 'agents', 'cavecrew-builder.md')), false, 'cavecrew agent survived');
-    assert.equal(fs.existsSync(path.join(ocDir, 'skills', 'caveman')), false, 'caveman skill dir survived');
+    assert.equal(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic')), false, 'plugin dir survived');
+    assert.equal(fs.existsSync(path.join(ocDir, 'commands', 'transatlantic.md')), false, 'caveman.md command survived');
+    assert.equal(fs.existsSync(path.join(ocDir, 'agents', 'crew-editor.md')), false, 'crew agent survived');
+    assert.equal(fs.existsSync(path.join(ocDir, 'skills', 'transatlantic')), false, 'caveman skill dir survived');
     assert.equal(fs.existsSync(path.join(ocDir, 'AGENTS.md')), false, 'AGENTS.md (we wrote it) survived');
 
     if (fs.existsSync(path.join(ocDir, 'opencode.json'))) {
@@ -262,7 +262,7 @@ test('opencode plugin handles /caveman ultra, stop caveman, and session init via
     const r = runInstaller(['--only', 'opencode'], env);
     assert.notEqual(r.status, 2);
 
-    const pluginPath = path.join(xdg, 'opencode', 'plugins', 'caveman', 'plugin.js');
+    const pluginPath = path.join(xdg, 'opencode', 'plugins', 'transatlantic', 'plugin.js');
     const flagPath = path.join(xdg, 'opencode', '.caveman-active');
 
     // Set XDG_CONFIG_HOME so the plugin's flagPath resolves to our temp dir,
@@ -285,7 +285,7 @@ test('opencode plugin handles /caveman ultra, stop caveman, and session init via
 
     // Slash command in a chat.message text part activates ultra.
     await handlers['chat.message']({}, { parts: [{ type: 'text', text: '/caveman ultra' }] });
-    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'ultra');
+    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'morse');
 
     // opencode expands "/caveman <level>" into the command template before
     // chat.message fires — the level must be recovered from the expanded text.
@@ -297,22 +297,22 @@ test('opencode plugin handles /caveman ultra, stop caveman, and session init via
     assert.equal(fs.existsSync(flagPath), false, 'expanded template with off should delete the flag');
     await handlers['chat.message']({}, { parts: [{ type: 'text', text:
       'Activate caveman mode: \n\nIf no level given, use full. If "off", deactivate.' }] });
-    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'full', 'expanded template without level uses default');
+    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'telegraph', 'expanded template without level uses default (pinned full normalizes to telegraph)');
     await handlers['chat.message']({}, { parts: [{ type: 'text', text: '/caveman ultra' }] });
-    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'ultra');
+    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'morse');
 
     // opencode's non-interactive `run` path wraps the message in literal
     // quotes ("/caveman lite"\n) — the parser must unwrap them.
     await handlers['chat.message']({}, { parts: [{ type: 'text', text: '"/caveman lite"\n' }] });
-    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'lite');
+    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'transatlantic');
     await handlers['chat.message']({}, { parts: [{ type: 'text', text: '/caveman ultra' }] });
-    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'ultra');
+    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'morse');
 
     // system.transform injects the reinforcement line while active.
     const sys1 = { system: [] };
     await handlers['experimental.chat.system.transform']({}, sys1);
     assert.equal(sys1.system.length, 1, 'expected one reinforcement line');
-    assert.match(sys1.system[0], /CAVEMAN MODE ACTIVE \(ultra\)/);
+    assert.match(sys1.system[0], /TRANSATLANTIC MODE ACTIVE \(morse\)/);
 
     // Natural-language deactivation removes the flag.
     await handlers['chat.message']({}, { parts: [{ type: 'text', text: 'stop caveman please' }] });
@@ -328,7 +328,7 @@ test('opencode plugin handles /caveman ultra, stop caveman, and session init via
     await handlers.event({ event: { type: 'session.idle' } });
     assert.equal(fs.existsSync(flagPath), false, 'non-session.created event must not write the flag');
     await handlers.event({ event: { type: 'session.created' } });
-    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'full');
+    assert.equal(fs.readFileSync(flagPath, 'utf8'), 'telegraph');
   } finally {
     if (origDefault === undefined) delete process.env.CAVEMAN_DEFAULT_MODE;
     else process.env.CAVEMAN_DEFAULT_MODE = origDefault;

@@ -8,7 +8,7 @@
 //
 // Distribution:
 //   Local clone: node bin/install.js [flags]
-//   curl|bash:   delegated from install.sh shim → npx -y github:JuliusBrussee/caveman -- [flags]
+//   curl|bash:   delegated from install.sh shim → npx -y github:Startr/transatlantic -- [flags]
 //   Windows:     pwsh install.ps1 [flags] → same npx delegation
 //
 // Pure stdlib, zero npm runtime deps.
@@ -26,14 +26,14 @@ const SETTINGS = require('./lib/settings');
 const OPENCLAW = require('./lib/openclaw');
 const { stripOpencodeAgentTools } = require('./lib/opencode-agent');
 
-const REPO = 'JuliusBrussee/caveman';
+const REPO = 'Startr/transatlantic';
 // Pin remote fetches to an immutable release tag, not the moving `main`
 // branch (issue #261). A push to main must never silently change what a
 // curl|bash / detached-script install downloads and executes. Bump this to
 // the new tag on every release (CI release step) AFTER regenerating
 // src/hooks/checksums.sha256 so the integrity manifest matches the ref.
 // Overridable via CAVEMAN_REF for testing against a branch.
-const PINNED_REF = process.env.CAVEMAN_REF || 'v1.9.1';
+const PINNED_REF = process.env.TRANSATLANTIC_REF || process.env.CAVEMAN_REF || 'v2.0.0';
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${PINNED_REF}`;
 const HOOKS_REMOTE = `${RAW_BASE}/src/hooks`;
 const INIT_SCRIPT_URL = `${RAW_BASE}/src/tools/caveman-init.js`;
@@ -458,11 +458,11 @@ async function installClaude(ctx) {
   let alreadyInstalled = false;
   if (!opts.force) {
     const r = captureSpawn('claude', ['plugin', 'list']);
-    if (r.status === 0 && /caveman/i.test(r.stdout || '')) alreadyInstalled = true;
+    if (r.status === 0 && /transatlantic/i.test(r.stdout || '')) alreadyInstalled = true;
   }
   let pluginInstallSucceeded = false;
   if (alreadyInstalled) {
-    note('  caveman plugin already installed (use --force to reinstall)');
+    note('  transatlantic plugin already installed (use --force to reinstall)');
     results.skipped.push(['claude', 'plugin already installed']);
     pluginInstallSucceeded = true;
   } else {
@@ -470,7 +470,7 @@ async function installClaude(ctx) {
     // when Claude Code's plugin installer tries to rename across filesystems (#585).
     const pluginEnv = sameFilesystemTmpEnv(configDir);
     const r1 = runSpawn('claude', ['plugin', 'marketplace', 'add', REPO], { env: pluginEnv }, opts.dryRun);
-    const r2 = runSpawn('claude', ['plugin', 'install', 'caveman@caveman'], { env: pluginEnv }, opts.dryRun);
+    const r2 = runSpawn('claude', ['plugin', 'install', 'transatlantic@transatlantic'], { env: pluginEnv }, opts.dryRun);
     if (spawnOk(r1) && spawnOk(r2)) {
       results.installed.push('claude');
       pluginInstallSucceeded = true;
@@ -594,7 +594,7 @@ function installViaSkills(ctx, prov) {
 
 // ── hermes native install ──────────────────────────────────────────────────
 // Drops the caveman skills into ~/.hermes/skills/productivity/ (or HERMES_HOME if set).
-const HERMES_SKILL_DIRS = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'crew'];
+const HERMES_SKILL_DIRS = ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
 
 function hermesConfigDir() {
   // Hermes uses ~/.hermes by default, or HERMES_HOME env var.
@@ -609,7 +609,7 @@ function installHermes(ctx) {
 
   if (!repoRoot) {
     warn('  Hermes native install requires a local clone of the caveman repo.');
-    note('  Re-run from a clone: git clone https://github.com/' + REPO + ' && cd caveman && node bin/install.js --only hermes');
+    note('  Re-run from a clone: git clone https://github.com/' + REPO + ' && cd transatlantic && node bin/install.js --only hermes');
     results.failed.push(['hermes', 'native install requires local repo clone']);
     process.stdout.write('\n');
     return;
@@ -655,11 +655,13 @@ function installHermes(ctx) {
 // opencode.json with a "plugin" array entry. Mirrors the Claude Code hook
 // architecture as closely as opencode allows — only the statusline is missing
 // (opencode's TUI exposes no plugin-writable badge).
-const OPENCODE_SKILL_DIRS  = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'crew'];
+const OPENCODE_SKILL_DIRS  = ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
 const OPENCODE_AGENT_FILES = ['crew-locator.md', 'crew-editor.md', 'crew-reviewer.md'];
-const OPENCODE_COMMAND_FILES = ['caveman.md', 'caveman-commit.md', 'caveman-review.md', 'caveman-compress.md', 'caveman-stats.md', 'caveman-help.md'];
+const OPENCODE_COMMAND_FILES = ['transatlantic.md', 'ta-commit.md', 'ta-review.md', 'ta-compress.md', 'ta-stats.md', 'ta-help.md'];
 const OPENCODE_PLUGIN_REL = './plugins/caveman/plugin.js';
-const OPENCODE_AGENTS_MD_SENTINEL = 'Respond terse like smart caveman';
+// Un-fenced installs may carry either ruleset generation: the upstream
+// caveman body or this fork's transatlantic body.
+const OPENCODE_AGENTS_MD_SENTINELS = ['Speak in the transatlantic register', 'Respond terse like smart caveman'];
 // Marker fence for the opencode AGENTS.md ruleset block. Same convention as
 // bin/lib/openclaw.js for SOUL.md — lets us strip our block cleanly even when
 // the user has authored content above AND below it.
@@ -690,14 +692,14 @@ function installOpencode(ctx) {
 
   if (!repoRoot) {
     warn('  opencode native install requires a local clone of the caveman repo.');
-    note('  Re-run from a clone: git clone https://github.com/' + REPO + ' && cd caveman && node bin/install.js --only opencode');
+    note('  Re-run from a clone: git clone https://github.com/' + REPO + ' && cd transatlantic && node bin/install.js --only opencode');
     results.failed.push(['opencode', 'native install requires local repo clone']);
     process.stdout.write('\n');
     return;
   }
 
   const dir = opencodeConfigDir();
-  const pluginDir   = path.join(dir, 'plugins', 'caveman');
+  const pluginDir   = path.join(dir, 'plugins', 'transatlantic');
   const commandsDir = path.join(dir, 'commands');
   const agentsDir   = path.join(dir, 'agents');
   const skillsDir   = path.join(dir, 'skills');
@@ -790,7 +792,8 @@ function installOpencode(ctx) {
       const existing = fs.readFileSync(agentsMd, 'utf8');
       const alreadyFenced = existing.includes(OPENCODE_AGENTS_MD_BEGIN)
         && existing.includes(OPENCODE_AGENTS_MD_END);
-      const alreadyByLegacySentinel = !alreadyFenced && existing.includes(OPENCODE_AGENTS_MD_SENTINEL);
+      const matchedSentinel = OPENCODE_AGENTS_MD_SENTINELS.find(sn => existing.includes(sn));
+      const alreadyByLegacySentinel = !alreadyFenced && Boolean(matchedSentinel);
       if (alreadyFenced) {
         note(`  ${agentsMd} already contains caveman ruleset`);
       } else if (alreadyByLegacySentinel) {
@@ -816,7 +819,7 @@ function installOpencode(ctx) {
           if (exact !== -1) {
             userPart = (existing.slice(0, exact) + existing.slice(exact + bodyTrim.length)).trim();
           } else {
-            const sentinelAt = existing.indexOf(OPENCODE_AGENTS_MD_SENTINEL);
+            const sentinelAt = existing.indexOf(matchedSentinel);
             const cutAt = existing.lastIndexOf('\n\n', sentinelAt);
             userPart = cutAt === -1 ? '' : existing.slice(0, cutAt).trim();
             note(`  legacy block did not match the current ruleset — everything from the sentinel down was replaced; original kept at ${agentsBak}`);
@@ -1188,7 +1191,7 @@ function uninstall(ctx) {
   if (hasCmd('claude')) {
     const probe = captureSpawn('claude', ['plugin', 'list']);
     if (probe.status === 0 && /caveman/i.test(probe.stdout || '')) {
-      const r = runSpawn('claude', ['plugin', 'uninstall', 'caveman@caveman'], null, opts.dryRun);
+      const r = runSpawn('claude', ['plugin', 'uninstall', 'transatlantic@transatlantic'], null, opts.dryRun);
       if (spawnOk(r)) ok('  removed claude plugin');
     } else {
       note('  claude plugin not installed — skipping');
@@ -1206,7 +1209,7 @@ function uninstall(ctx) {
   if (hasCmd('gemini')) {
     const probe = captureSpawn('gemini', ['extensions', 'list']);
     if (probe.status === 0 && /caveman/i.test(probe.stdout || '')) {
-      runSpawn('gemini', ['extensions', 'uninstall', 'caveman'], null, opts.dryRun);
+      runSpawn('gemini', ['extensions', 'uninstall', 'transatlantic'], null, opts.dryRun);
     } else {
       note('  gemini extension not installed — skipping');
     }
@@ -1215,7 +1218,7 @@ function uninstall(ctx) {
   // opencode native install — strip plugin entry, MCP entry, and our files.
   // Probed by the existence of the plugin dir we own; if absent, skip silently.
   const ocDir = opencodeConfigDir();
-  const ocPluginDir = path.join(ocDir, 'plugins', 'caveman');
+  const ocPluginDir = path.join(ocDir, 'plugins', 'transatlantic');
   if (fs.existsSync(ocPluginDir)) {
     const ocJson = path.join(ocDir, 'opencode.json');
     if (fs.existsSync(ocJson)) {
@@ -1346,7 +1349,7 @@ async function promptForOnly(detected) {
 // ── --list ─────────────────────────────────────────────────────────────────
 function printList(noColor) {
   const c = makeChalk(noColor);
-  process.stdout.write(c.orange('🪨 caveman provider matrix') + '\n\n');
+  process.stdout.write(c.orange('🌊 transatlantic provider matrix') + '\n\n');
   process.stdout.write(`  ${pad('ID', 13)} ${pad('AGENT', 22)} INSTALL MECHANISM\n`);
   process.stdout.write(`  ${pad('--', 13)} ${pad('-----', 22)} -----------------\n`);
   for (const p of PROVIDERS) {
@@ -1366,7 +1369,7 @@ function printHelp() {
   process.stdout.write(`caveman installer — detects your agents and installs caveman for each one.
 
 USAGE
-  npx -y github:JuliusBrussee/caveman -- [flags]
+  npx -y github:Startr/transatlantic -- [flags]
   node bin/install.js [flags]
   bash install.sh [flags]              # shim → npx
   pwsh install.ps1 [flags]             # shim → npx
@@ -1403,10 +1406,10 @@ FLAGS
   -h, --help            Show this help.
 
 EXAMPLES
-  npx -y github:JuliusBrussee/caveman                        # default install
-  npx -y github:JuliusBrussee/caveman -- --all               # all the trimmings
-  npx -y github:JuliusBrussee/caveman -- --only claude --no-mcp-shrink
-  npx -y github:JuliusBrussee/caveman -- --uninstall
+  npx -y github:Startr/transatlantic                        # default install
+  npx -y github:Startr/transatlantic -- --all               # all the trimmings
+  npx -y github:Startr/transatlantic -- --only claude --no-mcp-shrink
+  npx -y github:Startr/transatlantic -- --uninstall
 
   Issues: https://github.com/${REPO}/issues
 `);
@@ -1436,7 +1439,7 @@ async function main() {
 
   if (opts.uninstall) { uninstall(ctx); return 0; }
 
-  ctx.say('🪨 caveman installer');
+  ctx.say('🌊 transatlantic installer');
   ctx.note(`  ${REPO}`);
   if (opts.dryRun) ctx.note('  (dry run — nothing will be written)');
   process.stdout.write('\n');

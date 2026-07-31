@@ -29,7 +29,7 @@ test('dry-run --only claude prints plan and writes nothing', () => {
   // is a no-op (the installer just prints "nothing detected" and exits 0).
   if (/Claude Code detected/.test(r.stdout)) {
     assert.match(r.stdout, /would run: claude plugin marketplace add/);
-    assert.match(r.stdout, /would run: claude plugin install caveman@caveman/);
+    assert.match(r.stdout, /would run: claude plugin install transatlantic@transatlantic/);
     assert.match(r.stdout, /would mkdir -p .*\/hooks/);
     assert.match(r.stdout, /would install .*caveman-activate\.js/);
     assert.match(r.stdout, /would merge SessionStart \+ UserPromptSubmit \+ statusline/);

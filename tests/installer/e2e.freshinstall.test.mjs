@@ -241,7 +241,7 @@ test('install tolerates JSONC settings.json (comments + trailing commas)', { ski
 // OPENCLAW_WORKSPACE — no network, no external CLI, no plugin install. Safe
 // to run on every CI box.
 
-const SKILL_BODY_SRC = path.join(REPO_ROOT, 'skills', 'caveman', 'SKILL.md');
+const SKILL_BODY_SRC = path.join(REPO_ROOT, 'skills', 'transatlantic', 'SKILL.md');
 
 test('openclaw install writes skill folder + SOUL.md bootstrap', () => {
   const dir = freshTmpDir();
@@ -255,7 +255,7 @@ test('openclaw install writes skill folder + SOUL.md bootstrap', () => {
     assert.notEqual(r.status, 2, `installer aborted on argv parse: ${r.stderr}`);
 
     // 1. Skill body written with merged frontmatter.
-    const skillFile = path.join(ws, 'skills', 'caveman', 'SKILL.md');
+    const skillFile = path.join(ws, 'skills', 'transatlantic', 'SKILL.md');
     assert.ok(fs.existsSync(skillFile), 'skill SKILL.md missing');
     const skillRaw = fs.readFileSync(skillFile, 'utf8');
     assert.match(skillRaw, /^---\n/, 'skill missing frontmatter');
@@ -275,7 +275,7 @@ test('openclaw install writes skill folder + SOUL.md bootstrap', () => {
     const soulRaw = fs.readFileSync(soul, 'utf8');
     assert.match(soulRaw, /<!-- caveman-begin -->/, 'SOUL.md missing begin marker');
     assert.match(soulRaw, /<!-- caveman-end -->/, 'SOUL.md missing end marker');
-    assert.match(soulRaw, /Respond terse like smart caveman/, 'SOUL.md missing sentinel');
+    assert.match(soulRaw, /Speak in the transatlantic register/, 'SOUL.md missing sentinel');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -291,7 +291,7 @@ test('openclaw install is idempotent: skill frontmatter not double-prepended, SO
     spawnSync('node', [INSTALLER, ...args], { env, encoding: 'utf8' });
     spawnSync('node', [INSTALLER, ...args], { env, encoding: 'utf8' });
 
-    const skillRaw = fs.readFileSync(path.join(ws, 'skills', 'caveman', 'SKILL.md'), 'utf8');
+    const skillRaw = fs.readFileSync(path.join(ws, 'skills', 'transatlantic', 'SKILL.md'), 'utf8');
     // version key should appear exactly once (idempotent merge).
     const versionMatches = skillRaw.match(/^version:/gm) || [];
     assert.equal(versionMatches.length, 1, `expected 1 version key after re-run, got ${versionMatches.length}`);
@@ -344,7 +344,7 @@ test('openclaw uninstall removes skill folder + strips SOUL.md block, preserving
     });
     assert.notEqual(r.status, 2, `uninstall argv error: ${r.stderr}`);
 
-    assert.equal(fs.existsSync(path.join(ws, 'skills', 'caveman')), false, 'skill folder should be removed');
+    assert.equal(fs.existsSync(path.join(ws, 'skills', 'transatlantic')), false, 'skill folder should be removed');
     const soulAfter = fs.readFileSync(path.join(ws, 'SOUL.md'), 'utf8');
     assert.doesNotMatch(soulAfter, /<!-- caveman-begin -->/, 'caveman block survived uninstall');
     assert.doesNotMatch(soulAfter, /<!-- caveman-end -->/, 'caveman end marker survived uninstall');
@@ -366,10 +366,10 @@ test('caveman-init.js --only openclaw routes through the same helper', () => {
       encoding: 'utf8',
     });
     assert.equal(r.status, 0, `caveman-init failed: ${r.stderr || r.stdout}`);
-    assert.ok(fs.existsSync(path.join(ws, 'skills', 'caveman', 'SKILL.md')), 'skill missing via init route');
+    assert.ok(fs.existsSync(path.join(ws, 'skills', 'transatlantic', 'SKILL.md')), 'skill missing via init route');
     assert.ok(fs.existsSync(path.join(ws, 'SOUL.md')), 'SOUL.md missing via init route');
     const soulRaw = fs.readFileSync(path.join(ws, 'SOUL.md'), 'utf8');
-    assert.match(soulRaw, /Respond terse like smart caveman/, 'sentinel missing via init route');
+    assert.match(soulRaw, /Speak in the transatlantic register/, 'sentinel missing via init route');
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -429,7 +429,7 @@ test('opencode: --force on legacy AGENTS.md preserves user content and takes a b
     assert.match(after, /<!-- caveman-end -->/, 'fence end missing after migration');
     // Legacy un-fenced copy must be gone: sentinel appears only inside the fence.
     const beforeFence = after.slice(0, after.indexOf('<!-- caveman-begin -->'));
-    assert.doesNotMatch(beforeFence, /Respond terse like smart caveman/,
+    assert.doesNotMatch(beforeFence, /Speak in the transatlantic register/,
       'legacy un-fenced block still present above the fence');
     assert.ok(fs.existsSync(agentsMd + '.bak'), 'backup missing after --force migration');
     assert.match(fs.readFileSync(agentsMd + '.bak', 'utf8'), /My precious user rules/,

@@ -22,7 +22,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(HERE, '..', '..');
 const INSTALLER = path.join(REPO_ROOT, 'bin', 'install.js');
 
-const SKILLS = ['caveman', 'caveman-commit', 'caveman-review', 'caveman-help', 'caveman-stats', 'caveman-compress', 'cavecrew'];
+const SKILLS = ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
 
 function freshHome() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'caveman-hermes-'));
@@ -51,7 +51,7 @@ test('hermes fresh install lands 7 skill dirs with SKILL.md under skills/product
       assert.ok(fs.existsSync(path.join(prod, name, 'SKILL.md')), `skill ${name}/SKILL.md missing`);
     }
     // caveman-compress ships executable scripts — ensure the recursive copy kept them.
-    assert.ok(fs.existsSync(path.join(prod, 'caveman-compress', 'scripts')), 'caveman-compress/scripts/ not copied');
+    assert.ok(fs.existsSync(path.join(prod, 'ta-compress', 'scripts')), 'caveman-compress/scripts/ not copied');
   } finally {
     fs.rmSync(home, { recursive: true, force: true });
   }

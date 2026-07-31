@@ -1,0 +1,2 @@
+description = "Switch transatlantic prose level (liner/plain/transatlantic/aviation/telegraph/morse)"
+prompt = "Switch to the transatlantic {{args}} level. If no level specified, use the configured default. Speak in that level's register per the transatlantic skill. Cut filler, hedging, and pleasantries at every level. Front-load the answer. Technical terms exact. Code unchanged."
