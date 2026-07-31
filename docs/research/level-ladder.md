@@ -129,10 +129,37 @@ One extracted claim failed adversarial verification (1-2) and must NOT be cited:
 - The formula-vs-eye-tracking result [S5] is 2025–2026 work testing current frontier
   models — fresh, not yet widely replicated.
 
+## First measured data (2026-07-31)
+
+CLI eval run (`evals/level_run.py`): 10 prompts × 8 arms, model sonnet, tokens
+counted offline with tiktoken (approximate ratios, not exact Claude tokens).
+Savings are vs the "Answer concisely." terse control arm, mean across prompts:
+
+| Level | Mean tokens | Savings vs terse (mean) | stdev |
+|---|---:|---:|---:|
+| liner | 198 | +44% | 20% |
+| plain | 288 | +17% | 28% |
+| transatlantic | 200 | +45% | 30% |
+| aviation | 174 | +52% | 18% |
+| telegraph | 176 | +52% | 13% |
+| morse | 97 | +73% | 10% |
+
+Two readings, both design-confirming. First, **transatlantic achieves telegraph-class
+savings with grammar fully intact** (45% vs 52%, inside each other's noise band):
+dropping articles buys almost nothing under a BPE tokenizer, exactly as the ladder
+predicted — the real savings come from cutting filler clauses. Second, plain's smaller
+saving is the point of plain: it keeps helpful redundancy on purpose. Morse is the only
+level that buys a large step beyond the middle of the ladder. Caveats: n=10, one model,
+one run; the terse control came out slightly *longer* than bare baseline (353 vs 319
+mean tokens), a reminder that these are noisy small-sample ratios. API-measured
+per-level numbers (exact Claude tokens, `benchmarks/run.py --level`) remain the
+authoritative target.
+
 ## Open questions (unresolved by the evidence)
 
-- Exact BPE token savings of dropped articles in *output* prose, per tokenizer — needs
-  our own benchmark run (upstream `benchmarks/` harness; keep numbers real).
+- Exact per-level savings under the Claude API tokenizer — the CLI/tiktoken run above
+  approximates it; authoritative numbers need `benchmarks/run.py --level` runs
+  (bring-your-own-key flow in `benchmarks/README.md`).
 - Whether the comprehension-vs-speed dissociation replicates for English technical prose.
 - Quantified knee location for assistant prose specifically — no study measures it directly.
 - How to weight surprisal (validated predictor, needs a model to compute) against

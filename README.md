@@ -110,7 +110,9 @@ Real token counts from the Claude API, committed and reproducible in [`benchmark
 | **Average** | **1214** | **294** | **65%** |
 <!-- BENCHMARK-TABLE-END -->
 
-Per-level numbers for the new ladder are being collected the same way: measured, committed, never estimated. **You can contribute a run with your own API key** — one level costs pennies and takes minutes. The how and the house rules live in [benchmarks/README.md](./benchmarks/README.md).
+First per-level measurements exist (CLI eval, 10 prompts, sonnet, tiktoken-approximate ratios vs a plain "be concise" control): liner +44%, plain +17%, transatlantic +45%, aviation +52%, telegraph +52%, morse +73%. The headline: **the default keeps full grammar and still lands in telegraph's savings band** — dropping articles buys almost nothing under a modern tokenizer; cutting filler is where the tokens are. Details and caveats in [docs/research/level-ladder.md](./docs/research/level-ladder.md).
+
+API-measured numbers are the authoritative target, collected the same way as the table above: measured, committed, never estimated. **You can contribute a run with your own API key** — one level costs pennies and takes minutes. The how and the house rules live in [benchmarks/README.md](./benchmarks/README.md).
 
 > [!IMPORTANT]
 > **Honest number warning.** These levels shrink **output** tokens. Input and reasoning tokens are untouched, and the skill itself adds ~1–1.5k input tokens per turn, so whole-session savings run smaller than the output number. The primary win is readability and speed; cost is the bonus. Full accounting in **[docs/HONEST-NUMBERS.md](./docs/HONEST-NUMBERS.md)**.

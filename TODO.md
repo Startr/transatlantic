@@ -67,8 +67,9 @@ to bare keywords (morse). Level ladder and citations:
   - [ ] Update `COMPRESSION` map in `src/hooks/caveman-stats.js` from results
   - [ ] Regenerate README benchmark table from committed results
 - [ ] **Eval the New Levels**: Three-arm harness (baseline / terse / skill)
-  - [ ] Regenerate `evals/snapshots/results.json` for the new SKILL.md
-  - [ ] Verify honest delta (skill vs terse) holds per level
+  - [x] Per-level CLI run committed (`evals/snapshots/levels.json`, sonnet, n=10): liner +44%, plain +17%, transatlantic +45%, aviation +52%, telegraph +52%, morse +73% vs terse control — transatlantic hits telegraph-class savings with grammar intact
+  - [ ] Regenerate legacy `evals/snapshots/results.json` for the new SKILL.md
+  - [ ] Re-run with larger n and a second model to shrink the noise bands (stdev 10–30%)
 - [ ] **Compression Boundary in caveman-compress**: Enforce the research finding
   - [ ] Skill must refuse telegraph/morse register for LLM context files (memory, CLAUDE.md)
   - [ ] Default compress target: transatlantic register
