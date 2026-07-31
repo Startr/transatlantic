@@ -32,12 +32,23 @@ test('poka-yoke: one version everywhere (package, PINNED_REF, both shims, latest
   assert.equal(psPin, pinned, 'install.ps1 pin drifted');
 
   // Latest v* tag must agree — skipped gracefully outside a git checkout.
-  let tag = null;
+  // Exception: mid-release (on a release/X.Y.Z or hotfix branch) the pins are
+  // one ahead by design — the tag is created at release_finish. Then the pins
+  // must equal the in-flight release version instead.
+  let tag = null, branch = null;
   try {
     tag = execFileSync('git', ['describe', '--tags', '--abbrev=0', '--match', 'v*'],
       { cwd: ROOT, encoding: 'utf8' }).trim();
+    branch = execFileSync('git', ['symbolic-ref', '--short', 'HEAD'],
+      { cwd: ROOT, encoding: 'utf8' }).trim();
   } catch (e) { /* no git → skip */ }
-  if (tag) assert.equal(tag, pinned, `latest tag ${tag} != PINNED_REF ${pinned}`);
+  const releaseMatch = branch && branch.match(/^(?:release|hotfix)\/(\d+\.\d+\.\d+)$/);
+  if (releaseMatch) {
+    assert.equal(pinned, 'v' + releaseMatch[1],
+      `on ${branch} the pins must already say v${releaseMatch[1]} (bump before make release_finish)`);
+  } else if (tag) {
+    assert.equal(tag, pinned, `latest tag ${tag} != PINNED_REF ${pinned}`);
+  }
 });
 
 // ── Name lists vs filesystem ──
