@@ -18,7 +18,7 @@
 
 ---
 
-Transatlantic is a skill/plugin for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and 30+ other AI coding agents. It began as a fork of [caveman](https://github.com/JuliusBrussee/caveman), which proved that agents waste most of their words. We kept the proof and rebuilt the voice: the default register cuts the filler and keeps the grammar, because the evidence says that's where compression is free.
+Transatlantic is a skill/plugin for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and 30+ other AI coding agents. It began as a fork of [caveman](https://github.com/JuliusBrussee/caveman), which proved that agents waste most of their words. The voice is older than the fork: at [Sage.is](https://sage.is), makers of the Sage AI UI, the house writing guidelines have been minimal, earnest, and Hemingway-inspired for years — short declarative sentences, plain words, nothing cut that carries meaning. Caveman contributed the measurement culture; we contributed the register. The default cuts the filler and keeps the grammar, because the evidence says that's where compression is free.
 
 The name is the idea. Every level is a way people once talked across the Atlantic — the ocean liner, the plain letter, the newsreel broadcast, aviation radio, the telegraph cable, morse code. Pick how far down the wire you want to go.
 

@@ -12,7 +12,9 @@ Alexander Somma put a plugin called caveman on his machine because the pitch was
 
 They also got embarrassing. "New object ref each render. Wrap in `useMemo`." Correct, certainly. Also not something you'd want on screen when a client walks past. Caveman proved that agents waste most of their words. It never asked whether you have to talk like that to stop wasting them.
 
-So we asked. That question turned into a research pass through twenty-nine sources on how people actually read: the plain-language studies that cut a Veterans Affairs letter's support calls from 1,128 to 192, the syntax experiments showing that clauses folded inside clauses hurt readers more than jargon does, the eye-tracking work showing that readability formulas barely predict reading ease at all. Each claim went through adversarial fact-checking before we let it shape the design. One claim failed and was thrown out. The rest became a ladder.
+We already believed you didn't, because we'd been writing that way for years. At Sage.is, the team behind the Sage AI UI, the house writing guidelines have long been minimal and earnest in the Hemingway line: short declarative sentences, plain words, no ornament, nothing cut that carries meaning. When this fork needed a working name, the first one on the whiteboard was simply "hemingway." What we'd never done was measure that style against the alternatives, and caveman's whole culture was measurement. The fork put our voice and their rigor in the same repo.
+
+So we asked the question properly. It turned into a research pass through twenty-nine sources on how people actually read: the plain-language studies that cut a Veterans Affairs letter's support calls from 1,128 to 192, the syntax experiments showing that clauses folded inside clauses hurt readers more than jargon does, the eye-tracking work showing that readability formulas barely predict reading ease at all. Each claim went through adversarial fact-checking before we let it shape the design. One claim failed and was thrown out. The rest became a ladder.
 
 Then we measured the thing that mattered. Against a plain "be concise" baseline, caveman's grunt register saves about 52% of output tokens. A register with every article intact, full grammar, one idea per sentence? 45%, inside the noise band of the same test. Under a modern tokenizer, dropping "the" buys almost nothing. The savings were never in the small words. They were in the filler sentences, and you can cut those wearing a dinner jacket.
 
@@ -22,7 +24,7 @@ Every level cites the tradition it comes from. The plain register leans on the p
 
 There was one more inheritance to deal with. Caveman's docs told users to type `/caveman`; the plugin actually required `/caveman:caveman`. A small lie, the kind every project accumulates. We fixed it structurally: the session hook mirrors every command into a scope where the bare names genuinely resolve, and every command in our docs is tested to work as written. The same temperament runs through the numbers. The benchmark harness takes your API key, not our word, and the honest-numbers page will tell you outright when this tool costs you money instead of saving it.
 
-Caveman got the diagnosis right. Agents are verbose because nothing ever told them not to be. Transatlantic keeps the cure and fixes the bedside manner, and everything it claims, it can show a citation or a committed measurement for.
+Caveman got the diagnosis right. Agents are verbose because nothing ever told them not to be. Transatlantic keeps the cure and gives it the voice we've held ourselves to for years, and everything it claims, it can show a citation or a committed measurement for. The house style finally has its evidence.
 
 The grunt got us across the ocean. Now we dress for dinner.
 
