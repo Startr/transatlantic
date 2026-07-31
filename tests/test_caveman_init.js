@@ -42,12 +42,12 @@ console.log('caveman-init tests\n');
 
 test('greenfield: creates all rule files with proper frontmatter', (tmp) => {
   runInit(tmp);
-  const cursor = fs.readFileSync(path.join(tmp, '.cursor/rules/caveman.mdc'), 'utf8');
+  const cursor = fs.readFileSync(path.join(tmp, '.cursor/rules/transatlantic.mdc'), 'utf8');
   assert.match(cursor, /alwaysApply: true/);
   assert.match(cursor, /Speak in the transatlantic register/);
-  const windsurf = fs.readFileSync(path.join(tmp, '.windsurf/rules/caveman.md'), 'utf8');
+  const windsurf = fs.readFileSync(path.join(tmp, '.windsurf/rules/transatlantic.md'), 'utf8');
   assert.match(windsurf, /trigger: always_on/);
-  const cline = fs.readFileSync(path.join(tmp, '.clinerules/caveman.md'), 'utf8');
+  const cline = fs.readFileSync(path.join(tmp, '.clinerules/transatlantic.md'), 'utf8');
   assert.match(cline, /^Speak in the transatlantic/);
   const copilot = fs.readFileSync(path.join(tmp, '.github/copilot-instructions.md'), 'utf8');
   assert.match(copilot, /Speak in the transatlantic/);
@@ -76,19 +76,19 @@ test('append mode: existing AGENTS.md gets caveman appended (not replaced)', (tm
 test('skip mode: existing .cursor rule is not overwritten without --force', (tmp) => {
   const dir = path.join(tmp, '.cursor/rules');
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'caveman.mdc'), '# original\nDo not delete me.\n');
+  fs.writeFileSync(path.join(dir, 'transatlantic.mdc'), '# original\nDo not delete me.\n');
   const out = runInit(tmp);
-  assert.match(out, /\? .*\.cursor\/rules\/caveman\.mdc/);
-  const after = fs.readFileSync(path.join(dir, 'caveman.mdc'), 'utf8');
+  assert.match(out, /\? .*\.cursor\/rules\/transatlantic\.mdc/);
+  const after = fs.readFileSync(path.join(dir, 'transatlantic.mdc'), 'utf8');
   assert.strictEqual(after, '# original\nDo not delete me.\n');
 });
 
 test('--force overwrites existing rule files', (tmp) => {
   const dir = path.join(tmp, '.cursor/rules');
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'caveman.mdc'), '# original\n');
+  fs.writeFileSync(path.join(dir, 'transatlantic.mdc'), '# original\n');
   runInit(tmp, '--force');
-  const after = fs.readFileSync(path.join(dir, 'caveman.mdc'), 'utf8');
+  const after = fs.readFileSync(path.join(dir, 'transatlantic.mdc'), 'utf8');
   assert.match(after, /alwaysApply: true/);
   assert.match(after, /Speak in the transatlantic/);
 });
@@ -108,7 +108,7 @@ test('--dry-run: announces but writes nothing', (tmp) => {
 test('--only filters to one target', (tmp) => {
   const out = runInit(tmp, '--only', 'cline');
   assert.match(out, /1 added/);
-  assert.ok(fs.existsSync(path.join(tmp, '.clinerules/caveman.md')));
+  assert.ok(fs.existsSync(path.join(tmp, '.clinerules/transatlantic.md')));
   assert.ok(!fs.existsSync(path.join(tmp, '.cursor')));
 });
 
@@ -116,7 +116,7 @@ test('detects sentinel and skips files that already have transatlantic content',
   // Hand-write a file that already contains the rule (simulating prior install).
   const dir = path.join(tmp, '.clinerules');
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'caveman.md'),
+  fs.writeFileSync(path.join(dir, 'transatlantic.md'),
     '# Existing\n\nSpeak in the transatlantic register. Hello.\n');
   const out = runInit(tmp, '--only', 'cline');
   assert.match(out, /skipped-already-installed/);
@@ -126,11 +126,12 @@ test('upgrades a byte-intact legacy caveman install in place', (tmp) => {
   const { LEGACY_RULE_BODY, SENTINEL } = require('../src/tools/caveman-init.js');
   const dir = path.join(tmp, '.clinerules');
   fs.mkdirSync(dir, { recursive: true });
-  const file = path.join(dir, 'caveman.md');
-  fs.writeFileSync(file, '# Prefix kept\n\n' + LEGACY_RULE_BODY);
+  const legacyFile = path.join(dir, 'caveman.md');
+  fs.writeFileSync(legacyFile, '# Prefix kept\n\n' + LEGACY_RULE_BODY);
   const out = runInit(tmp, '--only', 'cline');
   assert.match(out, /upgraded/);
-  const after = fs.readFileSync(file, 'utf8');
+  assert.ok(!fs.existsSync(legacyFile), 'legacy-named file removed');
+  const after = fs.readFileSync(path.join(dir, 'transatlantic.md'), 'utf8');
   assert.ok(after.includes(SENTINEL), 'new ruleset present after upgrade');
   assert.ok(after.startsWith('# Prefix kept'), 'surrounding content preserved');
   assert.ok(!after.includes('Respond terse like smart caveman'), 'old body gone');

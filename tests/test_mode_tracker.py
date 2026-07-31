@@ -166,7 +166,7 @@ class ModeTrackerTests(unittest.TestCase):
         self.send("/caveman-review")
         self.assertEqual(self.flag_value(), "review")
         self.send("ordinary follow-up question")
-        self.assertEqual(self.flag_value(), "transatlantic")
+        self.assertEqual(self.flag_value(), "wenyan-ultra")
 
     def test_namespaced_commit_and_review_recognized(self):
         # Pre-fix: only compress and stats had the /caveman:caveman- variant.

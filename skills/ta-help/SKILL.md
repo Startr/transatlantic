@@ -1,8 +1,8 @@
 ---
-name: caveman-help
+name: ta-help
 description: >
   Quick-reference card for the transatlantic levels, skills, and commands.
-  One-shot display, not a persistent mode. Trigger: /caveman-help,
+  One-shot display, not a persistent mode. Trigger: /ta-help,
   "transatlantic help", "caveman help", "what transatlantic commands",
   "how do I use transatlantic".
 ---
@@ -23,6 +23,7 @@ Most readable to most compressed. Full research basis: `docs/research/level-ladd
 | **aviation** | `/transatlantic aviation` | Controlled technical English. One instruction per sentence, ~20-word cap. |
 | **telegraph** | `/transatlantic telegraph` | Dropped articles, fragments. Skim register. Legacy caveman `full`. |
 | **morse** | `/transatlantic morse` | Bare keywords. Maximum compression. Legacy caveman `ultra`. |
+| **wenyan** | `/transatlantic wenyan` | Classical Chinese annex (also `wenyan-lite`, `wenyan-ultra`). Densest register of all. |
 
 `/ta <level>` is the short form. Legacy `/caveman lite|full|ultra` maps onto the ladder. A level sticks until changed or session end.
 
@@ -34,7 +35,7 @@ Most readable to most compressed. Full research basis: `docs/research/level-ladd
 | **caveman-review** | `/caveman-review` | One-line PR comments: `L42: bug: user null. Add guard.` |
 | **caveman-compress** | `/caveman-compress <file>` | Compress a memory file for LLM context. Never uses telegraph/morse — stopword removal harms model reading. |
 | **caveman-stats** | `/caveman-stats` | Real session token usage and lifetime savings. |
-| **caveman-help** | `/caveman-help` | This card. |
+| **caveman-help** | `/ta-help` | This card. |
 
 ## Deactivate
 

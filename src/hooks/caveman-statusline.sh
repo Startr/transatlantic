@@ -26,10 +26,11 @@ MODE=$(printf '%s' "$MODE" | tr -cd 'a-z0-9-')
 # are collapsed onto the canonical ladder, mirroring normalizeMode() in
 # caveman-config.js.
 case "$MODE" in
-  off|liner|plain|transatlantic|aviation|telegraph|morse|commit|review|compress) ;;
-  lite|wenyan|wenyan-lite|wenyan-full|wenyan-ultra) MODE=transatlantic ;;
+  off|liner|plain|transatlantic|aviation|telegraph|morse|wenyan-lite|wenyan|wenyan-ultra|commit|review|compress) ;;
+  lite) MODE=transatlantic ;;
   full) MODE=telegraph ;;
   ultra) MODE=morse ;;
+  wenyan-full) MODE=wenyan ;;
   *) exit 0 ;;
 esac
 

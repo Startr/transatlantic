@@ -85,7 +85,7 @@ test('safeWriteFlag then readFlag round-trip through symlink', (tmp) => {
 
   // Read back through the same symlink path
   const result = readFlag(flagPath);
-  assert.strictEqual(result, 'transatlantic');
+  assert.strictEqual(result, 'wenyan-ultra');
 });
 
 test('refuses flag file that is itself a symlink (even through symlinked parent)', (tmp) => {

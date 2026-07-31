@@ -108,8 +108,8 @@ function parseModeChange(promptRaw) {
 
   // Natural-language deactivation — checked before activation so "stop talking
   // like caveman" doesn't trip the activation regex.
-  if (/\b(stop|disable|deactivate|turn off)\b.*\bcaveman\b/i.test(prompt) ||
-      /\bcaveman\b.*\b(stop|disable|deactivate|turn off)\b/i.test(prompt) ||
+  if (/\b(stop|disable|deactivate|turn off)\b.*\b(caveman|transatlantic)\b/i.test(prompt) ||
+      /\b(caveman|transatlantic)\b.*\b(stop|disable|deactivate|turn off)\b/i.test(prompt) ||
       /\bnormal mode\b/i.test(prompt)) {
     return 'off';
   }
@@ -120,7 +120,7 @@ function parseModeChange(promptRaw) {
   // slash-command branch below never sees it — recover the level argument
   // from the template's first line instead. Must run before the generic
   // NL-activation match, which would swallow it and drop the level.
-  const tpl = /^activate caveman mode:[ \t]*(\S*)/.exec(prompt);
+  const tpl = /^activate (?:caveman|transatlantic) mode:[ \t]*(\S*)/.exec(prompt);
   if (tpl) {
     const arg = tpl[1] || '';
     if (arg === 'off' || arg === 'stop' || arg === 'disable') return 'off';
@@ -130,24 +130,25 @@ function parseModeChange(promptRaw) {
   }
 
   // Natural-language activation
-  if (/\b(activate|enable|turn on|start|talk like)\b.*\bcaveman\b/i.test(prompt) ||
-      /\bcaveman\b.*\b(mode|activate|enable|turn on|start)\b/i.test(prompt)) {
+  if (/\b(activate|enable|turn on|start|talk like)\b.*\b(caveman|transatlantic)\b/i.test(prompt) ||
+      /\b(caveman|transatlantic)\b.*\b(mode|activate|enable|turn on|start)\b/i.test(prompt)) {
     const mode = getDefaultMode();
     return mode === 'off' ? null : mode;
   }
 
   // Slash-command parsing — opencode also expands command files, but if the
   // user types the literal slash command we still want to flip the flag.
-  if (prompt.startsWith('/caveman')) {
+  if (prompt.startsWith('/caveman') || prompt.startsWith('/transatlantic') ||
+      prompt.startsWith('/ta ') || prompt.startsWith('/ta-') || prompt === '/ta') {
     const parts = prompt.split(/\s+/);
     const cmd = parts[0];
     const arg = parts[1] || '';
 
-    if (cmd === '/caveman-commit')   return 'commit';
-    if (cmd === '/caveman-review')   return 'review';
-    if (cmd === '/caveman-compress') return 'compress';
+    if (cmd === '/ta-commit'   || cmd === '/caveman-commit')   return 'commit';
+    if (cmd === '/ta-review'   || cmd === '/caveman-review')   return 'review';
+    if (cmd === '/ta-compress' || cmd === '/caveman-compress') return 'compress';
 
-    if (cmd === '/caveman') {
+    if (cmd === '/transatlantic' || cmd === '/ta' || cmd === '/caveman') {
       if (!arg)                                     return getDefaultMode();
       if (arg === 'off' || arg === 'stop' || arg === 'disable') return 'off';
       if (arg === 'wenyan-full')                    return 'wenyan';

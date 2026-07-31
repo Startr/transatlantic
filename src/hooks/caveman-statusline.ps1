@@ -35,10 +35,7 @@ if (-not ($Valid -contains $Mode)) { exit 0 }
 # normalizeMode() in caveman-config.js and the .sh counterpart.
 switch ($Mode) {
     'lite'         { $Mode = 'transatlantic' }
-    'wenyan'       { $Mode = 'transatlantic' }
-    'wenyan-lite'  { $Mode = 'transatlantic' }
-    'wenyan-full'  { $Mode = 'transatlantic' }
-    'wenyan-ultra' { $Mode = 'transatlantic' }
+    'wenyan-full'  { $Mode = 'wenyan' }
     'full'         { $Mode = 'telegraph' }
     'ultra'        { $Mode = 'morse' }
 }

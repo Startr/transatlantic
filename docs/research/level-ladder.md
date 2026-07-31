@@ -173,8 +173,10 @@ authoritative target.
 4. Front-load the answer; structure with subheadings at liner/plain/transatlantic.
 5. Memory-file compression (`caveman-compress` lineage) must NOT use telegraph/morse —
    stopword removal degrades LLM reading of context [S21].
-6. Wenyan levels are dropped from the fork (brand mismatch); legacy caveman levels map
-   to `telegraph` (full) and `morse` (ultra) for migration.
+6. Wenyan levels are retained as a first-class annex (`wenyan-lite`, `wenyan`,
+   `wenyan-ultra`) — classical Chinese packs the most meaning per token of any
+   register here, and sits outside the transatlantic naming theme on purpose.
+   Legacy caveman levels map to `telegraph` (full) and `morse` (ultra).
 7. `liner`'s anti-AI-tell rules are convention, not validated experiment — documented
    as such, consistent with [S9]'s finding that most style rules lack validation.
 

@@ -92,7 +92,8 @@ to bare keywords (morse). Level ladder and citations:
 - [ ] **Surprisal Tooling**: Explore scoring output with a small LM (surprisal beats Flesch as a readability predictor — open question S5 in the ladder doc)
 - [ ] **Wenyan Decision**: Deprecated in fork — decide whether to upstream the wenyan levels back to caveman or drop entirely
 - [ ] **Per-Level Stats**: Statusline savings attribution once per-level benchmarks exist
-- [ ] **Cavecrew Rename**: Decide subagent family name for the transatlantic brand
+- [ ] **Cavecrew Rename**: Decide subagent family name for the transatlantic brand (only remaining user-facing cave branding; internal file names like `caveman-config.js` and the `.caveman-active` flag are tracked separately)
+- [ ] **Wenyan Benchmarks**: The annex claims densest register per token — measure it (eval + API runs)
 
 ## Bugs
 

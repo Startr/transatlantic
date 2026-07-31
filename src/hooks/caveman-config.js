@@ -24,25 +24,22 @@ const VALID_MODES = [
   // Transatlantic ladder — most readable to most compressed
   // (research basis: docs/research/level-ladder.md)
   'liner', 'plain', 'transatlantic', 'aviation', 'telegraph', 'morse',
+  // Wenyan annex — classical Chinese registers, kept as first-class levels
+  // ('wenyan' is the canonical spelling of wenyan-full, as upstream)
+  'wenyan-lite', 'wenyan', 'wenyan-full', 'wenyan-ultra',
   // Legacy caveman names — accepted on read/args, normalized before write
   'lite', 'full', 'ultra',
-  'wenyan-lite', 'wenyan', 'wenyan-full', 'wenyan-ultra',
   // Independent one-shot skill modes
   'commit', 'review', 'compress'
 ];
 
-// Legacy name → canonical ladder level. Old flag files, configs, and
-// /caveman args keep working; everything is normalized before it is written
-// or acted on. Wenyan levels are deprecated in the fork and fall back to the
-// default voice.
+// Legacy name → canonical level. Old flag files, configs, and /caveman args
+// keep working; everything is normalized before it is written or acted on.
 const LEGACY_ALIASES = {
   lite: 'transatlantic',
   full: 'telegraph',
   ultra: 'morse',
-  wenyan: 'transatlantic',
-  'wenyan-lite': 'transatlantic',
-  'wenyan-full': 'transatlantic',
-  'wenyan-ultra': 'transatlantic'
+  'wenyan-full': 'wenyan'
 };
 
 function normalizeMode(mode) {

@@ -172,10 +172,10 @@ class HookScriptTests(unittest.TestCase):
             self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
 
             cmds = claude_dir / "commands"
-            for name in ["transatlantic.md", "ta.md", "caveman.md",
-                         "caveman-commit.md", "caveman-review.md",
-                         "caveman-stats.md", "caveman-compress.md",
-                         "caveman-help.md"]:
+            for name in ["transatlantic.md", "ta.md",
+                         "ta-commit.md", "ta-review.md",
+                         "ta-stats.md", "ta-compress.md",
+                         "ta-help.md", "ta-init.md"]:
                 self.assertTrue((cmds / name).exists(), f"{name} not mirrored")
                 self.assertIn("managed-by-transatlantic", (cmds / name).read_text())
 
@@ -186,7 +186,7 @@ class HookScriptTests(unittest.TestCase):
             self.assertEqual(own.read_text(), "my own ta command\n")
 
     # Regression for #587/#589 — hook at <root>/src/hooks/ must resolve SKILL.md
-    # at <root>/skills/caveman/, not the nonexistent <root>/src/skills/.
+    # at <root>/skills/transatlantic/, not the nonexistent <root>/src/skills/.
     def test_activate_emits_skill_md_not_fallback_from_repo_layout(self):
         with tempfile.TemporaryDirectory(prefix="caveman-hooks-skillpath-") as tmp:
             home = Path(tmp)
@@ -202,7 +202,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_activate_finds_skill_beside_config_dir_hooks(self):
         # Standalone layout: hooks at $CLAUDE_CONFIG_DIR/hooks/, skill installed
-        # at $CLAUDE_CONFIG_DIR/skills/caveman/SKILL.md
+        # at $CLAUDE_CONFIG_DIR/skills/transatlantic/SKILL.md
         with tempfile.TemporaryDirectory(prefix="caveman-hooks-standalone-") as tmp:
             home = Path(tmp)
             claude_dir = home / ".claude"
@@ -210,7 +210,7 @@ class HookScriptTests(unittest.TestCase):
             hooks_dir.mkdir(parents=True)
             for name in ("caveman-activate.js", "caveman-config.js", "package.json"):
                 shutil.copy(REPO_ROOT / "src" / "hooks" / name, hooks_dir / name)
-            skill_dir = claude_dir / "skills" / "caveman"
+            skill_dir = claude_dir / "skills" / "transatlantic"
             skill_dir.mkdir(parents=True)
             (skill_dir / "SKILL.md").write_text(
                 "---\nname: caveman\n---\nSTANDALONE MARKER RULESET\n"
@@ -225,7 +225,7 @@ class HookScriptTests(unittest.TestCase):
             home = Path(tmp)
             (home / ".claude").mkdir(parents=True)
             plugin_root = home / "plugin-cache"
-            skill_dir = plugin_root / "skills" / "caveman"
+            skill_dir = plugin_root / "skills" / "transatlantic"
             skill_dir.mkdir(parents=True)
             (skill_dir / "SKILL.md").write_text(
                 "---\nname: caveman\n---\nPLUGIN ROOT MARKER RULESET\n"

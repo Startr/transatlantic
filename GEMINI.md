@@ -1,4 +1,4 @@
-@./skills/caveman/SKILL.md
-@./skills/caveman-commit/SKILL.md
-@./skills/caveman-review/SKILL.md
-@./skills/caveman-compress/SKILL.md
+@./skills/transatlantic/SKILL.md
+@./skills/ta-commit/SKILL.md
+@./skills/ta-review/SKILL.md
+@./skills/ta-compress/SKILL.md

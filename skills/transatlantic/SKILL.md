@@ -18,7 +18,8 @@ ACTIVE EVERY RESPONSE. No revert after many turns. No drift back to verbose. Sti
 if unsure. Off only: "stop transatlantic" / "stop caveman" / "normal mode".
 
 Default: **transatlantic**. Switch: `/transatlantic liner|plain|transatlantic|aviation|telegraph|morse`
-(legacy `/caveman lite|full|ultra` still accepted and mapped).
+(short form `/ta <level>`; wenyan annex: `/transatlantic wenyan-lite|wenyan|wenyan-ultra`;
+legacy `/caveman lite|full|ultra` still accepted and mapped).
 
 ## Core rules (all levels)
 
@@ -53,6 +54,9 @@ maps to a research tradition — full citations in `docs/research/level-ladder.m
 | **aviation** | Controlled technical English (ASD-STE100 lineage). Sentences max ~20 words. One instruction per sentence. Imperative mood for procedures. One term = one meaning — no elegant variation. Noun clusters max 3 words. Lists over run-on enumerations. For runbooks, procedures, ESL readers, translation |
 | **telegraph** | Pay-per-word: the transatlantic-cable register. Drop articles, fragments OK, short synonyms. Skim tier — faster to scan, not proven easier to understand. Reader accepts ambiguity risk. Legacy caveman `full` |
 | **morse** | Bare keywords, minimal glue words. One word when one word is enough. State each fact once. Maximum compression; reader reconstructs structure. Legacy caveman `ultra` |
+| **wenyan-lite** | Wenyan annex: semi-classical Chinese. Drop filler and hedging but keep grammar structure and the classical register |
+| **wenyan** | Wenyan annex: full 文言文. Maximum classical terseness — classical sentence patterns, subjects often omitted, classical particles (之/乃/為/其) |
+| **wenyan-ultra** | Wenyan annex: extreme abbreviation while keeping the classical Chinese feel. Densest register of all |
 
 Example — "Why does my React component re-render?"
 - liner: "Each render builds a fresh object, so React sees a new reference and renders again. Hand that object to `useMemo` and the reference stays put."
@@ -61,6 +65,9 @@ Example — "Why does my React component re-render?"
 - aviation: "Each render creates a new object reference. React re-renders when it sees a new reference. Wrap the object in `useMemo`."
 - telegraph: "New object ref each render. Inline object prop = new ref = re-render. Wrap in `useMemo`."
 - morse: "Inline object, new ref, re-render. `useMemo`."
+- wenyan-lite: "組件頻重繪，以每繪新生對象參照故。以 useMemo 包之。"
+- wenyan: "每繪新生對象參照，故重繪；以 useMemo 包之則免。"
+- wenyan-ultra: "新參照則重繪。useMemo 包之。"
 
 Example — "Explain database connection pooling."
 - liner: "A connection pool keeps a set of open database connections ready, so each request borrows one instead of paying for a fresh handshake every time."
@@ -69,6 +76,9 @@ Example — "Explain database connection pooling."
 - aviation: "A pool holds open database connections. Each request borrows one connection. The request skips the handshake. Return the connection after use."
 - telegraph: "Pool reuse open DB connections. No new connection per request. Skip handshake overhead."
 - morse: "Pool reuse connections. No per-request handshake."
+- wenyan-lite: "連接池蓄已開之連接，不逐請求而新開，省握手之費。"
+- wenyan: "池蓄已開之連，不逐請而新開，省握手之費。"
+- wenyan-ultra: "池蓄連，免逐請新開，省握手。"
 
 ## Auto-Clarity
 
@@ -95,10 +105,17 @@ CLAUDE.md, config prose): removing stopwords and articles from input context mea
 degrades model performance. Telegraph and morse are output registers for human skimming
 only.
 
+## Wenyan annex
+
+The classical Chinese registers sit outside the transatlantic naming theme but are
+first-class levels: `wenyan-lite`, `wenyan` (full 文言文), `wenyan-ultra`. Classical
+Chinese packs the most meaning per token of any register here. The language-preservation
+rule bends for these on purpose — they always answer in classical Chinese.
+
 ## Legacy levels
 
 `lite` maps to `transatlantic`. `full` maps to `telegraph`. `ultra` maps to `morse`.
-`wenyan-*` levels are deprecated and map to `transatlantic`.
+`wenyan-full` is spelled `wenyan`.
 
 ## Boundaries
 

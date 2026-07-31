@@ -82,7 +82,7 @@ test('walks up from nested cwd to find repo config', (tmp) => {
   const nested = path.join(tmp, 'a', 'b', 'c');
   fs.mkdirSync(nested, { recursive: true });
   process.chdir(nested);
-  assert.strictEqual(getDefaultMode(), 'transatlantic');
+  assert.strictEqual(getDefaultMode(), 'wenyan-lite');
 });
 
 test('env var beats repo-local config', (tmp) => {

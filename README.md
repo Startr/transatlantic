@@ -62,6 +62,7 @@ Six levels, most readable to most compressed. Each maps to a real research tradi
 | `aviation` | Controlled technical English, ASD-STE100 style. One instruction per sentence. | Runbooks, procedures, ESL readers, translation |
 | `telegraph` | Pay-per-word. Dropped articles, fragments. The old caveman `full`. | Skimming as an expert |
 | `morse` | Bare keywords. The old caveman `ultra`. | Maximum compression, you fill the gaps |
+| `wenyan` | Classical Chinese (文言文), the densest register of all. Also `wenyan-lite` and `wenyan-ultra`. | When you read classical Chinese and want maximum meaning per token |
 
 Your language is preserved at every level. Write Portuguese and the agent answers in Portuguese, compressed the same way.
 
@@ -85,10 +86,10 @@ One more, for the machines: stripping articles and stopwords from an agent's *in
 |---|---|
 | `/transatlantic [level]` or `/ta [level]` | Set the prose register. Sticks until changed or session end. |
 | `/caveman [lite\|full\|ultra]` | Legacy commands, mapped onto the ladder. |
-| `/caveman-commit` | Conventional Commit messages, ≤50-char subject. |
-| `/caveman-review` | One-line PR comments: `L42: 🔴 bug: user null. Add guard.` |
-| `/caveman-stats` | Real session token usage and lifetime savings. |
-| `/caveman-compress <file>` | Rewrite a memory file into the compact register that's safe for LLM context. |
+| `/ta-commit` | Conventional Commit messages, ≤50-char subject. |
+| `/ta-review` | One-line PR comments: `L42: 🔴 bug: user null. Add guard.` |
+| `/ta-stats` | Real session token usage and lifetime savings. |
+| `/ta-compress <file>` | Rewrite a memory file into the compact register that's safe for LLM context. |
 
 On Claude Code the statusline shows the active level — `[TRANSATLANTIC]`, or `[TRANSATLANTIC:MORSE]` when you've gone down the wire.
 

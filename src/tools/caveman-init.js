@@ -67,13 +67,16 @@ function loadOpenclawHelper() {
 }
 
 const AGENTS = [
-  { id: 'cursor',   file: '.cursor/rules/caveman.mdc',
-    frontmatter: '---\ndescription: "Caveman mode — terse communication, 65% fewer output tokens (measured), full technical accuracy"\nalwaysApply: true\n---\n\n',
+  { id: 'cursor',   file: '.cursor/rules/transatlantic.mdc',
+    legacyFile: '.cursor/rules/caveman.mdc',
+    frontmatter: '---\ndescription: "Transatlantic mode — concise, readable output; research-backed prose levels"\nalwaysApply: true\n---\n\n',
     mode: 'replace' },
-  { id: 'windsurf', file: '.windsurf/rules/caveman.md',
+  { id: 'windsurf', file: '.windsurf/rules/transatlantic.md',
+    legacyFile: '.windsurf/rules/caveman.md',
     frontmatter: '---\ntrigger: always_on\n---\n\n',
     mode: 'replace' },
-  { id: 'cline',    file: '.clinerules/caveman.md',
+  { id: 'cline',    file: '.clinerules/transatlantic.md',
+    legacyFile: '.clinerules/caveman.md',
     frontmatter: '',
     mode: 'replace' },
   { id: 'copilot',  file: '.github/copilot-instructions.md',
@@ -88,7 +91,7 @@ const AGENTS = [
   // OpenClaw — global workspace install, not per-repo. The `installer`
   // callback escape hatch bypasses the file/frontmatter/mode triple and
   // hands off to the shared helper. `description` is what `--help` prints.
-  { id: 'openclaw', description: '~/.openclaw/workspace/{skills/caveman/, SOUL.md}',
+  { id: 'openclaw', description: '~/.openclaw/workspace/{skills/transatlantic/, SOUL.md}',
     installer: 'openclaw' },
 ];
 
@@ -106,7 +109,34 @@ function processAgent(agent, targetDir, ruleBody, opts) {
     return processOpenclaw(opts);
   }
   const fullPath = path.join(targetDir, agent.file);
-  const exists = fs.existsSync(fullPath);
+  let exists = fs.existsSync(fullPath);
+
+  // Old installs used caveman-named rule files. When the new path is absent
+  // but the legacy one exists, migrate: intact old body → new file with the
+  // new ruleset, legacy file removed; already-new content under the old name
+  // → renamed; hand-edited legacy → left alone (report it).
+  if (!exists && agent.legacyFile) {
+    const legacyPath = path.join(targetDir, agent.legacyFile);
+    if (fs.existsSync(legacyPath)) {
+      const legacy = fs.readFileSync(legacyPath, 'utf8');
+      if (legacy.includes(SENTINEL)) {
+        if (!opts.dryRun) {
+          fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+          fs.renameSync(legacyPath, fullPath);
+        }
+        return { status: 'renamed', label: '^' };
+      }
+      if (legacy.includes(LEGACY_RULE_BODY)) {
+        if (!opts.dryRun) {
+          fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+          fs.writeFileSync(fullPath, legacy.replace(LEGACY_RULE_BODY, ruleBody), { mode: 0o644 });
+          fs.unlinkSync(legacyPath);
+        }
+        return { status: 'upgraded', label: '^' };
+      }
+      return { status: 'skipped-legacy-edited', label: '?' };
+    }
+  }
 
   if (!exists) {
     if (!opts.dryRun) {
@@ -233,7 +263,7 @@ function main() {
     console.log(`  ${result.label} ${target} (${result.status})`);
     if (result.status === 'added' || result.status === 'installed' || result.status === 'would-add') counts.added++;
     else if (result.status === 'appended') counts.appended++;
-    else if (result.status === 'overwritten' || result.status === 'upgraded') counts.overwritten++;
+    else if (result.status === 'overwritten' || result.status === 'upgraded' || result.status === 'renamed') counts.overwritten++;
     else counts.skipped++;
   }
 

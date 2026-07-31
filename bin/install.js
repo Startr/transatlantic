@@ -879,7 +879,7 @@ function installOpencode(ctx) {
 }
 
 // ── OpenClaw native install ───────────────────────────────────────────────
-// Drops skills/caveman/ into the OpenClaw workspace and appends a small
+// Drops skills/transatlantic/ into the OpenClaw workspace and appends a small
 // auto-injected bootstrap block to the workspace SOUL.md. Always-on behavior
 // comes from SOUL.md (auto-injected each turn); the skill folder makes
 // caveman discoverable via `openclaw skills list`. See bin/lib/openclaw.js
@@ -1289,7 +1289,7 @@ function uninstall(ctx) {
   // OpenClaw native install — strip skill folder + SOUL.md marker block.
   // Probed by the skill folder we own; if absent, skip silently.
   const ocwWs = process.env.OPENCLAW_WORKSPACE || path.join(os.homedir(), '.openclaw', 'workspace');
-  if (fs.existsSync(path.join(ocwWs, 'skills', 'caveman')) || fs.existsSync(path.join(ocwWs, 'SOUL.md'))) {
+  if (fs.existsSync(path.join(ocwWs, 'skills', 'transatlantic')) || fs.existsSync(path.join(ocwWs, 'SOUL.md'))) {
     const log = {
       write: (s) => process.stdout.write(s),
       note: (s) => note(s),

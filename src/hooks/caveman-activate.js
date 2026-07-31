@@ -76,6 +76,17 @@ try {
       }
       // No marker → user's own file → never touched.
     }
+    // Retire marker-owned mirrors the plugin no longer ships (e.g. the old
+    // caveman-*.md set after the /ta-* rename). User-authored files are
+    // untouched — only files carrying our marker are ever removed.
+    const shipped = new Set(fs.readdirSync(cmdSrc).filter(n => n.endsWith('.md')));
+    for (const name of fs.readdirSync(destDir)) {
+      if (!name.endsWith('.md') || shipped.has(name)) continue;
+      try {
+        const content = fs.readFileSync(path.join(destDir, name), 'utf8');
+        if (content.includes(COMMAND_MARKER)) fs.unlinkSync(path.join(destDir, name));
+      } catch (e) { /* unreadable → leave it */ }
+    }
   }
 } catch (e) {
   // Silent fail — command mirroring must never block session start
@@ -94,7 +105,7 @@ try {
 const INDEPENDENT_MODES = new Set(['commit', 'review', 'compress']);
 
 if (INDEPENDENT_MODES.has(mode)) {
-  process.stdout.write('TRANSATLANTIC MODE ACTIVE — level: ' + mode + '. Behavior defined by /caveman-' + mode + ' skill.');
+  process.stdout.write('TRANSATLANTIC MODE ACTIVE — level: ' + mode + '. Behavior defined by /ta-' + mode + ' skill.');
   process.exit(0);
 }
 
@@ -105,20 +116,20 @@ const modeLabel = mode;
 // Candidate locations, tried in order (#587/#589 — the old single '..' path
 // resolved to <plugin_root>/src/skills/, which doesn't exist, so plugin
 // installs silently used the stale fallback ruleset):
-//   1. $CLAUDE_PLUGIN_ROOT/skills/caveman/SKILL.md — Claude Code sets
+//   1. $CLAUDE_PLUGIN_ROOT/skills/transatlantic/SKILL.md — Claude Code sets
 //      CLAUDE_PLUGIN_ROOT when invoking plugin hooks; authoritative when present.
-//   2. ../../skills/caveman/SKILL.md — hook at <plugin_root>/src/hooks/
+//   2. ../../skills/transatlantic/SKILL.md — hook at <plugin_root>/src/hooks/
 //      (plugin.json layout) or a repo checkout.
-//   3. ../skills/caveman/SKILL.md — standalone install with hooks at
-//      $CLAUDE_CONFIG_DIR/hooks/ and the skill at $CLAUDE_CONFIG_DIR/skills/caveman/.
+//   3. ../skills/transatlantic/SKILL.md — standalone install with hooks at
+//      $CLAUDE_CONFIG_DIR/hooks/ and the skill at $CLAUDE_CONFIG_DIR/skills/transatlantic/.
 // All misses fall through to the hardcoded fallback ruleset below.
 const skillCandidates = [];
 if (process.env.CLAUDE_PLUGIN_ROOT) {
-  skillCandidates.push(path.join(process.env.CLAUDE_PLUGIN_ROOT, 'skills', 'caveman', 'SKILL.md'));
+  skillCandidates.push(path.join(process.env.CLAUDE_PLUGIN_ROOT, 'skills', 'transatlantic', 'SKILL.md'));
 }
 skillCandidates.push(
-  path.join(__dirname, '..', '..', 'skills', 'caveman', 'SKILL.md'),
-  path.join(__dirname, '..', 'skills', 'caveman', 'SKILL.md')
+  path.join(__dirname, '..', '..', 'skills', 'transatlantic', 'SKILL.md'),
+  path.join(__dirname, '..', 'skills', 'transatlantic', 'SKILL.md')
 );
 
 let skillContent = '';

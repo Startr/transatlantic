@@ -9,13 +9,16 @@ several identities have moved; where they conflict, this section wins:
 - **Six-level ladder** replaces caveman intensity levels: `liner`, `plain`,
   `transatlantic` (default), `aviation`, `telegraph`, `morse`. Legacy names
   normalize via `normalizeMode()` in `src/hooks/caveman-config.js`
-  (lite→transatlantic, full→telegraph, ultra→morse, wenyan-*→transatlantic).
+  (lite→transatlantic, full→telegraph, ultra→morse; wenyan levels stay first-class,
+  `wenyan-full` spelled `wenyan`).
   Research basis and citations: `docs/research/level-ladder.md`. Every level
   must stay evidence-backed — no ad-hoc style rules.
 - **Plugin + package renamed**: `.claude-plugin/plugin.json`, `marketplace.json`,
   and `package.json` say `transatlantic`. Commands namespace as `/transatlantic:*`;
-  `/ta` is the short alias. Legacy `/caveman*` forms stay accepted in the
-  mode-tracker.
+  `/ta` is the short alias and the companion family is `/ta-commit`, `/ta-review`,
+  `/ta-stats`, `/ta-compress`, `/ta-help`, `/ta-init` — no caveman-named command
+  ships anywhere. Typed legacy `/caveman*` forms stay accepted in the mode-tracker,
+  undocumented.
 - **Env/config names**: `TRANSATLANTIC_DEFAULT_MODE` primary,
   `CAVEMAN_DEFAULT_MODE` legacy; user config `~/.config/transatlantic/` primary
   with `~/.config/caveman/` fallback; repo-local `.transatlantic{/config.json,.json}`

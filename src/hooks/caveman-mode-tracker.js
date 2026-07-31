@@ -73,7 +73,7 @@ process.stdin.on('end', () => {
     // /caveman-stats [--share] — block the prompt and inject stats output as
     // the hook's reason. The script reads the active session log, so we pass
     // transcript_path through when Claude Code provides it.
-    const statsMatch = /^\/(?:caveman(?::caveman)?|transatlantic:caveman)-stats(?:\s+(.*))?$/.exec(prompt);
+    const statsMatch = /^\/(?:ta-stats|transatlantic:ta-stats|caveman(?::caveman)?-stats|transatlantic:caveman-stats)(?:\s+(.*))?$/.exec(prompt);
     if (statsMatch) {
       const tailArgs = (statsMatch[1] || '').trim().split(/\s+/).filter(Boolean);
       try {
@@ -102,7 +102,8 @@ process.stdin.on('end', () => {
     // — SKILL.md promises "Level persist until changed or session end", and a
     // one-shot skill invocation should not count as "changed" forever.
     let setIndependentThisTurn = false;
-    if (prompt.startsWith('/caveman') || prompt.startsWith('/transatlantic') || prompt.startsWith('/ta ') || prompt === '/ta') {
+    if (prompt.startsWith('/caveman') || prompt.startsWith('/transatlantic') ||
+        prompt.startsWith('/ta ') || prompt.startsWith('/ta-') || prompt === '/ta') {
       const parts = prompt.split(/\s+/);
       const cmd = parts[0]; // /transatlantic, /caveman, /caveman-commit, etc.
       const arg = parts[1] || '';
@@ -120,11 +121,22 @@ process.stdin.on('end', () => {
         '/transatlantic:caveman', '/caveman:transatlantic',
         '/caveman', '/caveman:caveman' // legacy
       ]);
-      if (cmd === '/caveman-commit' || cmd === '/caveman:caveman-commit' || cmd === '/transatlantic:caveman-commit') {
+      // Primary forms are /ta-* (bare via the user-scope mirror, namespaced
+      // via the plugin). Legacy /caveman* spellings stay accepted for typed
+      // muscle memory but are shipped and documented nowhere.
+      const IND = {
+        commit: ['/ta-commit', '/transatlantic:ta-commit',
+                 '/caveman-commit', '/caveman:caveman-commit', '/transatlantic:caveman-commit'],
+        review: ['/ta-review', '/transatlantic:ta-review',
+                 '/caveman-review', '/caveman:caveman-review', '/transatlantic:caveman-review'],
+        compress: ['/ta-compress', '/transatlantic:ta-compress',
+                   '/caveman-compress', '/caveman:caveman-compress', '/transatlantic:caveman-compress']
+      };
+      if (IND.commit.includes(cmd)) {
         mode = 'commit';
-      } else if (cmd === '/caveman-review' || cmd === '/caveman:caveman-review' || cmd === '/transatlantic:caveman-review') {
+      } else if (IND.review.includes(cmd)) {
         mode = 'review';
-      } else if (cmd === '/caveman-compress' || cmd === '/caveman:caveman-compress' || cmd === '/transatlantic:caveman-compress') {
+      } else if (IND.compress.includes(cmd)) {
         mode = 'compress';
       } else if (LEVEL_CMDS.has(cmd)) {
         // Bare command → activate at configured default

@@ -3,4 +3,4 @@ description: Real session token usage + lifetime savings + USD. Tweetable line v
 argument-hint: "[--share|--all|--since 7d]"
 ---
 
-/caveman-stats $ARGUMENTS
+/ta-stats $ARGUMENTS
