@@ -51,7 +51,7 @@ node bin/install.js
 
 On Claude Code specifically, the plugin path also works: `claude plugin marketplace add Startr/transatlantic && claude plugin install transatlantic@transatlantic`. The full per-agent matrix (Cursor, Windsurf, Cline, Gemini, 30+ more) lives in [INSTALL.md](./INSTALL.md).
 
-Needs Node ≥18. Safe to re-run. `node bin/install.js --uninstall` removes everything it added. Not on npm yet; everything installs straight from this repository.
+Or simply `npx -y transatlantic` once Node ≥18 is on the box. Safe to re-run; `npx -y transatlantic --uninstall` removes everything it added.
 
 **Turn it on:** it's on by default from message one on Claude Code. Switch levels with `/transatlantic <level>` (or the short form `/ta <level>`). **Turn it off:** say "normal mode". The legacy `/caveman` commands still work and map onto the new ladder.
 

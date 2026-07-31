@@ -383,4 +383,18 @@ function readHistory(filePath) {
   }
 }
 
-module.exports = { getDefaultMode, getConfigDir, getConfigPath, findRepoConfigPath, VALID_MODES, LEGACY_ALIASES, normalizeMode, safeWriteFlag, readFlag, appendFlag, readHistory, recordModeChange, MODE_LOG_BASENAME };
+// One-shot skill modes (own slash commands, not prose levels) — the single
+// definition; tracker, activate hook, and the opencode plugin all import it.
+const INDEPENDENT_MODES = ['commit', 'review', 'compress'];
+
+// Per-level attention anchor, shared by every per-turn reinforcement emitter.
+const REINFORCEMENT = {
+  liner: 'Classy humanized prose. Full natural voice, varied sentence rhythm, no machine-writing tells, no filler.',
+  plain: 'Plain language. Short declarative sentences, common words, active voice, front-load the point.',
+  transatlantic: 'Newsreel voice. Full grammar, one idea per sentence. Cut filler/hedging/pleasantries/padding.',
+  aviation: 'Controlled technical English. Sentences max ~20 words, one instruction per sentence, imperative mood, one term one meaning.',
+  telegraph: 'Telegraphic register. Drop articles, fragments OK, short synonyms.',
+  morse: 'Bare keywords, minimal glue words. State each fact once.'
+};
+
+module.exports = { getDefaultMode, getConfigDir, getConfigPath, findRepoConfigPath, VALID_MODES, LEGACY_ALIASES, normalizeMode, INDEPENDENT_MODES, REINFORCEMENT, safeWriteFlag, readFlag, appendFlag, readHistory, recordModeChange, MODE_LOG_BASENAME };

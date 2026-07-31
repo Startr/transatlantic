@@ -61,7 +61,10 @@ test('#470 ta-stats.toml prompt is intercepted by the mode-tracker regex', () =>
 
 // Every command documented for Claude Code. Each needs a .md (Claude Code)
 // AND a .toml (Gemini extension) sibling — the formats coexist in commands/.
-const DOCUMENTED_COMMANDS = ['transatlantic', 'ta', 'ta-commit', 'ta-review', 'ta-stats', 'ta-compress', 'ta-help', 'ta-init'];
+// Derived from the filesystem: every shipped .md command must satisfy the
+// invariants below, and new commands are covered automatically (poka-yoke).
+const DOCUMENTED_COMMANDS = fs.readdirSync(COMMANDS_DIR)
+  .filter(f => f.endsWith('.md')).map(f => f.replace(/\.md$/, ''));
 
 for (const name of DOCUMENTED_COMMANDS) {
   test(`#571 commands/${name}.md exists so Claude Code registers /${name}`, () => {

@@ -6,11 +6,11 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execFileSync } = require('child_process');
-const { getDefaultMode, safeWriteFlag, readFlag, recordModeChange, normalizeMode } = require('./caveman-config');
+const { getDefaultMode, safeWriteFlag, readFlag, recordModeChange, normalizeMode, INDEPENDENT_MODES: INDEPENDENT_LIST, REINFORCEMENT } = require('./caveman-config');
 
 // Modes handled by their own slash commands (/caveman-commit, etc.) — not
 // selectable via /caveman <arg>.
-const INDEPENDENT_MODES = new Set(['commit', 'review', 'compress']);
+const INDEPENDENT_MODES = new Set(INDEPENDENT_LIST);
 
 const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 const flagPath = path.join(claudeDir, '.caveman-active');
@@ -209,18 +209,8 @@ process.stdin.on('end', () => {
       }
     }
 
-    // Per-level attention anchor. The full ruleset comes from SessionStart;
-    // this one-liner must match the active level's register — telling the
-    // model to drop articles while "liner" is active would fight the skill.
-    const REINFORCEMENT = {
-      liner: "Classy humanized prose. Full natural voice, varied sentence rhythm, no machine-writing tells, no filler.",
-      plain: "Plain language. Short declarative sentences, common words, active voice, front-load the point.",
-      transatlantic: "Newsreel voice. Full grammar, one idea per sentence. Cut filler/hedging/pleasantries/padding.",
-      aviation: "Controlled technical English. Sentences max ~20 words, one instruction per sentence, imperative mood, one term one meaning.",
-      telegraph: "Telegraphic register. Drop articles, fragments OK, short synonyms.",
-      morse: "Bare keywords, minimal glue words. State each fact once."
-    };
-
+    // Per-level attention anchor lives in caveman-config.js (shared with the
+    // opencode plugin) — the full ruleset comes from SessionStart.
     if (activeMode && !INDEPENDENT_MODES.has(activeMode)) {
       const anchor = REINFORCEMENT[activeMode] ||
         "Cut filler/hedging/pleasantries. Keep all technical substance.";

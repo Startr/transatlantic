@@ -2,7 +2,7 @@ name: Sync SKILL.md and rules
 
 on:
   push:
-    branches: [main]
+    branches: [master, develop]
     paths:
       - skills/transatlantic/SKILL.md
       - skills/crew/SKILL.md

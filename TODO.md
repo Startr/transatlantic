@@ -32,17 +32,9 @@ ladder and citations: `docs/research/level-ladder.md`.
 - [x] **Release-Ref Unification**: shims now pin `npx github:$REPO#$PINNED_REF` (v1.0.0) — zero floating refs; bump both shim pins + `bin/install.js` PINNED_REF together each release (covered by the pending version-equality test)
 - [ ] **Version Triplication** #critical
   - [x] Aligned at 1.0.0 (package.json, git tag via make release flow, `PINNED_REF`, `SKILL_VERSION`) — transatlantic's own versioning initialized 2026-07-31; upstream's inherited v1.x tags and the interim v2.0.0 removed
-  - [ ] Add test: package version == latest tag == `PINNED_REF`
+  - [x] Test added: package == PINNED_REF == both shim pins == latest tag (pokayoke.test.mjs)
 - [x] **Publish Gate**: `"prepublishOnly": "npm test"` in package.json
-- [ ] **Name-List Drift Devices**: five hand-maintained arrays drifted during the rename (`HOOK_FILES` ×2, `HERMES_SKILL_DIRS`, `OPENCODE_SKILL_DIRS`, `OPENCODE_COMMAND_FILES`)
-  - [x] LIVE BUG fixed: `caveman-statusline.ps1` added to `src/hooks/install.sh` HOOK_FILES
-  - [ ] Derive `OPENCODE_COMMAND_FILES` from `readdirSync('commands')` (subtraction); drift-test the rest against the filesystem
-  - [ ] Drift test: `shasum -c src/hooks/checksums.sha256` in the suite
-- [ ] **Shell Normalization Drift Test**: both statuslines reimplement whitelist + alias map as case arms; a missed level renders no badge silently — test diffs case arms against `VALID_MODES`/`LEGACY_ALIASES`
-- [ ] **SKILL Table Coupling Test**: activate.js picks ruleset rows by `| **level** |` string match; a typo'd row ships a level with no rules — test every level has a row + example lines
-- [ ] **Deduplicate Semantic Maps**: `INDEPENDENT_MODES` ×3, `REINFORCEMENT` ×2 — move both into `caveman-config.js`, net-negative lines
-- [ ] **Byte-Sync Tests**: three embedded copies verified by hand this session, never again automatically — exact-equality tests for `RULE_BODY`↔rule file, openclaw fallback↔bootstrap md, checksums↔hook files
-- [ ] **Low**: derive `transatlantic@transatlantic` from plugin.json name; delete stale local `dist/caveman.skill`; guard `files:` shipping stale `plugins/` mirrors on publish
+- [x] **Audit fully applied** (2026-07-31, `tests/installer/pokayoke.test.mjs`, suite 132/132): command list derived from filesystem; drift tests for skill-dir lists, HOOK_FILES js↔sh parity, checksum bytes, statusline case arms, SKILL table rows, mirror↔source byte-equality, version quadruple (package/PINNED_REF/shim pins/latest tag); semantic maps single-sourced in caveman-config; plugin id derived from plugin.json; CI sync trigger fixed (was `main`, a branch this repo lacks — root cause of stale mirrors). Devices caught four real bugs on first run: stale checksums, openclaw bootstrap pointing at the old skill path, uninstall crashing on missing repoRoot, and opencode.json registering `plugins/caveman/plugin.js` while the installer wrote `plugins/transatlantic/` — opencode installs loaded nothing
 
 ### Rebrand Remainder
 

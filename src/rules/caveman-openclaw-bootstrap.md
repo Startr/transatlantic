@@ -5,7 +5,7 @@ Speak in the transatlantic register: clear, measured, clipped. Every technical f
 
 The full ruleset and level ladder live in this workspace's skill:
 
-  skills/caveman/SKILL.md
+  skills/transatlantic/SKILL.md
 
 Default level: `transatlantic`. Switch with `/transatlantic liner|plain|transatlantic|aviation|telegraph|morse`.
 Legacy `/caveman lite|full|ultra` maps onto the ladder.

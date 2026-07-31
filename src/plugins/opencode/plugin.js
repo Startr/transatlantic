@@ -70,9 +70,11 @@ function loadConfig() {
 const config = loadConfig();
 
 const { getDefaultMode, safeWriteFlag, readFlag, VALID_MODES, normalizeMode } = config;
+const SHARED_REINFORCEMENT = config.REINFORCEMENT || null;
+const SHARED_INDEPENDENT = config.INDEPENDENT_MODES || ['commit', 'review', 'compress'];
 
 // Modes handled by independent skills — not selectable via /caveman <arg>.
-const INDEPENDENT_MODES = new Set(['commit', 'review', 'compress']);
+const INDEPENDENT_MODES = new Set(SHARED_INDEPENDENT);
 
 // opencode resolves its config dir from $XDG_CONFIG_HOME, else ~/.config/opencode
 // on every platform — including Windows, where it uses %USERPROFILE%\.config\opencode
@@ -87,14 +89,10 @@ function opencodeConfigDir() {
 
 const flagPath = path.join(opencodeConfigDir(), '.caveman-active');
 
-// Per-level attention anchor — must match the active level's register.
-const REINFORCEMENT = {
-  liner: 'Classy humanized prose. Full natural voice, varied sentence rhythm, no machine-writing tells, no filler.',
-  plain: 'Plain language. Short declarative sentences, common words, active voice, front-load the point.',
-  transatlantic: 'Newsreel voice. Full grammar, one idea per sentence. Cut filler/hedging/pleasantries/padding.',
-  aviation: 'Controlled technical English. Sentences max ~20 words, one instruction per sentence, imperative mood.',
-  telegraph: 'Telegraphic register. Drop articles, fragments OK, short synonyms.',
-  morse: 'Bare keywords, minimal glue words. State each fact once.'
+// Per-level attention anchor — single definition in caveman-config.js
+// (falls back only if an old caveman-config.cjs copy predates the export).
+const REINFORCEMENT = SHARED_REINFORCEMENT || {
+  transatlantic: 'Newsreel voice. Full grammar, one idea per sentence. Cut filler/hedging/pleasantries/padding.'
 };
 
 function reinforcementLine(mode) {

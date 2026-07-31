@@ -27,13 +27,20 @@ const OPENCLAW = require('./lib/openclaw');
 const { stripOpencodeAgentTools } = require('./lib/opencode-agent');
 
 const REPO = 'Startr/transatlantic';
+// Plugin id derives from the manifest so a rename cannot half-apply.
+const PLUGIN_NAME = (() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(__dirname, '..', '.claude-plugin', 'plugin.json'), 'utf8')).name;
+  } catch (e) { return 'transatlantic'; }
+})();
+const PLUGIN_ID = `${PLUGIN_NAME}@${PLUGIN_NAME}`;
 // Pin remote fetches to an immutable release tag, not the moving `main`
 // branch (issue #261). A push to main must never silently change what a
 // curl|bash / detached-script install downloads and executes. Bump this to
 // the new tag on every release (CI release step) AFTER regenerating
 // src/hooks/checksums.sha256 so the integrity manifest matches the ref.
 // Overridable via CAVEMAN_REF for testing against a branch.
-const PINNED_REF = process.env.TRANSATLANTIC_REF || process.env.CAVEMAN_REF || 'v1.0.0';
+const PINNED_REF = process.env.TRANSATLANTIC_REF || process.env.CAVEMAN_REF || 'v1.0.1';
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${PINNED_REF}`;
 const HOOKS_REMOTE = `${RAW_BASE}/src/hooks`;
 const INIT_SCRIPT_URL = `${RAW_BASE}/src/tools/caveman-init.js`;
@@ -470,7 +477,7 @@ async function installClaude(ctx) {
     // when Claude Code's plugin installer tries to rename across filesystems (#585).
     const pluginEnv = sameFilesystemTmpEnv(configDir);
     const r1 = runSpawn('claude', ['plugin', 'marketplace', 'add', REPO], { env: pluginEnv }, opts.dryRun);
-    const r2 = runSpawn('claude', ['plugin', 'install', 'transatlantic@transatlantic'], { env: pluginEnv }, opts.dryRun);
+    const r2 = runSpawn('claude', ['plugin', 'install', PLUGIN_ID], { env: pluginEnv }, opts.dryRun);
     if (spawnOk(r1) && spawnOk(r2)) {
       results.installed.push('claude');
       pluginInstallSucceeded = true;
@@ -657,8 +664,16 @@ function installHermes(ctx) {
 // (opencode's TUI exposes no plugin-writable badge).
 const OPENCODE_SKILL_DIRS  = ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
 const OPENCODE_AGENT_FILES = ['crew-locator.md', 'crew-editor.md', 'crew-reviewer.md'];
-const OPENCODE_COMMAND_FILES = ['transatlantic.md', 'ta-commit.md', 'ta-review.md', 'ta-compress.md', 'ta-stats.md', 'ta-help.md'];
-const OPENCODE_PLUGIN_REL = './plugins/caveman/plugin.js';
+// Derived from the filesystem so the list cannot drift from commands/
+// (poka-yoke: three hand-lists went stale during the 2.0 rename).
+function opencodeCommandFiles(repoRoot) {
+  try {
+    return fs.readdirSync(path.join(repoRoot, 'commands'))
+      .filter(f => f.endsWith('.md') && f !== 'ta-init.md');
+  } catch (e) { return []; }
+}
+const OPENCODE_PLUGIN_REL = './plugins/transatlantic/plugin.js';
+const OPENCODE_PLUGIN_REL_LEGACY = './plugins/caveman/plugin.js';
 // Un-fenced installs may carry either ruleset generation: the upstream
 // caveman body or this fork's transatlantic body.
 const OPENCODE_AGENTS_MD_SENTINELS = ['Speak in the transatlantic register', 'Respond terse like smart caveman'];
@@ -709,7 +724,7 @@ function installOpencode(ctx) {
   if (opts.dryRun) {
     note(`  would mkdir ${pluginDir}/, ${commandsDir}/, ${agentsDir}/, ${skillsDir}/`);
     note(`  would copy plugin.js + package.json + caveman-config.cjs into ${pluginDir}/`);
-    note(`  would copy ${OPENCODE_COMMAND_FILES.length} command files into ${commandsDir}/`);
+    note(`  would copy ${opencodeCommandFiles(repoRoot).length} command files into ${commandsDir}/`);
     note(`  would copy ${OPENCODE_AGENT_FILES.length} crew agents into ${agentsDir}/`);
     note(`  would copy ${OPENCODE_SKILL_DIRS.length} skill dirs into ${skillsDir}/`);
     note(`  would patch ${opencodeJson} with "plugin" entry${opts.withMcpShrink ? ' + caveman-shrink MCP' : ''}`);
@@ -745,7 +760,7 @@ function installOpencode(ctx) {
     // 2. Commands.
     fs.mkdirSync(commandsDir, { recursive: true });
     const cmdSrcDir = path.join(pluginSrc, 'commands');
-    for (const f of OPENCODE_COMMAND_FILES) {
+    for (const f of opencodeCommandFiles(repoRoot)) {
       const src = path.join(cmdSrcDir, f);
       const dest = path.join(commandsDir, f);
       if (!fs.existsSync(src)) continue; // defense-in-depth: skip a missing command file rather than crash (#434)
@@ -1153,7 +1168,7 @@ async function loadRemoteHookChecksums() {
 // ── Uninstall ─────────────────────────────────────────────────────────────
 function uninstall(ctx) {
   const { say, note, warn, ok, opts, configDir } = ctx;
-  say('🪨 caveman uninstall');
+  say('🌊 transatlantic uninstall');
 
   if (opts.dryRun) note('  (dry run — nothing will be removed)');
 
@@ -1191,7 +1206,7 @@ function uninstall(ctx) {
   if (hasCmd('claude')) {
     const probe = captureSpawn('claude', ['plugin', 'list']);
     if (probe.status === 0 && /caveman/i.test(probe.stdout || '')) {
-      const r = runSpawn('claude', ['plugin', 'uninstall', 'transatlantic@transatlantic'], null, opts.dryRun);
+      const r = runSpawn('claude', ['plugin', 'uninstall', PLUGIN_ID], null, opts.dryRun);
       if (spawnOk(r)) ok('  removed claude plugin');
     } else {
       note('  claude plugin not installed — skipping');
@@ -1225,7 +1240,7 @@ function uninstall(ctx) {
       const cfg = SETTINGS.readSettings(ocJson);
       if (cfg) {
         if (Array.isArray(cfg.plugin)) {
-          cfg.plugin = cfg.plugin.filter(p => p !== OPENCODE_PLUGIN_REL);
+          cfg.plugin = cfg.plugin.filter(p => p !== OPENCODE_PLUGIN_REL && p !== OPENCODE_PLUGIN_REL_LEGACY);
           if (cfg.plugin.length === 0) delete cfg.plugin;
         }
         if (cfg.mcp && typeof cfg.mcp === 'object' && cfg.mcp['caveman-shrink']) {
@@ -1240,10 +1255,15 @@ function uninstall(ctx) {
     note(`  removed ${ocPluginDir}`);
     // Commands, agents, skills — only files matching our manifest (don't
     // sweep the parent dirs; user may have other entries there).
-    for (const f of OPENCODE_COMMAND_FILES) {
-      const p = path.join(ocDir, 'commands', f);
-      if (fs.existsSync(p) && !opts.dryRun) { try { fs.unlinkSync(p); } catch (_) {} }
-    }
+    // Pattern-based so uninstall works without a repo checkout (npx path)
+    // and also sweeps legacy caveman-era names.
+    const OURS = /^(transatlantic|ta(-[a-z]+)?|caveman(-[a-z]+)?)\.md$/;
+    try {
+      for (const f of fs.readdirSync(path.join(ocDir, 'commands'))) {
+        if (!OURS.test(f)) continue;
+        if (!opts.dryRun) { try { fs.unlinkSync(path.join(ocDir, 'commands', f)); } catch (_) {} }
+      }
+    } catch (_) { /* commands dir absent */ }
     for (const f of OPENCODE_AGENT_FILES) {
       const p = path.join(ocDir, 'agents', f);
       if (fs.existsSync(p) && !opts.dryRun) { try { fs.unlinkSync(p); } catch (_) {} }

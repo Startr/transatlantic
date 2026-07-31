@@ -3,8 +3,7 @@
 > [!NOTE]
 > Transatlantic is the research-backed successor to the caveman plugin.
 > Legacy caveman installs upgrade in place; typed `/caveman` commands keep
-> working and map onto the new ladder. Not yet on npm — every path below
-> installs straight from this repository.
+> working and map onto the new ladder. Also on npm: `npx -y transatlantic` runs the same installer.
 
 One install. Works for every AI coding agent on your machine.
 

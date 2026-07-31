@@ -90,7 +90,7 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
     assert.ok(fs.existsSync(cfgPath), 'opencode.json missing');
     const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
     assert.ok(Array.isArray(cfg.plugin), 'opencode.json missing plugin array');
-    assert.ok(cfg.plugin.includes('./plugins/caveman/plugin.js'), 'plugin entry missing');
+    assert.ok(cfg.plugin.includes('./plugins/transatlantic/plugin.js'), 'plugin entry missing');
   } finally {
     fs.rmSync(xdg, { recursive: true, force: true });
     fs.rmSync(shimDir, { recursive: true, force: true });
@@ -109,7 +109,7 @@ test('opencode idempotent install does not duplicate plugin entries', () => {
     assert.notEqual(r2.status, 2);
 
     const cfg = JSON.parse(fs.readFileSync(path.join(xdg, 'opencode', 'opencode.json'), 'utf8'));
-    const matches = cfg.plugin.filter(p => p === './plugins/caveman/plugin.js');
+    const matches = cfg.plugin.filter(p => p === './plugins/transatlantic/plugin.js');
     assert.equal(matches.length, 1, `expected 1 plugin entry, got ${matches.length}`);
 
     // AGENTS.md should not have the ruleset duplicated either.
@@ -210,7 +210,7 @@ test('opencode install tolerates JSONC opencode.json (comments + trailing commas
     const cfg = JSON.parse(fs.readFileSync(path.join(ocDir, 'opencode.json'), 'utf8'));
     assert.equal(cfg.model, 'anthropic/claude-sonnet-4-5', 'user model setting wiped');
     assert.equal(cfg.theme, 'dark', 'user theme setting wiped');
-    assert.ok(cfg.plugin.includes('./plugins/caveman/plugin.js'), 'plugin entry missing');
+    assert.ok(cfg.plugin.includes('./plugins/transatlantic/plugin.js'), 'plugin entry missing');
   } finally {
     fs.rmSync(xdg, { recursive: true, force: true });
     fs.rmSync(shimDir, { recursive: true, force: true });
@@ -238,7 +238,7 @@ test('opencode uninstall removes plugin dir, command/agent/skill files, prunes o
 
     if (fs.existsSync(path.join(ocDir, 'opencode.json'))) {
       const cfg = JSON.parse(fs.readFileSync(path.join(ocDir, 'opencode.json'), 'utf8'));
-      const stillHasPlugin = Array.isArray(cfg.plugin) && cfg.plugin.includes('./plugins/caveman/plugin.js');
+      const stillHasPlugin = Array.isArray(cfg.plugin) && cfg.plugin.includes('./plugins/transatlantic/plugin.js');
       assert.equal(stillHasPlugin, false, 'plugin entry survived in opencode.json');
     }
   } finally {

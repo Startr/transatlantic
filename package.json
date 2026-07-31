@@ -1,6 +1,6 @@
 {
   "name": "transatlantic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Research-backed prose levels for AI coding agents \u2014 six registers from classy humanized (liner) to bare keywords (morse). Installer detects your agents and wires each one.",
   "license": "MIT",
   "author": "Startr",
