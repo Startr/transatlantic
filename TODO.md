@@ -21,7 +21,7 @@ ladder and citations: `docs/research/level-ladder.md`.
 ## In Progress
 
 - [ ] **Repo & Distribution**: New home under the team org #critical
-  - [ ] Create GitHub repo (org: Sage.is or Startr — DECISION PENDING, blocks everything below)
+  - [ ] Create GitHub repo named `transatlantic` (org: Sage-is vs Startr still open; both orgs exist, recommendation on record is Sage-is for story coherence)
   - [ ] Init git-flow branches `develop` + `master` — Makefile release_finish pushes to both
   - [ ] Point local clone `origin` at the org repo (Makefile OWNER self-corrects from remote)
   - [ ] Reserve npm name `transatlantic` (verified free 2026-07-30)
@@ -36,7 +36,6 @@ ladder and citations: `docs/research/level-ladder.md`.
   - [ ] Wire statusline into `settings.json` via `bin/lib/settings.js` (hand-added 2026-07-30)
   - [ ] `--uninstall` removes marker-owned mirrored commands
   - [ ] Document the dev-mode install (installPath pointed at clone) and its marketplace-update revert risk
-- [ ] **Docs Site Rebuild**: `docs/index.html` is still the upstream caveman marketing page ("Lithic Token Compression") — design a transatlantic site or remove until the org repo exists
 - [ ] **Internal Filename Decision at 1.0**: `caveman-config.js`, `caveman-activate.js`, `caveman-mode-tracker.js`, `caveman-statusline.*`, `caveman-stats.js`, `caveman-init.js`, `.caveman-active` flag, `caveman-shrink` npm package — all functional, all still cave-named. Rename in one coordinated pass at the repo move (see CLAUDE.md fork banner for the split-brain rationale)
 
 ### Evidence Debt
@@ -67,7 +66,6 @@ ladder and citations: `docs/research/level-ladder.md`.
 - [ ] **Surprisal Tooling**: Explore scoring output with a small LM (surprisal beats Flesch as a readability predictor — open question S5 in the ladder doc)
 - [ ] **Wenyan Benchmarks**: The annex claims densest register per token — measure it (eval + API runs)
 - [ ] **Per-Level Stats**: Statusline savings attribution once per-level benchmarks exist
-- [ ] **Upstream Contributions**: Offer caveman the fixes that aren't brand-specific (bare-command mirroring, symlink-safe mirror cleanup, legacy-upgrade path in init)
 
 ## Bugs
 
@@ -87,4 +85,6 @@ _No known bugs. Use `# BUG:` inline tags to flag defects in source._
 - [x] **First Per-Level Numbers**: CLI eval (sonnet, n=10, tiktoken ratios vs terse control): liner +44%, plain +17%, transatlantic +45%, aviation +52%, telegraph +52%, morse +73% — transatlantic hits telegraph-class savings with grammar intact; snapshot committed (2026-07-31)
 - [x] **Benchmark Invitation**: `run.py --level` + BYO-key contribution flow in `benchmarks/README.md` under real-numbers-only house rules (2026-07-31)
 - [x] **CI Sync Workflow**: paths updated for `plugins/transatlantic/`, `skills/transatlantic` + `ta-*` + `crew`, `dist/transatlantic.skill` (2026-07-31)
+- [x] **Docs Site Rebuilt**: `docs/index.html` is now the transatlantic landing page — self-contained (no external fonts/CDN), light and dark, liner-voice copy from the fieldnote, measured-numbers table with caveats, honest install section; upstream page preserved at `docs/research/index-caveman-upstream.html` (2026-07-31)
+- [x] **Upstream Posture Decided**: fork quietly, no upstream PRs — clean divergence, less coordination overhead (2026-07-31)
 - [x] **Documentation Alignment Pass**: skill READMEs, CONTRIBUTING, SECURITY, HONEST-NUMBERS, evals README, TOML stubs, CLAUDE.md body — all match the shipped state (2026-07-31)
