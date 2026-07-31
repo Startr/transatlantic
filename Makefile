@@ -90,9 +90,11 @@ hotfix: require_gitflow_next
 	git flow hotfix start $$(git tag --sort=-v:refname | sed 's/^v//' | head -n 1 | awk -F'.' '{print $$1"."$$2"."$$3"."$$4+1}') && echo "or use 'make hotfix_finish' to finish the hotfix"
 
 release_finish: require_gitflow_next
+	npm test
 	git flow release finish && git push origin develop && git push origin master && git push --tags && git checkout develop
 
 hotfix_finish: require_gitflow_next
+	npm test
 	git flow hotfix finish && git push origin develop && git push origin master && git push --tags && git checkout master
 
 # 10. things_clean

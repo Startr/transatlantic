@@ -18,7 +18,7 @@
 set -euo pipefail
 
 REPO="Startr/transatlantic"
-PINNED_REF="v1.0.1"
+PINNED_REF="v1.1.0"
 
 # Require Node ≥18. nvm is a common path; print a hint if missing.
 if ! command -v node >/dev/null 2>&1; then
