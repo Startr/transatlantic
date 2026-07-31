@@ -20,12 +20,10 @@ ladder and citations: `docs/research/level-ladder.md`.
 
 ## In Progress
 
-- [ ] **Repo & Distribution**: New home under the team org #critical
-  - [ ] Create GitHub repo named `transatlantic` (org: Sage-is vs Startr still open; both orgs exist, recommendation on record is Sage-is for story coherence)
-  - [ ] Init git-flow branches `develop` + `master` — Makefile release_finish pushes to both
-  - [ ] Point local clone `origin` at the org repo (Makefile OWNER self-corrects from remote)
-  - [ ] Reserve npm name `transatlantic` (verified free 2026-07-30)
-  - [ ] Point marketplace source at the new repo; restore one-liner installs in README/INSTALL
+- [ ] **Launch Checklist**: The repo is home; what remains before flipping public #critical
+  - [ ] Reserve npm name `transatlantic` — needs `npm login` (BLOCKED on auth: `npm whoami` says ENEEDAUTH)
+  - [ ] Flip `Startr/transatlantic` public when ready; restore one-liner install commands in README/INSTALL at that moment
+  - [ ] Enable GitHub Pages on `docs/` for the landing page after going public
 
 ## TODO
 
@@ -87,4 +85,6 @@ _No known bugs. Use `# BUG:` inline tags to flag defects in source._
 - [x] **CI Sync Workflow**: paths updated for `plugins/transatlantic/`, `skills/transatlantic` + `ta-*` + `crew`, `dist/transatlantic.skill` (2026-07-31)
 - [x] **Docs Site Rebuilt**: `docs/index.html` is now the transatlantic landing page — self-contained (no external fonts/CDN), light and dark, liner-voice copy from the fieldnote, measured-numbers table with caveats, honest install section; upstream page preserved at `docs/research/index-caveman-upstream.html` (2026-07-31)
 - [x] **Upstream Posture Decided**: fork quietly, no upstream PRs — clean divergence, less coordination overhead (2026-07-31)
+- [x] **Repo Home: Startr** (decided 2026-07-31, "dev tech lives with the dev tools"): private `Startr/transatlantic` created; git-flow `develop` (default) + `master` pushed; local remotes rewired (`origin`=Startr, `upstream`=JuliusBrussee); package/plugin/marketplace identity Startr with the Sage.is voice credit kept in copy; local marketplace source repointed; clone URLs real
+- [x] **Landing Page in Startr House Style**: startr.style + vendored system7.css (hard shadows, Monaco, System 7), same liner copy, no tracking script (2026-07-31)
 - [x] **Documentation Alignment Pass**: skill READMEs, CONTRIBUTING, SECURITY, HONEST-NUMBERS, evals README, TOML stubs, CLAUDE.md body — all match the shipped state (2026-07-31)
