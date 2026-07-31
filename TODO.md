@@ -20,10 +20,10 @@ ladder and citations: `docs/research/level-ladder.md`.
 
 ## In Progress
 
-- [ ] **Launch Checklist**: The repo is home; what remains before flipping public #critical
+- [ ] **Post-Launch**: Live as of 2026-07-31 — remaining follow-through
   - [ ] Reserve npm name `transatlantic` — needs `npm login` (BLOCKED on auth: `npm whoami` says ENEEDAUTH)
-  - [ ] Flip `Startr/transatlantic` public when ready; restore one-liner install commands in README/INSTALL at that moment
-  - [ ] Enable GitHub Pages on `docs/` for the landing page after going public
+  - [ ] Announce (Sage.is / Startr channels; fieldnote is the copy source)
+  - [ ] Watch for first community benchmark PRs
 
 ## TODO
 
@@ -70,6 +70,8 @@ ladder and citations: `docs/research/level-ladder.md`.
 _No known bugs. Use `# BUG:` inline tags to flag defects in source._
 
 ## Done
+
+- [x] **LAUNCHED** (2026-07-31): `Startr/transatlantic` public; v2.0.0 tagged; landing page live at startr.github.io/transatlantic (Pages, master:/docs); one-liner install verified end-to-end from the live internet in a sandbox (curl → shim → npx → transatlantic installer, correct plugin id); every install path test-verified (installer suite 121/121, all hook suites green); develop/master/transatlantic in sync at v2.0.0
 
 - [x] **Name Research**: npm/GitHub availability probe — `transatlantic` free on npm, `pico` taken (2026-07-30)
 - [x] **Fork Bootstrap**: Six-level ladder landed on branch `transatlantic` — 29-source verified research pass, ladder doc with full bibliography, SKILL.md, hooks with legacy normalization, statusline, stats, all suites green, local machine swapped (2026-07-30)
