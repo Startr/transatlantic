@@ -7,7 +7,7 @@
 > home, install transatlantic from a local clone:
 >
 > ```bash
-> git clone <this-repo> transatlantic && cd transatlantic
+> git clone https://github.com/Startr/transatlantic.git && cd transatlantic
 > node bin/install.js
 > ```
 >

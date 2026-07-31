@@ -1,201 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Transatlantic — research-backed prose registers for AI agents</title>
-<meta name="description" content="Six prose registers for AI coding agents, each grounded in published reading research. Concise output that stays clear.">
-<style>
-  :root {
-    --ink: #1c2733;
-    --paper: #f7f4ee;
-    --card: #ffffff;
-    --steel: #3e6f9e;
-    --steel-deep: #2c5175;
-    --rule: #d8d2c6;
-    --muted: #5d6a77;
-    --mono: "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --ink: #e8e4dc;
-      --paper: #131a22;
-      --card: #1b2530;
-      --steel: #7aa7d0;
-      --steel-deep: #a9c6e2;
-      --rule: #2c3947;
-      --muted: #93a1b0;
-    }
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.65;
-  }
-  .wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem; }
-  header { padding: 4.5rem 0 3rem; text-align: center; border-bottom: 3px double var(--rule); }
-  .wordmark {
-    font-size: clamp(2.2rem, 7vw, 3.6rem);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    font-weight: normal;
-    color: var(--steel-deep);
-  }
-  .deck { margin-top: 1.1rem; font-size: 1.25rem; font-style: italic; color: var(--muted); }
-  .route {
-    margin-top: 1.6rem;
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.28em;
-    color: var(--steel);
-    text-transform: uppercase;
-  }
-  section { padding: 2.6rem 0; border-bottom: 1px solid var(--rule); }
-  h2 {
-    font-size: 1.05rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    font-weight: normal;
-    color: var(--steel);
-    margin-bottom: 1.2rem;
-  }
-  p + p { margin-top: 1rem; }
-  a { color: var(--steel); }
-  .quote {
-    background: var(--card);
-    border-left: 3px solid var(--rule);
-    padding: 0.9rem 1.1rem;
-    margin-top: 0.9rem;
-    border-radius: 0 6px 6px 0;
-  }
-  .quote.ours { border-left-color: var(--steel); }
-  .quote .who {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.35rem;
-  }
-  code { font-family: var(--mono); font-size: 0.88em; }
-  .tablewrap { overflow-x: auto; margin-top: 0.6rem; }
-  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
-  th, td { text-align: left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
-  th {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: normal;
-  }
-  td:first-child { font-family: var(--mono); font-size: 0.85rem; white-space: nowrap; color: var(--steel-deep); }
-  .num { text-align: right; font-family: var(--mono); font-size: 0.85rem; }
-  .finding { margin-top: 1.1rem; }
-  .finding b { color: var(--steel-deep); }
-  pre {
-    background: var(--card);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    padding: 1rem 1.2rem;
-    overflow-x: auto;
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    line-height: 1.7;
-    margin-top: 0.9rem;
-  }
-  .note { font-size: 0.9rem; color: var(--muted); margin-top: 0.8rem; }
-  footer { padding: 2.4rem 0 3.5rem; text-align: center; font-size: 0.9rem; color: var(--muted); }
-  footer .line { margin-top: 0.4rem; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Transatlantic — research-backed prose registers for AI agents</title>
+  <meta name="description" content="Six prose registers for AI coding agents, each grounded in published reading research. Concise output that stays clear.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Transatlantic — research-backed prose registers for AI agents">
+  <meta property="og:description" content="Six prose registers for AI coding agents, each grounded in published reading research. Concise output that stays clear.">
+
+  <!-- The Startr look: startr.style + System 7 (vendored). Do not restyle modern. -->
+  <link rel="stylesheet" href="https://startr.style/style.css">
+  <link rel="stylesheet" href="assets/css/system7.css">
+  <style>
+    body { max-width: 50rem; padding: 2rem; margin: auto; font-size: 120%; }
+    h1 { display: block; margin: auto; text-align: center; }
+    .deck { text-align: center; font-style: italic; }
+    .route { text-align: center; font-family: Monaco, monospace; font-size: 0.75em; letter-spacing: 0.2em; text-transform: uppercase; }
+    pre { font-family: Monaco, monospace; background: #fff; border: 2px solid #000; box-shadow: 2px 2px 0 0 #000; padding: 1rem; overflow-x: auto; font-size: 0.7em; line-height: 1.1em; }
+    pre code { background: transparent; color: #000; border: none; padding: 0; }
+    :not(pre) > code { font-family: Monaco, monospace; font-size: 0.85em; background: #fff; color: #000; border: 1px solid #000; padding: 0 0.25em; }
+    blockquote { background: #fff; border: 2px solid #000; box-shadow: 2px 2px 0 0 #000; padding: 0.75rem 1rem; margin: 1rem 0; }
+    blockquote .who { font-family: Monaco, monospace; font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4em; }
+    .tablewrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; background: #fff; border: 2px solid #000; box-shadow: 2px 2px 0 0 #000; }
+    th, td { text-align: left; padding: 0.4rem 0.7rem; border-bottom: 1px solid #000; vertical-align: top; }
+    th { font-family: Monaco, monospace; font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.1em; }
+    td:first-child { font-family: Monaco, monospace; font-size: 0.85em; white-space: nowrap; }
+    .num { text-align: right; font-family: Monaco, monospace; font-size: 0.85em; }
+    footer { text-align: center; font-size: 0.85em; margin-top: 2rem; }
+  </style>
 </head>
 <body>
+<nav>
+      <a href="#hear">Hear it</a>
+      <a href="#ladder">Ladder</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/Startr/transatlantic/blob/develop/docs/research/level-ladder.md">Research</a>
+</nav>
+<hr>
+<h1>Transatlantic</h1>
+<p class="deck">You don't have to grunt to save tokens.</p>
+<p class="route">Liner · Plain · Transatlantic · Aviation · Telegraph · Morse</p>
+<hr>
 
-<header>
-  <div class="wrap">
-    <h1 class="wordmark">Transatlantic</h1>
-    <p class="deck">You don't have to grunt to save tokens.</p>
-    <p class="route">Liner · Plain · Transatlantic · Aviation · Telegraph · Morse</p>
-  </div>
-</header>
+<p>Transatlantic gives your AI coding agent a prose register: six of them, on a ladder from classy humanized writing down to bare keywords. Each level is grounded in published research on how people actually read, and each is named for a way people once talked across an ocean.</p>
 
-<section>
-  <div class="wrap">
-    <p>Transatlantic gives your AI coding agent a prose register: six of them, on a ladder from classy humanized writing down to bare keywords. Each level is grounded in published research on how people actually read, and each is named for a way people once talked across an ocean.</p>
-    <p>The voice comes first. At <a href="https://sage.is">Sage.is</a>, makers of the Sage AI UI, the house writing guidelines have been minimal, earnest, and Hemingway-inspired for years: short declarative sentences, plain words, nothing cut that carries meaning. Transatlantic packages that register so your agent writes to it too. It is built on a fork of <a href="https://github.com/JuliusBrussee/caveman">caveman</a>, which proved that agents waste most of their words and contributed its measurement culture. We contributed the voice.</p>
-  </div>
-</section>
+<p>The voice comes first. At <a href="https://sage.is">Sage.is</a>, makers of the Sage AI UI, the house writing guidelines have been minimal, earnest, and Hemingway-inspired for years: short declarative sentences, plain words, nothing cut that carries meaning. Transatlantic packages that register so your agent writes to it too. It is built on a fork of <a href="https://github.com/JuliusBrussee/caveman">caveman</a>, which proved that agents waste most of their words and contributed its measurement culture. We contributed the voice.</p>
 
-<section>
-  <div class="wrap">
-    <h2>Hear the difference</h2>
-    <p>"Why does my React component re-render?"</p>
-    <div class="quote">
-      <div class="who">A typical agent · 69 tokens</div>
-      The reason your React component is re-rendering is likely because you're creating a new object reference on each render cycle. When you pass an inline object as a prop, React's shallow comparison sees it as a different object every time, which triggers a re-render. I'd recommend using useMemo to memoize the object.
-    </div>
-    <div class="quote ours">
-      <div class="who">transatlantic, the default · 26 tokens</div>
-      The component re-renders because each render creates a new object reference. Wrap the value in <code>useMemo</code> to keep the reference stable.
-    </div>
-    <div class="quote">
-      <div class="who">telegraph, when you want it terse · 19 tokens</div>
-      New object ref each render. Inline object prop = new ref = re-render. Wrap in <code>useMemo</code>.
-    </div>
-    <p class="note">Same fix each time. Code, commands, and error strings stay byte-for-byte exact at every level.</p>
-  </div>
-</section>
+<hr>
+<h2 id="hear">Hear the difference</h2>
 
-<section>
-  <div class="wrap">
-    <h2>The ladder</h2>
-    <div class="tablewrap">
-      <table>
-        <tr><th>Level</th><th>Voice</th><th>Measured savings*</th></tr>
-        <tr><td>liner</td><td>Classy, humanized prose. Varied rhythm, no machine tells.</td><td class="num">+44%</td></tr>
-        <tr><td>plain</td><td>The plain-language letter. Short sentences, common words.</td><td class="num">+17%</td></tr>
-        <tr><td>transatlantic</td><td>Default. The newsreel voice: full grammar, filler cut.</td><td class="num">+45%</td></tr>
-        <tr><td>aviation</td><td>Controlled technical English. One instruction per sentence.</td><td class="num">+52%</td></tr>
-        <tr><td>telegraph</td><td>Dropped articles, fragments. Skim register.</td><td class="num">+52%</td></tr>
-        <tr><td>morse</td><td>Bare keywords. Maximum compression.</td><td class="num">+73%</td></tr>
-        <tr><td>wenyan</td><td>Classical Chinese annex (文言文), the densest register of all.</td><td class="num">not yet measured</td></tr>
-      </table>
-    </div>
-    <p class="note">*Output-token reduction vs a plain "answer concisely" control. CLI eval, 10 prompts, sonnet, tokenizer-approximate; details and caveats in the <a href="https://github.com/JuliusBrussee/caveman/blob/transatlantic/docs/research/level-ladder.md">research document</a>. The headline: the default keeps full grammar and still lands in telegraph's savings band. The tokens were in the filler, never in the small words.</p>
-  </div>
-</section>
+<p>"Why does my React component re-render?"</p>
 
-<section>
-  <div class="wrap">
-    <h2>Built on evidence</h2>
-    <p>Most "be concise" tools guess. We ran a 29-source research pass with adversarial fact-checking and built each level on what survived.</p>
-    <p class="finding"><b>Plainer prose wins, measurably.</b> A rewritten Veterans Affairs letter cut inbound support calls from 1,128 to 192. Even lawyers understand legalese worse than a plain rewrite of the same contract.</p>
-    <p class="finding"><b>Syntax is the real enemy.</b> Clauses folded inside clauses hurt recall more than jargon does. Every level splits nested sentences first and worries about word choice second.</p>
-    <p class="finding"><b>Shorter and clearer are different axes.</b> The ladder never pretends its tersest levels are its clearest; telegraph and morse are labeled as skim registers, honestly.</p>
-    <p class="finding"><b>Readability formulas mislead.</b> Against eye-tracking data, Flesch-style scores predict reading ease poorly. We design for common words in expected positions instead of chasing a grade number.</p>
-    <p class="note">Every claim above carries a citation in <a href="https://github.com/JuliusBrussee/caveman/blob/transatlantic/docs/research/level-ladder.md">the ladder document</a>, including the ones we mark as unproven. When a rule is convention rather than evidence, the docs say so.</p>
-  </div>
-</section>
+<blockquote>
+  <div class="who">A typical agent · 69 tokens</div>
+  The reason your React component is re-rendering is likely because you're creating a new object reference on each render cycle. When you pass an inline object as a prop, React's shallow comparison sees it as a different object every time, which triggers a re-render. I'd recommend using useMemo to memoize the object.
+</blockquote>
 
-<section>
-  <div class="wrap">
-    <h2>Install</h2>
-    <p>Pre-release. Transatlantic is in active development and isn't on npm or a marketplace yet. Today's path is a local clone:</p>
-    <pre>git clone &lt;this-repo&gt; transatlantic &amp;&amp; cd transatlantic
-node bin/install.js</pre>
-    <p class="note">Detects your agents and wires each one. Needs Node ≥18, safe to re-run, <code>--uninstall</code> removes everything it added. Switch levels with <code>/transatlantic &lt;level&gt;</code> or <code>/ta &lt;level&gt;</code>; say "normal mode" to stop. Every command in the docs is tested to resolve as written.</p>
-    <p class="note">The honest-numbers rule is inherited and kept: these levels shrink output tokens only, the skill itself costs input tokens per turn, and the <a href="https://github.com/JuliusBrussee/caveman/blob/transatlantic/docs/HONEST-NUMBERS.md">honest numbers page</a> will tell you outright when this tool costs more than it saves. Benchmarks accept your API key, not our word.</p>
-  </div>
-</section>
+<blockquote>
+  <div class="who">transatlantic, the default · 26 tokens</div>
+  The component re-renders because each render creates a new object reference. Wrap the value in <code>useMemo</code> to keep the reference stable.
+</blockquote>
 
+<blockquote>
+  <div class="who">telegraph, when you want it terse · 19 tokens</div>
+  New object ref each render. Inline object prop = new ref = re-render. Wrap in <code>useMemo</code>.
+</blockquote>
+
+<p>Same fix each time. Code, commands, and error strings stay byte-for-byte exact at every level.</p>
+
+<hr>
+<h2 id="ladder">The ladder</h2>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Level</th><th>Voice</th><th>Measured savings*</th></tr>
+  <tr><td>liner</td><td>Classy, humanized prose. Varied rhythm, no machine tells.</td><td class="num">+44%</td></tr>
+  <tr><td>plain</td><td>The plain-language letter. Short sentences, common words.</td><td class="num">+17%</td></tr>
+  <tr><td>transatlantic</td><td>Default. The newsreel voice: full grammar, filler cut.</td><td class="num">+45%</td></tr>
+  <tr><td>aviation</td><td>Controlled technical English. One instruction per sentence.</td><td class="num">+52%</td></tr>
+  <tr><td>telegraph</td><td>Dropped articles, fragments. Skim register.</td><td class="num">+52%</td></tr>
+  <tr><td>morse</td><td>Bare keywords. Maximum compression.</td><td class="num">+73%</td></tr>
+  <tr><td>wenyan</td><td>Classical Chinese annex (文言文), the densest register of all.</td><td class="num">not yet measured</td></tr>
+</table>
+</div>
+
+<p><em>*Output-token reduction vs a plain "answer concisely" control. CLI eval, 10 prompts, sonnet, tokenizer-approximate; details and caveats in the <a href="https://github.com/Startr/transatlantic/blob/develop/docs/research/level-ladder.md">research document</a>. The headline: the default keeps full grammar and still lands in telegraph's savings band. The tokens were in the filler, never in the small words.</em></p>
+
+<hr>
+<h2 id="evidence">Built on evidence</h2>
+
+<p>Most "be concise" tools guess. We ran a 29-source research pass with adversarial fact-checking and built each level on what survived.</p>
+
+<ul>
+<li><strong>Plainer prose wins, measurably.</strong> A rewritten Veterans Affairs letter cut inbound support calls from 1,128 to 192. Even lawyers understand legalese worse than a plain rewrite of the same contract.</li>
+<li><strong>Syntax is the real enemy.</strong> Clauses folded inside clauses hurt recall more than jargon does. Every level splits nested sentences first and worries about word choice second.</li>
+<li><strong>Shorter and clearer are different axes.</strong> The ladder never pretends its tersest levels are its clearest; telegraph and morse are labeled as skim registers, honestly.</li>
+<li><strong>Readability formulas mislead.</strong> Against eye-tracking data, Flesch-style scores predict reading ease poorly. We design for common words in expected positions instead of chasing a grade number.</li>
+</ul>
+
+<p>Every claim above carries a citation in <a href="https://github.com/Startr/transatlantic/blob/develop/docs/research/level-ladder.md">the ladder document</a>, including the ones we mark as unproven. When a rule is convention rather than evidence, the docs say so.</p>
+
+<hr>
+<h2 id="install">Install</h2>
+
+<p>Pre-release. Transatlantic is in active development and isn't on npm or a marketplace yet. Today's path is a local clone:</p>
+
+<pre><code>git clone https://github.com/Startr/transatlantic.git &amp;&amp; cd transatlantic
+node bin/install.js</code></pre>
+
+<p>Detects your agents and wires each one. Needs Node ≥18, safe to re-run, <code>--uninstall</code> removes everything it added. Switch levels with <code>/transatlantic &lt;level&gt;</code> or <code>/ta &lt;level&gt;</code>; say "normal mode" to stop. Every command in the docs is tested to resolve as written.</p>
+
+<p>The honest-numbers rule is inherited and kept: these levels shrink output tokens only, the skill itself costs input tokens per turn, and the <a href="https://github.com/Startr/transatlantic/blob/develop/docs/HONEST-NUMBERS.md">honest numbers page</a> will tell you outright when this tool costs more than it saves. Benchmarks accept your API key, not our word.</p>
+
+<hr>
 <footer>
-  <div class="wrap">
-    <div class="line">A <a href="https://sage.is">Sage.is</a> project, built on <a href="https://github.com/JuliusBrussee/caveman">caveman</a> by Julius Brussee. MIT licensed, like the original.</div>
-    <div class="line">The grunt got us across the ocean. Now we dress for dinner.</div>
-  </div>
+  <p>A <a href="https://startr.team">Startr</a> project. The voice comes from <a href="https://sage.is">Sage.is</a>. Built on <a href="https://github.com/JuliusBrussee/caveman">caveman</a> by Julius Brussee. MIT licensed, like the original.</p>
+  <p><em>The grunt got us across the ocean. Now we dress for dinner.</em></p>
 </footer>
-
 </body>
 </html>

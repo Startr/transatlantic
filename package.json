@@ -1,10 +1,10 @@
 {
   "name": "transatlantic",
   "version": "0.2.0",
-  "description": "Research-backed prose levels for AI coding agents — six registers from classy humanized (liner) to bare keywords (morse). Installer detects your agents and wires each one.",
+  "description": "Research-backed prose levels for AI coding agents \u2014 six registers from classy humanized (liner) to bare keywords (morse). Installer detects your agents and wires each one.",
   "license": "MIT",
-  "author": "Sage.is",
-  "homepage": "https://sage.is",
+  "author": "Startr",
+  "homepage": "https://startr.team",
   "bin": {
     "transatlantic": "./bin/install.js",
     "caveman": "./bin/install.js"
@@ -25,5 +25,12 @@
     "dist/transatlantic.skill",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Startr/transatlantic.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Startr/transatlantic/issues"
+  }
 }

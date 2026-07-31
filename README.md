@@ -40,7 +40,7 @@ Same fix each time. The default reads like a good newsroom edit; telegraph reads
 > **Pre-release.** Transatlantic is in active development on this fork and isn't published to npm or a marketplace yet. Today's install path is from a local clone; the one-command installers return when the project lands in its permanent home.
 
 ```bash
-git clone <this-repo> transatlantic && cd transatlantic
+git clone https://github.com/Startr/transatlantic.git && cd transatlantic
 node bin/install.js          # detects your agents, wires each one
 ```
 
