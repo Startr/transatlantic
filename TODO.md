@@ -1,9 +1,9 @@
 # Transatlantic — Roadmap
 
-Fork of [caveman](https://github.com/JuliusBrussee/caveman) rebranding to
+Fork of [caveman](https://github.com/JuliusBrussee/caveman) rebranded to
 **transatlantic**: research-backed prose levels from classy humanized (liner)
-to bare keywords (morse). Level ladder and citations:
-`docs/research/level-ladder.md`.
+to bare keywords (morse), plus a classical Chinese annex (wenyan). Level
+ladder and citations: `docs/research/level-ladder.md`.
 
 > **Convention** — Sections below map to kanban columns. Inline source-code
 > tags use the same vocabulary so items stay cross-referenced between this
@@ -20,57 +20,35 @@ to bare keywords (morse). Level ladder and citations:
 
 ## In Progress
 
-- [ ] **Plugin Rename**: `caveman` to `transatlantic` #critical
-  - [x] `.claude-plugin/plugin.json` + `marketplace.json` renamed — commands now `/transatlantic:*`
-  - [x] Local machine rewired (`enabledPlugins` + `installed_plugins` keys, backups kept)
-  - [x] Skill frontmatter name to `transatlantic`; tracker accepts every namespaced form
-  - [x] Flag-file name decided: keep `.caveman-active` until 1.0 — five readers share the path, renaming pre-release risks split-brain (recorded in CLAUDE.md fork banner)
-- [ ] **Docs Rewrite in Liner Voice**: README is the product front door
-  - [x] README: liner voice, ladder table, research section with citations, honest pre-release install, benchmark table relabeled telegraph, upstream credits (original preserved at `docs/research/README-caveman-upstream.md`)
-  - [x] INSTALL.md: pre-release banner with local-clone install; per-agent matrix accurate for both versions
-  - [x] AGENTS.md / GEMINI.md — @-includes of SKILL.md, already serve the new ladder, no change needed
-  - [x] `src/rules/caveman-activate.md` rewritten to the transatlantic ruleset; `caveman-init.js` embedded copy byte-synced, new sentinel, legacy installs upgrade in place (tested)
-  - [x] OpenClaw bootstrap rewritten — markers kept, file and embedded fallback byte-equal (verified)
-  - [x] CLAUDE.md: fork-status banner supersedes conflicting upstream instructions
-  - [x] Env/config names: `TRANSATLANTIC_DEFAULT_MODE` primary + `CAVEMAN_DEFAULT_MODE` legacy; `~/.config/transatlantic/` + repo `.transatlantic*` configs with caveman fallbacks
+- [ ] **Repo & Distribution**: New home under the team org #critical
+  - [ ] Create GitHub repo (org: Sage.is or Startr — DECISION PENDING, blocks everything below)
+  - [ ] Init git-flow branches `develop` + `master` — Makefile release_finish pushes to both
+  - [ ] Point local clone `origin` at the org repo (Makefile OWNER self-corrects from remote)
+  - [ ] Reserve npm name `transatlantic` (verified free 2026-07-30)
+  - [ ] Point marketplace source at the new repo; restore one-liner installs in README/INSTALL
 
 ## TODO
 
-### Rebrand Sweep
+### Rebrand Remainder
 
-- [ ] **Package & Installer Rename**: npm identity and install paths
-  - [x] `package.json` name to `transatlantic`, bins `transatlantic` + `caveman`, upstream repo fields dropped until org repo exists
-  - [ ] `bin/install.js` PROVIDERS strings, hook file paths, uninstall marker
-  - [ ] `install.sh` / `install.ps1` shim references
-  - [x] `CAVEMAN_DEFAULT_MODE` accepted as legacy alias of `TRANSATLANTIC_DEFAULT_MODE`
-- [x] **CI Sync Workflow**: `.github/workflows/sync-skill.yml` updated — mirror dir `plugins/transatlantic/`, skill dirs `skills/transatlantic` + `skills/ta-*` + `skills/crew`, release ZIP `dist/transatlantic.skill`
-- [ ] **Repo & Distribution**: New home under the team org
-  - [ ] Create GitHub repo (org: Sage.is or Startr — decide)
-  - [ ] Init git-flow branches `develop` + `master` — Makefile release_finish pushes to both
-  - [ ] Point local clone `origin` at the org repo (Makefile OWNER self-corrects from remote)
-  - [ ] Reserve npm name `transatlantic`
-  - [ ] Point marketplace source at the new repo
-  - [ ] Update `enabledPlugins` key on user machines after plugin rename (`caveman@caveman` to new id)
-- [ ] **Installer Ships the Full Local Setup**: Everything hand-done on this machine, automated
-  - [x] Bare user-scope commands: SessionStart hook mirrors all plugin commands into `$CLAUDE_CONFIG_DIR/commands/` (marker-owned, idempotent, user files never touched, tested) — every documented bare form now resolves on every install path
+- [ ] **Installer String Sweep**: `bin/install.js` PROVIDERS labels, uninstall marker, `install.sh` / `install.ps1` shim references — mechanism works, strings still say caveman
+- [ ] **Installer Ships the Full Local Setup**: Automate what was hand-done on this machine
   - [ ] Wire statusline into `settings.json` via `bin/lib/settings.js` (hand-added 2026-07-30)
   - [ ] `--uninstall` removes marker-owned mirrored commands
   - [ ] Document the dev-mode install (installPath pointed at clone) and its marketplace-update revert risk
+- [ ] **Docs Site Rebuild**: `docs/index.html` is still the upstream caveman marketing page ("Lithic Token Compression") — design a transatlantic site or remove until the org repo exists
+- [ ] **Internal Filename Decision at 1.0**: `caveman-config.js`, `caveman-activate.js`, `caveman-mode-tracker.js`, `caveman-statusline.*`, `caveman-stats.js`, `caveman-init.js`, `.caveman-active` flag, `caveman-shrink` npm package — all functional, all still cave-named. Rename in one coordinated pass at the repo move (see CLAUDE.md fork banner for the split-brain rationale)
 
 ### Evidence Debt
 
-- [ ] **Benchmark the New Levels**: Real numbers only — never estimate #critical
-  - [x] `--level` flag added to `benchmarks/run.py` (filters SKILL.md like the SessionStart hook; level recorded in results metadata)
-  - [x] `benchmarks/README.md` — bring-your-own-key invitation with contribution flow and house rules
-  - [x] CLI-only eval path: `evals/level_run.py` + `level_measure.py` (no API key; tiktoken ratios, kept separate from API numbers)
-  - [ ] First community/API runs per level committed to `benchmarks/results/`
+- [ ] **API Benchmarks Per Level**: Real numbers only — never estimate #critical
+  - [ ] First community/API runs per level committed to `benchmarks/results/` (BYO-key flow live in `benchmarks/README.md`; `run.py --level` ready)
   - [ ] Update `COMPRESSION` map in `src/hooks/caveman-stats.js` from results
   - [ ] Regenerate README benchmark table from committed results
-- [ ] **Eval the New Levels**: Three-arm harness (baseline / terse / skill)
-  - [x] Per-level CLI run committed (`evals/snapshots/levels.json`, sonnet, n=10): liner +44%, plain +17%, transatlantic +45%, aviation +52%, telegraph +52%, morse +73% vs terse control — transatlantic hits telegraph-class savings with grammar intact
+- [ ] **Eval Follow-ups**: Per-level CLI numbers exist (see Done); shrink the error bars
   - [ ] Regenerate legacy `evals/snapshots/results.json` for the new SKILL.md
-  - [ ] Re-run with larger n and a second model to shrink the noise bands (stdev 10–30%)
-- [ ] **Compression Boundary in caveman-compress**: Enforce the research finding
+  - [ ] Re-run `level_run.py` with larger n and a second model (current stdev 10–30%)
+- [ ] **Compression Boundary in ta-compress**: Enforce the research finding (ladder doc S21)
   - [ ] Skill must refuse telegraph/morse register for LLM context files (memory, CLAUDE.md)
   - [ ] Default compress target: transatlantic register
 
@@ -80,18 +58,16 @@ to bare keywords (morse). Level ladder and citations:
   - [ ] Review `.todoscope-exclude.csv` paths (plugins/ mirror excluded on purpose)
   - [ ] Migrate any inline tags in source to `TODO:` / `FIXME:` / `BUG:` vocabulary
   - [ ] Scan repo with TodoScope and verify the board matches this file
-- [ ] **Startr Alignment Follow-ups**: Scaffold landed 2026-07-30 (Makefile + allowlist .gitignore, verified)
-  - [x] Stale dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) — verified absent from this clone, nothing to remove
+- [ ] **Startr Alignment Follow-ups**:
   - [ ] Decide fate of upstream `context/refs/` gitignore entry after fork cleanup
 
 ## Backlog
 
 - [ ] **Liner Validation Eval**: Anti-AI-tell rules are convention, not experiment — build an eval that scores burstiness/tell-frequency so the level earns its citations
 - [ ] **Surprisal Tooling**: Explore scoring output with a small LM (surprisal beats Flesch as a readability predictor — open question S5 in the ladder doc)
-- [x] **Wenyan Decision**: Reinstated as a first-class annex (wenyan-lite / wenyan / wenyan-ultra) — Chinese stays, cave goes (2026-07-31)
-- [ ] **Per-Level Stats**: Statusline savings attribution once per-level benchmarks exist
-- [x] **Crew Rename**: `crew-locator` / `crew-editor` / `crew-reviewer` (was cavecrew-*). Three-agent research pass (sea literature, cable-ship history, CRM/naming studies) concluded: metaphor names the ship, function names the crew — job-shaped identifiers route better for humans and the LLM router. Ship lore lives in docs. Legacy `CAVECREW_*` env vars accepted
 - [ ] **Wenyan Benchmarks**: The annex claims densest register per token — measure it (eval + API runs)
+- [ ] **Per-Level Stats**: Statusline savings attribution once per-level benchmarks exist
+- [ ] **Upstream Contributions**: Offer caveman the fixes that aren't brand-specific (bare-command mirroring, symlink-safe mirror cleanup, legacy-upgrade path in init)
 
 ## Bugs
 
@@ -100,7 +76,15 @@ _No known bugs. Use `# BUG:` inline tags to flag defects in source._
 ## Done
 
 - [x] **Name Research**: npm/GitHub availability probe — `transatlantic` free on npm, `pico` taken (2026-07-30)
-- [x] **Bare Command Fix**: `/transatlantic` and `/ta` as user-scope commands; tracker accepts all namespaced forms
-- [x] **Startr Scaffold**: Universal Makefile (help/vars/verify/git-flow-next/things_clean) + `.gitignore` converted to `.*` allowlist, both verified (`make verify` OK, no tracked files hidden)
-- [x] **TodoScope Bootstrap**: TODO.md + `.todoscope-exclude.csv` created to convention
-- [x] **Fork Bootstrap**: Six-level ladder landed on branch `transatlantic` — research pass, ladder doc, SKILL.md, hooks, statusline, stats, tests green, local machine swapped, committed (8bf3f4c, 86a708d, 25671de)
+- [x] **Fork Bootstrap**: Six-level ladder landed on branch `transatlantic` — 29-source verified research pass, ladder doc with full bibliography, SKILL.md, hooks with legacy normalization, statusline, stats, all suites green, local machine swapped (2026-07-30)
+- [x] **TodoScope + Startr Scaffolds**: TODO.md, `.todoscope-exclude.csv`, universal Makefile, `.*`-allowlist `.gitignore` — all verified (2026-07-30)
+- [x] **Plugin + Package Rename**: manifest/marketplace/package to `transatlantic`; commands namespace `/transatlantic:*`; flag file stays `.caveman-active` until 1.0 by recorded decision (2026-07-31)
+- [x] **Docs in Liner Voice**: README (research-marketed, honest pre-release install), INSTALL banner, rule bodies, OpenClaw bootstrap (byte-synced), CLAUDE.md fork banner, env/config names with legacy fallbacks (2026-07-31)
+- [x] **Every Documented Command Resolves**: SessionStart hook mirrors plugin commands into user scope (marker-owned, idempotent, retires stale mirrors); trackers accept every namespaced spelling; tested (2026-07-31)
+- [x] **Caveman Command Retirement**: `/ta-*` family ships; no caveman-named command anywhere; per-repo rule files migrate legacy installs in place; typed legacy forms accepted undocumented (2026-07-31)
+- [x] **Wenyan Reinstated**: First-class annex (wenyan-lite / wenyan / wenyan-ultra) — Chinese stays, cave goes (2026-07-31)
+- [x] **Crew Rename**: `crew-locator` / `crew-editor` / `crew-reviewer` (was cavecrew-*) after a three-agent research pass (sea literature, cable-ship history, CRM/naming studies): metaphor names the ship, function names the crew. `CREW_*_MODEL` env vars with legacy `CAVECREW_*` accepted (2026-07-31)
+- [x] **First Per-Level Numbers**: CLI eval (sonnet, n=10, tiktoken ratios vs terse control): liner +44%, plain +17%, transatlantic +45%, aviation +52%, telegraph +52%, morse +73% — transatlantic hits telegraph-class savings with grammar intact; snapshot committed (2026-07-31)
+- [x] **Benchmark Invitation**: `run.py --level` + BYO-key contribution flow in `benchmarks/README.md` under real-numbers-only house rules (2026-07-31)
+- [x] **CI Sync Workflow**: paths updated for `plugins/transatlantic/`, `skills/transatlantic` + `ta-*` + `crew`, `dist/transatlantic.skill` (2026-07-31)
+- [x] **Documentation Alignment Pass**: skill READMEs, CONTRIBUTING, SECURITY, HONEST-NUMBERS, evals README, TOML stubs, CLAUDE.md body — all match the shipped state (2026-07-31)

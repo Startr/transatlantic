@@ -1,28 +1,28 @@
-# Contributing to caveman
+# Contributing to transatlantic
 
-Thanks for considering a contribution. Caveman is a multi-agent skill that
-makes 30+ AI coding agents talk in compressed caveman-style prose. Most
+Thanks for considering a contribution. Transatlantic is a multi-agent skill that
+makes 30+ AI coding agents talk in compressed transatlantic-register prose. Most
 contributions fall into one of three buckets:
 
-1. **Editing skill prose** — change how caveman speaks, what intensity levels do, what slash commands trigger.
+1. **Editing skill prose** — change how the agent speaks, what the ladder levels do, what slash commands trigger.
 2. **Adding a new agent** — wire a fresh editor/CLI/IDE into the unified installer.
 3. **Fixing the hooks or installer** — Claude Code hooks, the Node installer, the per-repo init script.
 
-Caveman like simple. Small focused PR > big rewrite.
+Transatlantic like simple. Small focused PR > big rewrite.
 
 ---
 
 ## Quick orientation
 
-The repo distributes one skill (caveman) plus a handful of sub-skills
-(caveman-commit, caveman-review, caveman-compress, cavecrew-*) to many
+The repo distributes one skill (transatlantic) plus a handful of sub-skills
+(ta-commit, ta-review, ta-compress, crew-*) to many
 agents through different distribution mechanisms (Claude Code plugin, Codex
 plugin, Gemini extension, Cursor/Windsurf/Cline rule files, `npx skills` for
 the long tail). A single Node installer at `bin/install.js` detects which
 agents are on the user's machine and installs the right thing for each.
 
 Sources of truth live at the **top level** of the repo. Agent-specific
-copies live under `plugins/caveman/` and similar mirror dirs — those are
+copies live under `plugins/transatlantic/` and similar mirror dirs — those are
 **rebuilt by CI** and edits there are reverted.
 
 ---
@@ -31,13 +31,13 @@ copies live under `plugins/caveman/` and similar mirror dirs — those are
 
 | I want to change... | Edit this file |
 |---|---|
-| Caveman behavior (intensity levels, voice, rules) | `skills/caveman/SKILL.md` |
-| Caveman commit-message format | `skills/caveman-commit/SKILL.md` |
-| Caveman code-review format | `skills/caveman-review/SKILL.md` |
-| Caveman compress logic | `skills/caveman-compress/SKILL.md` and `skills/caveman-compress/scripts/` |
-| Caveman quick-reference card | `skills/caveman-help/SKILL.md` |
-| Cavecrew decision guide (when to delegate to subagents) | `skills/cavecrew/SKILL.md` |
-| cavecrew subagent definitions | `agents/cavecrew-investigator.md`, `agents/cavecrew-builder.md`, `agents/cavecrew-reviewer.md` |
+| Transatlantic behavior (intensity levels, voice, rules) | `skills/transatlantic/SKILL.md` |
+| Transatlantic commit-message format | `skills/ta-commit/SKILL.md` |
+| Transatlantic code-review format | `skills/ta-review/SKILL.md` |
+| Transatlantic compress logic | `skills/ta-compress/SKILL.md` and `skills/ta-compress/scripts/` |
+| Transatlantic quick-reference card | `skills/ta-help/SKILL.md` |
+| Cavecrew decision guide (when to delegate to subagents) | `skills/crew/SKILL.md` |
+| crew subagent definitions | `agents/crew-locator.md`, `agents/crew-editor.md`, `agents/crew-reviewer.md` |
 | Auto-activation rule body (Cursor/Windsurf/Cline/Copilot) | `src/rules/caveman-activate.md` |
 | Add support for a new agent | `bin/install.js` (PROVIDERS array) |
 | Per-repo init script (drops rule files into a user's repo) | `src/tools/caveman-init.js` |
@@ -57,13 +57,13 @@ on every push to `main`.
 
 | Path | Rebuilt from |
 |------|--------------|
-| `plugins/caveman/skills/caveman/SKILL.md` | `skills/caveman/SKILL.md` |
-| `plugins/caveman/skills/caveman-compress/{SKILL.md, scripts/}` | `skills/caveman-compress/{SKILL.md, scripts/}` |
-| `plugins/caveman/skills/cavecrew/SKILL.md` | `skills/cavecrew/SKILL.md` |
-| `plugins/caveman/agents/cavecrew-*.md` | `agents/cavecrew-*.md` |
-| `dist/caveman.skill` | ZIP of `skills/caveman/` (gitignored; rebuilt by CI on each push to `main`) |
+| `plugins/transatlantic/skills/transatlantic/SKILL.md` | `skills/transatlantic/SKILL.md` |
+| `plugins/transatlantic/skills/ta-compress/{SKILL.md, scripts/}` | `skills/ta-compress/{SKILL.md, scripts/}` |
+| `plugins/transatlantic/skills/crew/SKILL.md` | `skills/crew/SKILL.md` |
+| `plugins/transatlantic/agents/crew-*.md` | `agents/crew-*.md` |
+| `dist/transatlantic.skill` | ZIP of `skills/transatlantic/` (gitignored; rebuilt by CI on each push to `main`) |
 
-`caveman-commit`, `caveman-review`, `caveman-help`, and `caveman-stats` are **not** mirrored under `plugins/caveman/skills/` by CI. Claude Code reaches them through the standalone hook + skill install path and `npx skills` carries them to other agents. If you see `plugins/caveman/skills/caveman-stats/` checked in, treat it as a legacy hand-committed copy — the workflow in `.github/workflows/sync-skill.yml` does not touch it.
+`ta-commit`, `ta-review`, `ta-help`, and `ta-stats` are **not** mirrored under `plugins/transatlantic/skills/` by CI. Claude Code reaches them through the standalone hook + skill install path and `npx skills` carries them to other agents. If you see `plugins/transatlantic/skills/ta-stats/` checked in, treat it as a legacy hand-committed copy — the workflow in `.github/workflows/sync-skill.yml` does not touch it.
 
 When in doubt: if the file lives under `plugins/`, `dist/`, or any agent
 dotdir mirror, it's a build artifact. Edit the top-level source instead.
@@ -108,7 +108,7 @@ merging.
    ```
 2. Create `skills/<name>/README.md` — human-facing summary, install hint, example.
 3. Add `skills/<name>/scripts/` if the skill ships helpers (Python or Node).
-4. If the skill should be in the Claude Code plugin, add a sync step to `.github/workflows/sync-skill.yml` so CI mirrors it into `plugins/caveman/skills/<name>/`.
+4. If the skill should be in the Claude Code plugin, add a sync step to `.github/workflows/sync-skill.yml` so CI mirrors it into `plugins/transatlantic/skills/<name>/`.
 5. If it's user-invocable as a slash command, add a row to the slash-command table in `README.md` and `INSTALL.md`.
 6. Add an eval prompt to `evals/prompts/en.txt` if you want the eval harness to score it.
 
@@ -159,13 +159,13 @@ real runs — never invent or round.
 
 ## Pull-request guidelines
 
-- **Conventional Commits** for the commit subject. See `skills/caveman-commit/SKILL.md` for the format we use here.
+- **Conventional Commits** for the commit subject. See `skills/ta-commit/SKILL.md` for the format we use here.
 - **One concern per PR.** A README copy-edit and an installer fix go in separate PRs.
 - **Update `package.json` `files`** if you add a new top-level directory the installer needs to ship to npm. Files outside that array don't get published.
 - **Show before/after** for prose changes to any `SKILL.md`. One sentence on why the new wording is better.
-- **Mention the CI sync.** If you edited a source-of-truth file, note it: "CI will resync `plugins/caveman/skills/...` on merge."
+- **Mention the CI sync.** If you edited a source-of-truth file, note it: "CI will resync `plugins/transatlantic/skills/...` on merge."
 
-PR descriptions don't need to be long. Caveman style fine. Just say what change, why.
+PR descriptions don't need to be long. Transatlantic style fine. Just say what change, why.
 
 ---
 
@@ -188,5 +188,5 @@ See [issues labeled `good first issue`](../../issues?q=label%3A%22good+first+iss
 for starter tasks. Or grep `TODO` / `FIXME` in `src/hooks/`, `bin/`, `src/tools/` —
 each one is a real lead.
 
-Caveman like contribution. You bring rock, caveman put rock in pile. Pile
+Transatlantic like contribution. You bring rock, transatlantic put rock in pile. Pile
 get bigger. Brain still big.

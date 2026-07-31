@@ -1,38 +1,38 @@
-# caveman-help
+# ta-help
 
 Quick-reference card. One shot, no mode change.
 
 ## What it does
 
-Prints a cheat sheet of all caveman modes, sibling skills, deactivation triggers, and how to set the default mode via env var or config file. One-shot display — does not flip the active mode, write flag files, or persist anything. Use when you forget the slash commands.
+Prints a cheat sheet of all transatlantic modes, sibling skills, deactivation triggers, and how to set the default mode via env var or config file. One-shot display — does not flip the active mode, write flag files, or persist anything. Use when you forget the slash commands.
 
 ## How to invoke
 
 ```
-/caveman-help
+/ta-help
 ```
 
-Also triggers on "caveman help", "what caveman commands", "how do I use caveman".
+Also triggers on "transatlantic help", "what transatlantic commands", "how do I use transatlantic".
 
 ## Example output
 
 ```
 Modes:
-  /caveman              full (default)
-  /caveman lite         lighter
-  /caveman ultra        extreme
-  /caveman wenyan       classical Chinese
+  /transatlantic              full (default)
+  /transatlantic lite         lighter
+  /transatlantic ultra        extreme
+  /transatlantic wenyan       classical Chinese
 
 Skills:
-  /caveman-commit       terse Conventional Commits
-  /caveman-review       one-line PR comments
-  /caveman-stats        session token savings
+  /ta-commit       terse Conventional Commits
+  /ta-review       one-line PR comments
+  /ta-stats        session token savings
 
 Deactivate:
-  "stop caveman" or "normal mode"
+  "stop transatlantic" or "normal mode"
 ```
 
 ## See also
 
 - [`SKILL.md`](./SKILL.md) — full reference card
-- [Caveman README](../../README.md) — repo overview
+- [Transatlantic README](../../README.md) — repo overview

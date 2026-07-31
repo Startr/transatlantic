@@ -1,48 +1,55 @@
-# caveman
+# transatlantic
 
-Talk like smart caveman. Same brain, fewer tokens.
+Research-backed prose levels for AI agents. Concise output that stays clear.
 
 ## What it does
 
-Compress every model response to caveman-style prose. Drops articles, filler, pleasantries, and hedging. Keeps every technical detail, code block, error string, and symbol exact. Cuts 65% of output tokens (measured) with full accuracy preserved. Mode persists for the whole session until changed or stopped.
+Sets the register your agent answers in, on a six-level ladder from classy
+humanized prose down to bare keywords. Every level keeps code blocks, error
+strings, commands, and technical terms byte-for-byte exact. The level persists
+for the whole session until changed or stopped.
 
-Six intensity levels:
+| Level | Voice |
+|-------|-------|
+| `liner` | Classy, humanized prose. Varied rhythm, no machine tells. |
+| `plain` | The plain-language letter. Short sentences, common words. |
+| `transatlantic` | Default. The newsreel voice — full grammar, filler cut. |
+| `aviation` | Controlled technical English. One instruction per sentence. |
+| `telegraph` | Dropped articles, fragments. Skim register. |
+| `morse` | Bare keywords. Maximum compression. |
+| `wenyan` | Classical Chinese annex (also `wenyan-lite`, `wenyan-ultra`). |
 
-| Level | What change |
-|-------|-------------|
-| `lite` | Drop filler/hedging. Sentences stay full. Professional but tight. |
-| `full` | Default. Drop articles, fragments OK, short synonyms. |
-| `ultra` | Bare fragments. Abbreviations (DB, auth, fn). Arrows for causality. |
-| `wenyan-lite` | Classical Chinese register, light compression. |
-| `wenyan-full` | Maximum 文言文. 80-90% character reduction. |
-| `wenyan-ultra` | Extreme classical compression. |
+Each level is grounded in published research on readable, concise writing —
+the full citations live in
+[docs/research/level-ladder.md](../../docs/research/level-ladder.md).
 
-Auto-clarity rule: caveman drops to normal prose for security warnings, irreversible-action confirmations, multi-step sequences where fragment ambiguity risks misread, and when user repeats a question. Resumes after the clear part.
+Auto-clarity rule: the agent rises to plain full-grammar prose for security
+warnings, irreversible-action confirmations, and multi-step sequences where
+compression risks a misread, then resumes the active level.
 
 ## How to invoke
 
 ```
-/caveman              # full mode (default)
-/caveman lite         # lighter compression
-/caveman ultra        # extreme compression
-/caveman wenyan       # classical Chinese
-stop caveman          # back to normal prose
+/transatlantic            # default level
+/ta liner                 # short form, classy end
+/ta telegraph             # skim register
+/transatlantic wenyan     # classical Chinese
+normal mode               # back to ordinary prose
 ```
+
+Legacy `/caveman lite|full|ultra` still works and maps onto the ladder.
 
 ## Example output
 
 Question: "Why does my React component re-render?"
 
-Normal prose:
-> Your component re-renders because you create a new object reference each render. Wrapping it in `useMemo` will fix the issue.
+transatlantic (default):
+> The component re-renders because each render creates a new object reference. Wrap the value in `useMemo` to keep the reference stable.
 
-Caveman (full):
+telegraph:
 > New object ref each render. Inline object prop = new ref = re-render. Wrap in `useMemo`.
-
-Caveman (ultra):
-> Inline obj prop → new ref → re-render. `useMemo`.
 
 ## See also
 
 - [`SKILL.md`](./SKILL.md) — full LLM-facing instructions
-- [Caveman README](../../README.md) — repo overview, install, benchmarks
+- [Transatlantic README](../../README.md) — repo overview, install, benchmarks

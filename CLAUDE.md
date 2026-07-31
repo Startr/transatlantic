@@ -27,7 +27,7 @@ several identities have moved; where they conflict, this section wins:
   (both statuslines, both hooks, opencode plugin); renaming pre-release buys
   nothing and risks split-brain. Revisit at the repo move.
 - **Voice**: user-facing docs are written in the `liner` register (see the level
-  table in `skills/caveman/SKILL.md`). The upstream "preserve caveman voice"
+  table in `skills/transatlantic/SKILL.md`). The upstream "preserve caveman voice"
   README rule is superseded — preserve the *transatlantic* voice instead.
   Upstream README preserved at `docs/research/README-caveman-upstream.md`.
 - **Compression boundary**: never apply telegraph/morse registers to files an
@@ -37,8 +37,8 @@ several identities have moved; where they conflict, this section wins:
   API benchmarks accept community keys (`benchmarks/README.md`,
   `run.py --level`). Never estimate.
 - **Crew subagents renamed** (research-backed, 2026-07-31): `crew-locator`
-  (was cavecrew-investigator), `crew-editor` (was cavecrew-builder),
-  `crew-reviewer` (was cavecrew-reviewer); skill dir `skills/crew`. Functional
+  (was crew-locator), `crew-editor` (was crew-editor),
+  `crew-reviewer` (was crew-reviewer); skill dir `skills/crew`. Functional
   names chosen deliberately — CRM/agent-routing research says job-shaped names
   route better for both humans and the LLM router; the ship metaphor lives in
   docs, not identifiers. Model override env vars: `CREW_LOCATOR_MODEL`,
@@ -48,7 +48,7 @@ several identities have moved; where they conflict, this section wins:
 
 ## README is a product artifact
 
-README = product front door. Non-technical people read it to decide if caveman worth install. Treat like UI copy.
+README = product front door. Non-technical people read it to decide whether transatlantic is worth installing. Treat like UI copy.
 
 **Rules for any README change:**
 
@@ -65,7 +65,7 @@ README = product front door. Non-technical people read it to decide if caveman w
 
 ## Project overview
 
-Caveman makes AI coding agents respond in compressed caveman-style prose — cuts 65% output tokens (measured), full technical accuracy. Ships as Claude Code plugin, Codex plugin, Gemini CLI extension, agent rule files for Cursor, Windsurf, Cline, Copilot, 40+ others via `npx skills`.
+Transatlantic gives AI coding agents research-backed prose levels — concise output that stays readable, from classy humanized (liner) to bare keywords (morse). Ships as Claude Code plugin, Codex plugin, Gemini CLI extension, agent rule files for Cursor, Windsurf, Cline, Copilot, 40+ others via `npx skills`.
 
 ---
 
@@ -74,7 +74,7 @@ Caveman makes AI coding agents respond in compressed caveman-style prose — cut
 Post-cleanup layout. Sources of truth at the top, distribution mirrors below, build outputs in `dist/`, human docs alongside each skill.
 
 ```
-caveman/
+transatlantic/           # repo root (dir currently named caveman until the org move)
 ├── README.md                    # Front door (product pitch)
 ├── INSTALL.md                   # Per-agent install commands
 ├── CONTRIBUTING.md              # Dev guide
@@ -88,15 +88,15 @@ caveman/
 │   └── lib/settings.js          # JSONC-tolerant settings.json reader/writer
 │
 ├── skills/                      # ALL skills, single source of truth
-│   ├── caveman/{SKILL.md, README.md}
-│   ├── caveman-commit/{SKILL.md, README.md}
-│   ├── caveman-review/{SKILL.md, README.md}
-│   ├── caveman-help/{SKILL.md, README.md}
-│   ├── caveman-stats/{SKILL.md, README.md}
-│   ├── caveman-compress/{SKILL.md, README.md, scripts/}
-│   └── cavecrew/{SKILL.md, README.md}
+│   ├── transatlantic/{SKILL.md, README.md}
+│   ├── ta-commit/{SKILL.md, README.md}
+│   ├── ta-review/{SKILL.md, README.md}
+│   ├── ta-help/{SKILL.md, README.md}
+│   ├── ta-stats/{SKILL.md, README.md}
+│   ├── ta-compress/{SKILL.md, README.md, scripts/}
+│   └── crew/{SKILL.md, README.md}
 │
-├── agents/                      # cavecrew subagents (single source — kept at root for plugin auto-discovery)
+├── agents/                      # crew subagents (single source — kept at root for plugin auto-discovery)
 ├── commands/                    # Codex/Gemini TOML command stubs (root for plugin auto-discovery)
 │
 ├── src/                         # Internal source — not auto-discovered by plugin
@@ -106,12 +106,12 @@ caveman/
 │   └── mcp-servers/             # caveman-shrink npm-published MCP middleware
 │
 ├── .claude-plugin/              # Claude Code plugin manifest (REQUIRED at root)
-├── plugins/caveman/             # Claude Code plugin distribution (CI-mirrored)
+├── plugins/transatlantic/             # Claude Code plugin distribution (CI-mirrored)
 │   ├── skills/                  # ← from skills/
 │   └── agents/                  # ← from agents/
 │
 ├── dist/                        # Build artifacts (gitignored)
-│   └── caveman.skill            # ZIP of skills/caveman/, rebuilt by CI
+│   └── transatlantic.skill      # ZIP of skills/transatlantic/, rebuilt by CI
 │
 ├── tests/                       # All tests (Node + Python)
 ├── benchmarks/                  # Real token measurements through Claude API
@@ -128,55 +128,55 @@ caveman/
 
 | File | What it controls |
 |------|-----------------|
-| `skills/caveman/SKILL.md` | Caveman behavior: intensity levels, rules, wenyan mode, auto-clarity, persistence. Only file to edit for behavior changes. |
+| `skills/transatlantic/SKILL.md` | Caveman behavior: intensity levels, rules, wenyan mode, auto-clarity, persistence. Only file to edit for behavior changes. |
 | `src/rules/caveman-activate.md` | Always-on auto-activation rule body. Consumed by `src/tools/caveman-init.js` when a user runs `npx caveman --with-init` (per-repo IDE rule files). Edit here, not in any per-agent rule copy. |
 | `src/rules/caveman-openclaw-bootstrap.md` | Marker-fenced bootstrap snippet appended to `~/.openclaw/workspace/SOUL.md` by `bin/lib/openclaw.js`. Drives always-on caveman through the OpenClaw gateway. Must include the SENTINEL `Respond terse like smart caveman` and stay well under OpenClaw's 12K-per-bootstrap-file cap. |
 | `bin/lib/openclaw.js` | OpenClaw install/uninstall helper. Frontmatter merge (`version`, `always: true`), SOUL.md marker append/strip, idempotent. Shared by `bin/install.js` and `src/tools/caveman-init.js`. |
-| `skills/caveman-commit/SKILL.md` | Caveman commit message behavior. Fully independent skill. |
-| `skills/caveman-review/SKILL.md` | Caveman code review behavior. Fully independent skill. |
-| `skills/caveman-help/SKILL.md` | Quick-reference card. One-shot display, not a persistent mode. |
-| `skills/caveman-compress/SKILL.md` | Compress sub-skill behavior. |
-| `skills/cavecrew/SKILL.md` | Cavecrew decision guide — when to delegate to caveman subagents vs vanilla. Edit only here. |
-| `agents/cavecrew-investigator.md` | Read-only locator subagent (haiku). Output contract: `path:line — symbol — note`. |
-| `agents/cavecrew-builder.md` | Surgical 1-2 file editor subagent. Refuses 3+ file scope. |
-| `agents/cavecrew-reviewer.md` | Diff/file reviewer subagent (haiku). One-line findings with severity emoji. |
+| `skills/ta-commit/SKILL.md` | Caveman commit message behavior. Fully independent skill. |
+| `skills/ta-review/SKILL.md` | Caveman code review behavior. Fully independent skill. |
+| `skills/ta-help/SKILL.md` | Quick-reference card. One-shot display, not a persistent mode. |
+| `skills/ta-compress/SKILL.md` | Compress sub-skill behavior. |
+| `skills/crew/SKILL.md` | Crew decision guide — when to delegate to crew subagents vs vanilla. Edit only here. |
+| `agents/crew-locator.md` | Read-only locator subagent (haiku). Output contract: `path:line — symbol — note`. |
+| `agents/crew-editor.md` | Surgical 1-2 file editor subagent. Refuses 3+ file scope. |
+| `agents/crew-reviewer.md` | Diff/file reviewer subagent (haiku). One-line findings with severity emoji. |
 | `src/plugins/opencode/plugin.js` | opencode native plugin. ESM Bun module — `session.created` writes flag, `tui.prompt.append` parses slash/natural-language activation and appends per-prompt reinforcement. Reuses `caveman-config.js` via `createRequire`. |
-| `src/plugins/opencode/commands/*.md` | Six opencode slash-command prompt templates (`/caveman`, `/caveman-{commit,review,compress,stats,help}`). |
+| `src/plugins/opencode/commands/*.md` | Six opencode slash-command prompt templates (`/transatlantic`, `/ta-{commit,review,compress,stats,help}`). |
 
 ### Auto-generated / auto-synced — do not edit directly
 
 We removed the agent-specific dotdir mirrors at the repo root (`.cursor/`, `.windsurf/`, `.clinerules/`, `.github/copilot-instructions.md`, root `caveman/SKILL.md`). They were never read by the installer — only used to self-apply caveman to this repo when a maintainer opened it in Cursor/Windsurf/Cline. Devs who want caveman in their editor while editing this repo should run `npx caveman --with-init` once (writes per-repo rule files from `src/rules/caveman-activate.md` via `src/tools/caveman-init.js`). For per-user installs through the upstream skills CLI, `npx caveman --only <agent>` runs `npx skills add ... -a <profile>`.
 
-A handful of dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) still hold a stale `cavecrew/SKILL.md` mirror from before the cleanup. They aren't read by anything in the current install path; remove on sight, no migration needed.
+A handful of dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) still hold a stale `crew/SKILL.md` mirror from before the cleanup. They aren't read by anything in the current install path; remove on sight, no migration needed.
 
 What's left is the Claude Code plugin distribution (required by the plugin loader) and the release ZIP.
 
 | File | Synced from |
 |------|-------------|
-| `plugins/caveman/skills/caveman/SKILL.md` | `skills/caveman/SKILL.md` |
-| `plugins/caveman/skills/caveman-compress/SKILL.md` (+ `scripts/`) | `skills/caveman-compress/SKILL.md` (+ `scripts/`) |
-| `plugins/caveman/skills/cavecrew/SKILL.md` | `skills/cavecrew/SKILL.md` |
-| `plugins/caveman/agents/cavecrew-*.md` | `agents/cavecrew-*.md` |
-| `dist/caveman.skill` | ZIP of `skills/caveman/` directory (gitignored; rebuilt by CI on release) |
+| `plugins/transatlantic/skills/transatlantic/SKILL.md` | `skills/transatlantic/SKILL.md` |
+| `plugins/transatlantic/skills/ta-compress/SKILL.md` (+ `scripts/`) | `skills/ta-compress/SKILL.md` (+ `scripts/`) |
+| `plugins/transatlantic/skills/crew/SKILL.md` | `skills/crew/SKILL.md` |
+| `plugins/transatlantic/agents/crew-*.md` | `agents/crew-*.md` |
+| `dist/transatlantic.skill` | ZIP of `skills/transatlantic/` directory (gitignored; rebuilt by CI on release) |
 
-Skills not in this table (`caveman-commit`, `caveman-review`, `caveman-help`, `caveman-stats`) are not mirrored into the Claude Code plugin distribution by CI. They reach Claude Code through the standalone hook + skill install path, and reach other agents via `npx skills add`. A `plugins/caveman/skills/caveman-stats/` directory is currently checked in as a hand-committed copy; the sync workflow does not touch it, so don't rely on edits there to propagate.
+Skills not in this table (`ta-commit`, `ta-review`, `ta-help`, `ta-stats`) are not mirrored into the Claude Code plugin distribution by CI. They reach Claude Code through the standalone hook + skill install path, and reach other agents via `npx skills add`. A `plugins/transatlantic/skills/ta-stats/` directory is currently checked in as a hand-committed copy; the sync workflow does not touch it, so don't rely on edits there to propagate.
 
 ---
 
 ## CI sync workflow
 
-`.github/workflows/sync-skill.yml` triggers on main push when `skills/**/SKILL.md` or `agents/cavecrew-*.md` changes.
+`.github/workflows/sync-skill.yml` triggers on main push when `skills/**/SKILL.md` or `agents/crew-*.md` changes.
 
 What it does:
-1. Copies `skills/caveman/SKILL.md` and `skills/cavecrew/SKILL.md` into their `plugins/caveman/skills/<name>/` mirrors so the Claude Code plugin loader sees the latest behavior.
-2. Copies `skills/caveman-compress/SKILL.md` and its `scripts/` into `plugins/caveman/skills/caveman-compress/`.
-3. Copies `agents/cavecrew-*.md` into `plugins/caveman/agents/`.
-4. Rebuilds `dist/caveman.skill` (ZIP of `skills/caveman/`) for the release artifact.
+1. Copies `skills/transatlantic/SKILL.md` and `skills/crew/SKILL.md` into their `plugins/transatlantic/skills/<name>/` mirrors so the Claude Code plugin loader sees the latest behavior.
+2. Copies `skills/ta-compress/SKILL.md` and its `scripts/` into `plugins/transatlantic/skills/ta-compress/`.
+3. Copies `agents/crew-*.md` into `plugins/transatlantic/agents/`.
+4. Rebuilds `dist/transatlantic.skill` (ZIP of `skills/transatlantic/`) for the release artifact.
 5. Commits and pushes with `[skip ci]` to avoid loops.
 
 CI bot commits as `github-actions[bot]`. After PR merge, wait for workflow before declaring release complete.
 
-The old steps that mirrored SKILL.md and rules into root dotdirs (`.cursor/`, `.windsurf/`, `.clinerules/`, `.github/copilot-instructions.md`) are gone — those mirrors no longer exist. The old `caveman-compress/` → `skills/compress/` rename-on-sync is also gone now that compress lives at `skills/caveman-compress/`.
+The old steps that mirrored SKILL.md and rules into root dotdirs (`.cursor/`, `.windsurf/`, `.clinerules/`, `.github/copilot-instructions.md`) are gone — those mirrors no longer exist. The old `ta-compress/` → `skills/compress/` rename-on-sync is also gone now that compress lives at `skills/ta-compress/`.
 
 ---
 
@@ -208,7 +208,7 @@ Exports:
 
 Runs once per Claude Code session start. Three things:
 1. Writes the active mode to `$CLAUDE_CONFIG_DIR/.caveman-active` via `safeWriteFlag` (creates if missing)
-2. Emits caveman ruleset as hidden stdout — Claude Code injects SessionStart hook stdout as system context, invisible to user
+2. Emits the transatlantic ruleset as hidden stdout — Claude Code injects SessionStart hook stdout as system context, invisible to user
 3. Checks `settings.json` for statusline config; if missing, appends nudge to offer setup on first interaction
 
 Silent-fails on all filesystem errors — never blocks session start.
@@ -217,16 +217,14 @@ Silent-fails on all filesystem errors — never blocks session start.
 
 Reads JSON from stdin. Three responsibilities:
 
-**1. Slash-command activation.** If prompt starts with `/caveman`, writes mode to flag file via `safeWriteFlag`:
-- `/caveman` → configured default (see `caveman-config.js`, defaults to `full`)
-- `/caveman lite` → `lite`
-- `/caveman ultra` → `ultra`
-- `/caveman wenyan` or `/caveman wenyan-full` → `wenyan` (alias) / `wenyan-full`
-- `/caveman wenyan-lite` → `wenyan-lite`
-- `/caveman wenyan-ultra` → `wenyan-ultra`
-- `/caveman-commit` → `commit`
-- `/caveman-review` → `review`
-- `/caveman-compress` → `compress`
+**1. Slash-command activation.** If the prompt starts with `/transatlantic`, `/ta`, or legacy `/caveman`, writes the mode to the flag file via `safeWriteFlag`:
+- `/transatlantic` or `/ta` → configured default (see `caveman-config.js`, defaults to `transatlantic`)
+- `/transatlantic <level>` → that level (liner/plain/transatlantic/aviation/telegraph/morse/wenyan-*)
+- legacy `/caveman lite|full|ultra` → `transatlantic`/`telegraph`/`morse` via `normalizeMode()`
+- `/ta-commit` → `commit`
+- `/ta-review` → `review`
+- `/ta-compress` → `compress`
+- every plugin-namespaced spelling (`/transatlantic:*`, legacy `/caveman:*`) is accepted
 
 **2. Natural-language activation/deactivation.** Matches phrases like "activate caveman", "turn on caveman mode", "talk like caveman" and writes the configured default mode. Matches "stop caveman", "disable caveman", "normal mode", "deactivate caveman" etc. and deletes the flag file. README promises these triggers, the hook enforces them.
 
@@ -238,7 +236,7 @@ Reads flag file at `$CLAUDE_CONFIG_DIR/.caveman-active`. Outputs colored badge s
 - `full` or empty → `[CAVEMAN]` (orange)
 - anything else → `[CAVEMAN:<MODE_UPPERCASED>]` (orange)
 
-Then appends the lifetime-savings suffix (`⛏ 12.4k`) read from `$CLAUDE_CONFIG_DIR/.caveman-statusline-suffix` — written by `caveman-stats.js` on every `/caveman-stats` run. **Default on**; users opt out with `CAVEMAN_STATUSLINE_SAVINGS=0`. The suffix file is absent until `/caveman-stats` runs at least once, so fresh installs render no fake number.
+Then appends the lifetime-savings suffix (`⛏ 12.4k`) read from `$CLAUDE_CONFIG_DIR/.caveman-statusline-suffix` — written by `caveman-stats.js` on every `/ta-stats` run. **Default on**; users opt out with `CAVEMAN_STATUSLINE_SAVINGS=0`. The suffix file is absent until `/ta-stats` runs at least once, so fresh installs render no fake number.
 
 Configured in `settings.json` under `statusLine.command`. PowerShell counterpart at `src/hooks/caveman-statusline.ps1` for Windows. Both scripts symlink-refuse and whitelist-validate the flag/suffix file contents — never echo arbitrary bytes.
 
@@ -262,7 +260,7 @@ Each skill has a human-facing `README.md` alongside the LLM-facing `SKILL.md`. T
 
 ### Intensity levels
 
-Defined in `skills/caveman/SKILL.md`. Six levels: `lite`, `full` (default), `ultra`, `wenyan-lite`, `wenyan-full`, `wenyan-ultra`. Persists until changed or session ends.
+Defined in `skills/transatlantic/SKILL.md`. Six levels: `lite`, `full` (default), `ultra`, `wenyan-lite`, `wenyan-full`, `wenyan-ultra`. Persists until changed or session ends.
 
 ### Auto-clarity rule
 
@@ -270,13 +268,13 @@ Caveman drops to normal prose for: security warnings, irreversible action confir
 
 ### caveman-compress
 
-Sub-skill in `skills/caveman-compress/SKILL.md`. Takes file path, compresses prose to caveman style, writes to original path, saves backup at `<filename>.original.md`. Validates headings, code blocks, URLs, file paths, commands preserved. Retries up to 2 times on failure with targeted patches only. Requires Python 3.10+.
+Sub-skill in `skills/ta-compress/SKILL.md`. Takes file path, compresses prose to caveman style, writes to original path, saves backup at `<filename>.original.md`. Validates headings, code blocks, URLs, file paths, commands preserved. Retries up to 2 times on failure with targeted patches only. Requires Python 3.10+.
 
-The slash command is `/caveman-compress` everywhere — same name in plugin and standalone install. CI no longer renames the directory on sync (the old `caveman-compress/` → `skills/compress/` sed rename is gone now that the source lives at `skills/caveman-compress/`).
+The slash command is `/ta-compress` everywhere — same name in plugin and standalone install. CI no longer renames the directory on sync (the old `ta-compress/` → `skills/compress/` sed rename is gone now that the source lives at `skills/ta-compress/`).
 
-### caveman-commit / caveman-review
+### ta-commit / ta-review
 
-Independent skills in `skills/caveman-commit/SKILL.md` and `skills/caveman-review/SKILL.md`. Both have own `description` and `name` frontmatter so they load independently. caveman-commit: Conventional Commits, ≤50 char subject. caveman-review: one-line comments in `L<line>: <severity> <problem>. <fix>.` format.
+Independent skills in `skills/ta-commit/SKILL.md` and `skills/ta-review/SKILL.md`. Both have own `description` and `name` frontmatter so they load independently. ta-commit: Conventional Commits, ≤50 char subject. ta-review: one-line comments in `L<line>: <severity> <problem>. <fix>.` format.
 
 ---
 
@@ -287,10 +285,10 @@ How caveman reaches each agent type:
 | Agent | Mechanism | Auto-activates? |
 |-------|-----------|----------------|
 | Claude Code | Plugin (hooks + skills) or standalone hooks | Yes — SessionStart hook injects rules |
-| Codex | Plugin in `plugins/caveman/` plus repo `.codex/hooks.json` and `.codex/config.toml` | Yes on macOS/Linux — SessionStart hook |
+| Codex | Plugin in `plugins/transatlantic/` plus repo `.codex/hooks.json` and `.codex/config.toml` | Yes on macOS/Linux — SessionStart hook |
 | Gemini CLI | Extension with `GEMINI.md` context file | Yes — context file loads every session |
-| opencode | Native plugin (`src/plugins/opencode/`) copied into `~/.config/opencode/plugins/caveman/` + `AGENTS.md` ruleset + skills/agents/commands directories. Plugin uses `session.created` and `tui.prompt.append` lifecycle hooks. No statusline (opencode TUI exposes no plugin-writable badge). | Yes — `session.created` writes flag, `AGENTS.md` carries always-on ruleset |
-| OpenClaw | Workspace skill at `~/.openclaw/workspace/skills/caveman/SKILL.md` (frontmatter merged with `version` + `always: true`) plus a marker-fenced bootstrap block in `~/.openclaw/workspace/SOUL.md`. Both writes go through `bin/lib/openclaw.js`; workspace path is overridable via `OPENCLAW_WORKSPACE`. | Yes — SOUL.md is auto-injected each turn under "Project Context" (subject to OpenClaw's 12K-per-file / 60K-total bootstrap caps) |
+| opencode | Native plugin (`src/plugins/opencode/`) copied into `~/.config/opencode/plugins/transatlantic/` + `AGENTS.md` ruleset + skills/agents/commands directories. Plugin uses `session.created` and `tui.prompt.append` lifecycle hooks. No statusline (opencode TUI exposes no plugin-writable badge). | Yes — `session.created` writes flag, `AGENTS.md` carries always-on ruleset |
+| OpenClaw | Workspace skill at `~/.openclaw/workspace/skills/transatlantic/SKILL.md` (frontmatter merged with `version` + `always: true`) plus a marker-fenced bootstrap block in `~/.openclaw/workspace/SOUL.md`. Both writes go through `bin/lib/openclaw.js`; workspace path is overridable via `OPENCLAW_WORKSPACE`. | Yes — SOUL.md is auto-injected each turn under "Project Context" (subject to OpenClaw's 12K-per-file / 60K-total bootstrap caps) |
 | Cursor | `npx skills add ... -a cursor` (default via `--only cursor`) writes the upstream skill profile; per-repo `.cursor/rules/caveman.mdc` via `--with-init` (calls `src/tools/caveman-init.js`) | Yes — always-on rule |
 | Windsurf | `npx skills add ... -a windsurf` (default via `--only windsurf`); per-repo `.windsurf/rules/caveman.md` via `--with-init` | Yes — always-on rule |
 | Cline | `npx skills add ... -a cline` (default via `--only cline`); per-repo `.clinerules/caveman.md` via `--with-init` | Yes — Cline auto-discovers `.clinerules/` |
@@ -336,7 +334,7 @@ To reproduce: `uv run python benchmarks/run.py` (needs `ANTHROPIC_API_KEY` in `.
 
 ## Key rules for agents working here
 
-- Edit `skills/<name>/SKILL.md` for behavior changes. Never edit synced copies under `plugins/caveman/skills/`.
+- Edit `skills/<name>/SKILL.md` for behavior changes. Never edit synced copies under `plugins/transatlantic/skills/`.
 - Edit `src/rules/caveman-activate.md` for auto-activation rule changes. Never edit any per-agent rule copy a user has on their machine.
 - Edit `src/rules/caveman-openclaw-bootstrap.md` for the OpenClaw SOUL.md bootstrap snippet. Keep the `<!-- caveman-begin -->` / `<!-- caveman-end -->` markers and the `Respond terse like smart caveman` sentinel — `bin/lib/openclaw.js` keys idempotency off both. If you change the embedded fallback in `bin/lib/openclaw.js`, keep it byte-equivalent to the file.
 - Per-skill human docs live in `skills/<name>/README.md`. The LLM-facing body is in `SKILL.md`. Don't merge them — different audiences.
