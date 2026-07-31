@@ -9,9 +9,9 @@ $ErrorActionPreference = "Stop"
 $ClaudeDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { Join-Path $env:USERPROFILE ".claude" }
 $HooksDir = Join-Path $ClaudeDir "hooks"
 $Settings = Join-Path $ClaudeDir "settings.json"
-$FlagFile = Join-Path $ClaudeDir ".caveman-active"
+$FlagFile = Join-Path $ClaudeDir ".ta-active"
 
-$HookFiles = @("package.json", "caveman-config.js", "caveman-activate.js", "caveman-mode-tracker.js", "caveman-stats.js", "caveman-statusline.sh", "caveman-statusline.ps1", "cavecrew-model-overrides.js")
+$HookFiles = @("package.json", "ta-config.js", "ta-activate.js", "ta-mode-tracker.js", "ta-stats.js", "ta-statusline.sh", "ta-statusline.ps1", "cavecrew-model-overrides.js")
 
 # Detect if caveman is installed as a plugin
 $PluginInstalled = $false
@@ -69,7 +69,7 @@ if (Test-Path $Settings) {
 const fs = require('fs');
 const settingsPath = process.env.CAVEMAN_SETTINGS;
 const hooksDir = process.env.CAVEMAN_HOOKS_DIR;
-const managedStatusLinePath = hooksDir + '/caveman-statusline.ps1';
+const managedStatusLinePath = hooksDir + '/ta-statusline.ps1';
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
 
 const isCavemanEntry = (entry) =>

@@ -1,6 +1,7 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ClaudeDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { Join-Path $HOME ".claude" }
-$Flag = Join-Path $ClaudeDir ".caveman-active"
+$Flag = Join-Path $ClaudeDir ".ta-active"
+if (-not (Test-Path $Flag)) { $Flag = Join-Path $ClaudeDir ".caveman-active" }
 if (-not (Test-Path $Flag)) { exit 0 }
 
 # Refuse reparse points (symlinks / junctions) and oversized files. Without
@@ -32,7 +33,7 @@ $Valid = @('off','liner','plain','transatlantic','aviation','telegraph','morse',
 if (-not ($Valid -contains $Mode)) { exit 0 }
 
 # Collapse legacy caveman names onto the canonical ladder — mirrors
-# normalizeMode() in caveman-config.js and the .sh counterpart.
+# normalizeMode() in ta-config.js and the .sh counterpart.
 switch ($Mode) {
     'lite'         { $Mode = 'transatlantic' }
     'wenyan-full'  { $Mode = 'wenyan' }
@@ -49,12 +50,12 @@ if ([string]::IsNullOrEmpty($Mode) -or $Mode -eq "transatlantic") {
 }
 
 # Savings suffix: on by default. Opt out via CAVEMAN_STATUSLINE_SAVINGS=0.
-# Reads a pre-rendered string written by caveman-stats.js. Refuses reparse
+# Reads a pre-rendered string written by ta-stats.js. Refuses reparse
 # points and strips control bytes (matches statusline.sh hardening). Until
 # /caveman-stats has run at least once, the suffix file is absent and nothing
 # is rendered — safe default for fresh installs.
-if ($env:CAVEMAN_STATUSLINE_SAVINGS -ne "0") {
-    $SavingsFile = Join-Path $ClaudeDir ".caveman-statusline-suffix"
+if (($env:TRANSATLANTIC_STATUSLINE_SAVINGS -ne "0") -and ($env:CAVEMAN_STATUSLINE_SAVINGS -ne "0")) {
+    $SavingsFile = Join-Path $ClaudeDir ".ta-statusline-suffix"
     if (Test-Path $SavingsFile) {
         try {
             $SavingsItem = Get-Item -LiteralPath $SavingsFile -Force -ErrorAction Stop

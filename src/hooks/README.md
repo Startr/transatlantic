@@ -6,25 +6,25 @@ If you installed caveman standalone (without the plugin), the unified Node insta
 
 ## What's Included
 
-### `caveman-activate.js` — SessionStart hook
+### `ta-activate.js` — SessionStart hook
 
 - Runs once when Claude Code starts
-- Writes `full` to `$CLAUDE_CONFIG_DIR/.caveman-active` (default `~/.claude/.caveman-active`) via the symlink-safe `safeWriteFlag` helper
+- Writes `full` to `$CLAUDE_CONFIG_DIR/.ta-active` (default `~/.claude/.ta-active`) via the symlink-safe `safeWriteFlag` helper
 - Emits caveman rules as hidden SessionStart context
 - Detects missing statusline config and emits setup nudge (Claude will offer to help)
 
-### `caveman-mode-tracker.js` — UserPromptSubmit hook
+### `ta-mode-tracker.js` — UserPromptSubmit hook
 
 - Fires on every user prompt, checks for `/caveman` commands and natural-language activation/deactivation phrases ("talk like caveman", "stop caveman", "normal mode")
 - Writes the active mode to the flag file when a caveman command is detected; deletes it on deactivation
 - Emits a small per-turn reinforcement reminder when the flag is set to a non-independent mode (`lite`/`full`/`ultra`/`wenyan*`)
 - Supports: `lite`, `full`, `ultra`, `wenyan`, `wenyan-lite`, `wenyan-full`, `wenyan-ultra`, `commit`, `review`, `compress`
 
-### `caveman-statusline.sh` / `caveman-statusline.ps1` — Statusline badge script
+### `ta-statusline.sh` / `ta-statusline.ps1` — Statusline badge script
 
-- Reads `$CLAUDE_CONFIG_DIR/.caveman-active` (default `~/.claude/.caveman-active`) and outputs a colored badge
+- Reads `$CLAUDE_CONFIG_DIR/.ta-active` (default `~/.claude/.ta-active`) and outputs a colored badge
 - Shows `[CAVEMAN]`, `[CAVEMAN:ULTRA]`, `[CAVEMAN:WENYAN]`, etc.
-- Appends the lifetime savings suffix `⛏ 12.4k` from `$CLAUDE_CONFIG_DIR/.caveman-statusline-suffix` (written by `caveman-stats.js` on each `/caveman-stats` run; absent until the first run, so fresh installs render no fake number). Opt out with `CAVEMAN_STATUSLINE_SAVINGS=0`.
+- Appends the lifetime savings suffix `⛏ 12.4k` from `$CLAUDE_CONFIG_DIR/.ta-statusline-suffix` (written by `ta-stats.js` on each `/caveman-stats` run; absent until the first run, so fresh installs render no fake number). Opt out with `CAVEMAN_STATUSLINE_SAVINGS=0`.
 
 ## Statusline Badge
 
@@ -42,7 +42,7 @@ If you already have a custom statusline, caveman does not overwrite it and Claud
 {
   "statusLine": {
     "type": "command",
-    "command": "bash /path/to/caveman-statusline.sh"
+    "command": "bash /path/to/ta-statusline.sh"
   }
 }
 ```
@@ -51,7 +51,7 @@ If you already have a custom statusline, caveman does not overwrite it and Claud
 {
   "statusLine": {
     "type": "command",
-    "command": "powershell -ExecutionPolicy Bypass -File C:\\path\\to\\caveman-statusline.ps1"
+    "command": "powershell -ExecutionPolicy Bypass -File C:\\path\\to\\ta-statusline.ps1"
   }
 }
 ```
@@ -62,7 +62,7 @@ Replace the path with the actual script location (e.g. `~/.claude/hooks/` for st
 
 ```bash
 caveman_text=""
-caveman_flag="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.caveman-active"
+caveman_flag="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.ta-active"
 if [ -f "$caveman_flag" ]; then
   caveman_mode=$(cat "$caveman_flag" 2>/dev/null)
   if [ "$caveman_mode" = "full" ] || [ -z "$caveman_mode" ]; then
@@ -84,7 +84,7 @@ Badge examples:
 ## How It Works
 
 ```
-SessionStart hook ──writes "full"──▶ $CLAUDE_CONFIG_DIR/.caveman-active ◀──writes mode── UserPromptSubmit hook
+SessionStart hook ──writes "full"──▶ $CLAUDE_CONFIG_DIR/.ta-active ◀──writes mode── UserPromptSubmit hook
                                               │
                                            reads
                                               ▼
@@ -106,6 +106,6 @@ node bin/install.js --uninstall
 ```
 
 Or manually:
-1. Remove the caveman hook files from `$CLAUDE_CONFIG_DIR/hooks/` (default `~/.claude/hooks/`): `caveman-activate.js`, `caveman-mode-tracker.js`, `caveman-stats.js`, `caveman-config.js`, and `caveman-statusline.{sh,ps1}`.
+1. Remove the caveman hook files from `$CLAUDE_CONFIG_DIR/hooks/` (default `~/.claude/hooks/`): `ta-activate.js`, `ta-mode-tracker.js`, `ta-stats.js`, `ta-config.js`, and `caveman-statusline.{sh,ps1}`.
 2. Remove the SessionStart, UserPromptSubmit, and statusLine entries from `$CLAUDE_CONFIG_DIR/settings.json`.
-3. Delete `$CLAUDE_CONFIG_DIR/.caveman-active` (and `$CLAUDE_CONFIG_DIR/.caveman-statusline-suffix` if you ran `/caveman-stats`).
+3. Delete `$CLAUDE_CONFIG_DIR/.ta-active` (and `$CLAUDE_CONFIG_DIR/.ta-statusline-suffix` if you ran `/caveman-stats`).

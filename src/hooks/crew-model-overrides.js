@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // crew model overrides — patch installed agent frontmatter from env vars.
 //
-// Called by caveman-activate.js early in SessionStart so users can pin
+// Called by ta-activate.js early in SessionStart so users can pin
 // per-agent models without shadow-copying entire agent files.
 //
 // Env vars:

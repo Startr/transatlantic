@@ -15,7 +15,7 @@ import { createRequire } from 'node:module';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..', '..');
 const require = createRequire(import.meta.url);
-const CONFIG = require(path.join(ROOT, 'src', 'hooks', 'caveman-config.js'));
+const CONFIG = require(path.join(ROOT, 'src', 'hooks', 'ta-config.js'));
 
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), 'utf8');
 
@@ -93,16 +93,16 @@ test('poka-yoke: every command ships .md + .toml and appears in user-scope mirro
 // ── Byte-sync duplicates ──
 
 test('poka-yoke: caveman-init embedded RULE_BODY is byte-equal to the rule file', () => {
-  const tool = require(path.join(ROOT, 'src', 'tools', 'caveman-init.js'));
-  const file = read('src', 'rules', 'caveman-activate.md').trimEnd() + '\n';
-  assert.equal(tool.RULE_BODY, file, 'embedded RULE_BODY drifted from src/rules/caveman-activate.md');
+  const tool = require(path.join(ROOT, 'src', 'tools', 'ta-init.js'));
+  const file = read('src', 'rules', 'transatlantic-activate.md').trimEnd() + '\n';
+  assert.equal(tool.RULE_BODY, file, 'embedded RULE_BODY drifted from src/rules/transatlantic-activate.md');
   assert.ok(file.includes(tool.SENTINEL), 'SENTINEL no longer appears in the rule body');
 });
 
 test('poka-yoke: openclaw embedded bootstrap fallback is byte-equal to the file', () => {
   const oc = require(path.join(ROOT, 'bin', 'lib', 'openclaw.js'));
   assert.equal(oc.loadBootstrapSnippet(ROOT), oc.loadBootstrapSnippet(null),
-    'openclaw.js embedded fallback drifted from src/rules/caveman-openclaw-bootstrap.md');
+    'openclaw.js embedded fallback drifted from src/rules/transatlantic-openclaw-bootstrap.md');
 });
 
 test('poka-yoke: plugin mirror copies are byte-equal to their sources', () => {
@@ -134,8 +134,8 @@ test('poka-yoke: statusline scripts cover every VALID_MODE and alias', () => {
   const { VALID_MODES, LEGACY_ALIASES } = CONFIG;
   const expected = VALID_MODES.filter(m => m !== 'off');
   for (const [file, text] of [
-    ['caveman-statusline.sh', read('src', 'hooks', 'caveman-statusline.sh')],
-    ['caveman-statusline.ps1', read('src', 'hooks', 'caveman-statusline.ps1')],
+    ['ta-statusline.sh', read('src', 'hooks', 'ta-statusline.sh')],
+    ['ta-statusline.ps1', read('src', 'hooks', 'ta-statusline.ps1')],
   ]) {
     for (const mode of expected) {
       assert.ok(text.includes(mode),
@@ -168,7 +168,7 @@ test('poka-yoke: every prose level has a SKILL.md table row and example lines', 
 test('poka-yoke: INDEPENDENT_MODES and REINFORCEMENT defined once, in caveman-config', () => {
   assert.ok(Array.isArray(CONFIG.INDEPENDENT_MODES) && CONFIG.INDEPENDENT_MODES.length === 3);
   assert.ok(CONFIG.REINFORCEMENT && CONFIG.REINFORCEMENT.transatlantic);
-  for (const f of ['src/hooks/caveman-mode-tracker.js', 'src/hooks/caveman-activate.js', 'src/plugins/opencode/plugin.js']) {
+  for (const f of ['src/hooks/ta-mode-tracker.js', 'src/hooks/ta-activate.js', 'src/plugins/opencode/plugin.js']) {
     const text = read(...f.split('/'));
     assert.ok(!/new Set\(\['commit', 'review', 'compress'\]\)/.test(text),
       `${f} redefines INDEPENDENT_MODES instead of importing it`);

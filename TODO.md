@@ -43,13 +43,13 @@ ladder and citations: `docs/research/level-ladder.md`.
   - [ ] Wire statusline into `settings.json` via `bin/lib/settings.js` (hand-added 2026-07-30)
   - [ ] `--uninstall` removes marker-owned mirrored commands
   - [ ] Document the dev-mode install (installPath pointed at clone) and its marketplace-update revert risk
-- [ ] **Internal Filename Decision at 1.0**: `caveman-config.js`, `caveman-activate.js`, `caveman-mode-tracker.js`, `caveman-statusline.*`, `caveman-stats.js`, `caveman-init.js`, `.caveman-active` flag, `caveman-shrink` npm package — all functional, all still cave-named. Rename in one coordinated pass at the repo move (see CLAUDE.md fork banner for the split-brain rationale)
+- [ ] **Internal Filename Decision at 1.0**: `ta-config.js`, `ta-activate.js`, `ta-mode-tracker.js`, `caveman-statusline.*`, `ta-stats.js`, `ta-init.js`, `.ta-active` flag, `caveman-shrink` npm package — all functional, all still cave-named. Rename in one coordinated pass at the repo move (see CLAUDE.md fork banner for the split-brain rationale)
 
 ### Evidence Debt
 
 - [ ] **API Benchmarks Per Level**: Real numbers only — never estimate #critical
   - [ ] First community/API runs per level committed to `benchmarks/results/` (BYO-key flow live in `benchmarks/README.md`; `run.py --level` ready)
-  - [ ] Update `COMPRESSION` map in `src/hooks/caveman-stats.js` from results
+  - [ ] Update `COMPRESSION` map in `src/hooks/ta-stats.js` from results
   - [ ] Regenerate README benchmark table from committed results
 - [ ] **Eval Follow-ups**: Per-level CLI numbers exist (see Done); shrink the error bars
   - [ ] Regenerate legacy `evals/snapshots/results.json` for the new SKILL.md
@@ -85,7 +85,7 @@ _No known bugs. Use `# BUG:` inline tags to flag defects in source._
 - [x] **Name Research**: npm/GitHub availability probe — `transatlantic` free on npm, `pico` taken (2026-07-30)
 - [x] **Fork Bootstrap**: Six-level ladder landed on branch `transatlantic` — 29-source verified research pass, ladder doc with full bibliography, SKILL.md, hooks with legacy normalization, statusline, stats, all suites green, local machine swapped (2026-07-30)
 - [x] **TodoScope + Startr Scaffolds**: TODO.md, `.todoscope-exclude.csv`, universal Makefile, `.*`-allowlist `.gitignore` — all verified (2026-07-30)
-- [x] **Plugin + Package Rename**: manifest/marketplace/package to `transatlantic`; commands namespace `/transatlantic:*`; flag file stays `.caveman-active` until 1.0 by recorded decision (2026-07-31)
+- [x] **Plugin + Package Rename**: manifest/marketplace/package to `transatlantic`; commands namespace `/transatlantic:*`; flag file stays `.ta-active` until 1.0 by recorded decision (2026-07-31)
 - [x] **Docs in Liner Voice**: README (research-marketed, honest pre-release install), INSTALL banner, rule bodies, OpenClaw bootstrap (byte-synced), CLAUDE.md fork banner, env/config names with legacy fallbacks (2026-07-31)
 - [x] **Every Documented Command Resolves**: SessionStart hook mirrors plugin commands into user scope (marker-owned, idempotent, retires stale mirrors); trackers accept every namespaced spelling; tested (2026-07-31)
 - [x] **Caveman Command Retirement**: `/ta-*` family ships; no caveman-named command anywhere; per-repo rule files migrate legacy installs in place; typed legacy forms accepted undocumented (2026-07-31)

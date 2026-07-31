@@ -5,7 +5,7 @@
 // ignores commands/*.toml entirely (#571; TOML is the Gemini extension
 // format). With no commands/<name>.md on disk, the chat input is rejected as
 // "Unknown command" — the mode tracker's handlers in
-// src/hooks/caveman-mode-tracker.js never get a chance to intercept.
+// src/hooks/ta-mode-tracker.js never get a chance to intercept.
 //
 // README.md and INSTALL.md advertise the /caveman-* slash commands, so every
 // documented command MUST ship BOTH formats:
@@ -26,7 +26,7 @@ const REPO_ROOT = path.resolve(HERE, '..', '..');
 const COMMANDS_DIR = path.join(REPO_ROOT, 'commands');
 const STATS_TOML = path.join(COMMANDS_DIR, 'ta-stats.toml');
 
-// Mirrors the live regex in src/hooks/caveman-mode-tracker.js (the
+// Mirrors the live regex in src/hooks/ta-mode-tracker.js (the
 // `statsMatch` line). Anything that fails this here would also fail in
 // production, so the test stays representative if the hook regex shifts.
 const HOOK_STATS_REGEX = /^\/(?:ta-stats|transatlantic:ta-stats|caveman(?::caveman)?-stats|transatlantic:caveman-stats)(?:\s+(.*))?$/m;
@@ -53,7 +53,7 @@ test('#470 ta-stats.toml prompt is intercepted by the mode-tracker regex', () =>
   assert.match(
     prompt,
     HOOK_STATS_REGEX,
-    `Resolved prompt ${JSON.stringify(prompt)} must match the UserPromptSubmit handler regex in src/hooks/caveman-mode-tracker.js; otherwise the stats output is never injected.`,
+    `Resolved prompt ${JSON.stringify(prompt)} must match the UserPromptSubmit handler regex in src/hooks/ta-mode-tracker.js; otherwise the stats output is never injected.`,
   );
 });
 
@@ -98,7 +98,7 @@ test('#571 ta-stats.md body is intercepted by the mode-tracker regex', () => {
   assert.match(
     prompt,
     HOOK_STATS_REGEX,
-    `Resolved body ${JSON.stringify(prompt)} must match the UserPromptSubmit handler regex in src/hooks/caveman-mode-tracker.js; otherwise the stats output is never injected.`,
+    `Resolved body ${JSON.stringify(prompt)} must match the UserPromptSubmit handler regex in src/hooks/ta-mode-tracker.js; otherwise the stats output is never injected.`,
   );
 });
 
@@ -117,9 +117,9 @@ test('#571 command .md bodies use $ARGUMENTS, never the TOML {{args}} placeholde
 test('#603 ta-init command bodies do not run src/tools blindly', () => {
   for (const ext of ['md', 'toml']) {
     const body = fs.readFileSync(path.join(COMMANDS_DIR, `ta-init.${ext}`), 'utf8');
-    if (body.includes('src/tools/caveman-init.js')) {
+    if (body.includes('src/tools/ta-init.js')) {
       assert.ok(
-        /raw\.githubusercontent\.com.*caveman-init\.js/.test(body),
+        /raw\.githubusercontent\.com.*ta-init\.js/.test(body),
         `commands/caveman-init.${ext} references the repo-relative src/tools path without a standalone fallback (curl | node) — fails for every installed user (issue #603).`,
       );
       assert.match(

@@ -28,8 +28,12 @@ const path = require('path');
 
 const SKILL_NAME = 'transatlantic';
 const SKILL_VERSION = '1.0.0';
-const MARK_BEGIN = '<!-- caveman-begin -->';
-const MARK_END = '<!-- caveman-end -->';
+const MARK_BEGIN = '<!-- transatlantic-begin -->';
+const MARK_END = '<!-- transatlantic-end -->';
+// Blocks written by caveman-era installs — stripped on every append/uninstall
+// so upgrades never leave a stale grunt block behind.
+const LEGACY_MARK_BEGIN = '<!-- caveman-begin -->';
+const LEGACY_MARK_END = '<!-- caveman-end -->';
 const SOUL_FILE = 'SOUL.md';
 
 function resolveWorkspace(env = process.env) {
@@ -81,12 +85,12 @@ function mergeOpenclawFrontmatter(src) {
 // ── Bootstrap snippet load ────────────────────────────────────────────────
 function loadBootstrapSnippet(repoRoot) {
   if (repoRoot) {
-    const p = path.join(repoRoot, 'src', 'rules', 'caveman-openclaw-bootstrap.md');
+    const p = path.join(repoRoot, 'src', 'rules', 'transatlantic-openclaw-bootstrap.md');
     const body = readIfExists(p);
     if (body) return body.endsWith('\n') ? body : body + '\n';
   }
   // Standalone fallback (curl|node case where there's no repo on disk).
-  // Keep this in sync with src/rules/caveman-openclaw-bootstrap.md.
+  // Keep this in sync with src/rules/transatlantic-openclaw-bootstrap.md.
   return [
     MARK_BEGIN,
     '## Transatlantic mode (always on)',
@@ -126,21 +130,21 @@ function loadSkillBody(repoRoot) {
 // the next begin; an unpaired marker is removed as just the marker itself,
 // never as a span over user content.
 
-function stripAllBootstrapBlocks(text) {
+function stripBlocksFor(text, BEGIN, END) {
   let result = '';
   let found = false;
   let i = 0;
   while (i < text.length) {
-    const b = text.indexOf(MARK_BEGIN, i);
+    const b = text.indexOf(BEGIN, i);
     if (b === -1) { result += text.slice(i); break; }
     result += text.slice(i, b);
     found = true;
-    const nextB = text.indexOf(MARK_BEGIN, b + MARK_BEGIN.length);
-    const e = text.indexOf(MARK_END, b + MARK_BEGIN.length);
+    const nextB = text.indexOf(BEGIN, b + BEGIN.length);
+    const e = text.indexOf(END, b + BEGIN.length);
     if (e !== -1 && (nextB === -1 || e < nextB)) {
-      i = e + MARK_END.length; // well-formed block — drop begin..end inclusive
+      i = e + END.length; // well-formed block — drop begin..end inclusive
     } else {
-      i = b + MARK_BEGIN.length; // orphan begin — drop only the marker itself
+      i = b + BEGIN.length; // orphan begin — drop only the marker itself
     }
     // Collapse the blank-line scar around the cut (same cosmetic rule the
     // old single-cut code applied): keep at most one newline on each side.
@@ -149,8 +153,14 @@ function stripAllBootstrapBlocks(text) {
     if (lead) i += lead[0].length - (result ? 1 : 0);
   }
   // Orphan end markers (begin already gone or never written) — drop marker only.
-  while (result.includes(MARK_END)) { found = true; result = result.replace(MARK_END, ''); }
+  while (result.includes(END)) { found = true; result = result.replace(END, ''); }
   return { next: result, found };
+}
+
+function stripAllBootstrapBlocks(text) {
+  const a = stripBlocksFor(text, MARK_BEGIN, MARK_END);
+  const b = stripBlocksFor(a.next, LEGACY_MARK_BEGIN, LEGACY_MARK_END);
+  return { next: b.next, found: a.found || b.found };
 }
 
 function appendBootstrapToSoul(soulPath, snippet) {
@@ -161,10 +171,11 @@ function appendBootstrapToSoul(soulPath, snippet) {
   if (existing) {
     const nb = count(existing, MARK_BEGIN);
     const ne = count(existing, MARK_END);
-    if (nb === 1 && ne === 1 && existing.indexOf(MARK_END) > existing.indexOf(MARK_BEGIN)) {
+    const legacy = count(existing, LEGACY_MARK_BEGIN) + count(existing, LEGACY_MARK_END);
+    if (legacy === 0 && nb === 1 && ne === 1 && existing.indexOf(MARK_END) > existing.indexOf(MARK_BEGIN)) {
       return { changed: false, reason: 'already present' };
     }
-    if (nb > 0 || ne > 0) {
+    if (nb > 0 || ne > 0 || legacy > 0) {
       // Damaged markers — strip them safely first, then append one clean block.
       base = stripAllBootstrapBlocks(existing).next;
       repaired = true;

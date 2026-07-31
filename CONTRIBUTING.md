@@ -38,12 +38,12 @@ copies live under `plugins/transatlantic/` and similar mirror dirs — those are
 | Transatlantic quick-reference card | `skills/ta-help/SKILL.md` |
 | Cavecrew decision guide (when to delegate to subagents) | `skills/crew/SKILL.md` |
 | crew subagent definitions | `agents/crew-locator.md`, `agents/crew-editor.md`, `agents/crew-reviewer.md` |
-| Auto-activation rule body (Cursor/Windsurf/Cline/Copilot) | `src/rules/caveman-activate.md` |
+| Auto-activation rule body (Cursor/Windsurf/Cline/Copilot) | `src/rules/transatlantic-activate.md` |
 | Add support for a new agent | `bin/install.js` (PROVIDERS array) |
-| Per-repo init script (drops rule files into a user's repo) | `src/tools/caveman-init.js` |
-| Claude Code hooks | `src/hooks/caveman-activate.js`, `src/hooks/caveman-mode-tracker.js`, `src/hooks/caveman-config.js`, `src/hooks/caveman-statusline.sh`, `src/hooks/caveman-statusline.ps1` |
+| Per-repo init script (drops rule files into a user's repo) | `src/tools/ta-init.js` |
+| Claude Code hooks | `src/hooks/ta-activate.js`, `src/hooks/ta-mode-tracker.js`, `src/hooks/ta-config.js`, `src/hooks/ta-statusline.sh`, `src/hooks/ta-statusline.ps1` |
 | Settings.json read/write helpers | `bin/lib/settings.js` |
-| MCP shrink server | `src/mcp-servers/caveman-shrink/` |
+| MCP shrink server | `src/mcp-servers/ta-shrink/` |
 
 That's it. Every other markdown file with `SKILL.md` in the path is a copy.
 
@@ -173,10 +173,10 @@ PR descriptions don't need to be long. Transatlantic style fine. Just say what c
 
 A handful of invariants that have bitten us before. Keep them.
 
-- **Hooks must silent-fail on filesystem errors.** A `try/catch` that swallows the error is correct here. A hook that throws blocks Claude Code session start — that's user-facing breakage. See existing patterns in `src/hooks/caveman-activate.js`.
+- **Hooks must silent-fail on filesystem errors.** A `try/catch` that swallows the error is correct here. A hook that throws blocks Claude Code session start — that's user-facing breakage. See existing patterns in `src/hooks/ta-activate.js`.
 - **Settings.json reads and writes go through `bin/lib/settings.js`.** It tolerates JSONC comments. Direct `JSON.parse` on a user's `settings.json` will crash on a single `// comment`.
 - **Validate hook entries before writing.** Use `validateHookFields()` in `bin/lib/settings.js`. Claude Code's Zod schema silently discards the **entire** `settings.json` on a single bad hook entry — one malformed write poisons the user's whole config.
-- **Symlink-safe flag writes via `safeWriteFlag()`** in `src/hooks/caveman-config.js`. The flag file lives at a predictable path under `$CLAUDE_CONFIG_DIR/`; without `O_NOFOLLOW` and a parent-symlink check, a local attacker can clobber any file the user can write.
+- **Symlink-safe flag writes via `safeWriteFlag()`** in `src/hooks/ta-config.js`. The flag file lives at a predictable path under `$CLAUDE_CONFIG_DIR/`; without `O_NOFOLLOW` and a parent-symlink check, a local attacker can clobber any file the user can write.
 - **Honor `CLAUDE_CONFIG_DIR`.** Hooks, the installer, and the statusline scripts must respect it — never hardcode `~/.claude`.
 - **`install.sh` and `install.ps1` at the repo root are 30-line shims** that delegate to `bin/install.js`. Don't re-add per-OS install logic to them. Quoting bugs that way lie.
 

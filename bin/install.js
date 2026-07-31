@@ -43,19 +43,19 @@ const PLUGIN_ID = `${PLUGIN_NAME}@${PLUGIN_NAME}`;
 const PINNED_REF = process.env.TRANSATLANTIC_REF || process.env.CAVEMAN_REF || 'v1.0.1';
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${PINNED_REF}`;
 const HOOKS_REMOTE = `${RAW_BASE}/src/hooks`;
-const INIT_SCRIPT_URL = `${RAW_BASE}/src/tools/caveman-init.js`;
+const INIT_SCRIPT_URL = `${RAW_BASE}/src/tools/ta-init.js`;
 const MCP_SHRINK_PKG = 'caveman-shrink';
 // Hook files to copy. Statusline ships in both .sh (macOS/Linux) and .ps1
 // (Windows) flavors — copy both regardless of host OS so a roaming
 // $CLAUDE_CONFIG_DIR (e.g. dotfiles repo) keeps working across platforms.
 const HOOK_FILES = [
   'package.json',
-  'caveman-config.js',
-  'caveman-activate.js',
-  'caveman-mode-tracker.js',
-  'caveman-stats.js',
-  'caveman-statusline.sh',
-  'caveman-statusline.ps1',
+  'ta-config.js',
+  'ta-activate.js',
+  'ta-mode-tracker.js',
+  'ta-stats.js',
+  'ta-statusline.sh',
+  'ta-statusline.ps1',
   'crew-model-overrides.js',
 ];
 
@@ -133,7 +133,7 @@ function parseArgs(argv) {
         break;
       }
       default:
-        die(`error: unknown flag: ${a}\nrun 'caveman --help' for usage`);
+        die(`error: unknown flag: ${a}\nrun 'transatlantic --help' for usage`);
     }
   }
   if (opts.all && opts.minimal) die('error: --all and --minimal are mutually exclusive');
@@ -152,7 +152,7 @@ function parseArgs(argv) {
     const knownIds = new Set(PROVIDERS.map(p => p.id));
     for (const id of opts.only) {
       if (!knownIds.has(id)) {
-        die(`error: unknown agent: ${id}\n  see 'caveman --list' for valid ids`);
+        die(`error: unknown agent: ${id}\n  see 'transatlantic --list' for valid ids`);
       }
     }
   }
@@ -177,14 +177,14 @@ function checkWslWindowsNode() {
   // Windows-Node executing inside WSL has homedir like /mnt/c/Users/... which
   // breaks every config-dir resolution. Detect and abort with a clear hint.
   if (process.env.WSL_DISTRO_NAME) {
-    die('caveman: detected Windows Node.js running inside WSL.\n' +
+    die('transatlantic: detected Windows Node.js running inside WSL.\n' +
         '         Install Linux-native Node inside your WSL distro and re-run there.\n' +
         '         (WSL_DISTRO_NAME=' + process.env.WSL_DISTRO_NAME + ')');
   }
   try {
     const v = fs.readFileSync('/proc/version', 'utf8').toLowerCase();
     if (v.includes('microsoft') || v.includes('wsl')) {
-      die('caveman: detected Windows Node.js running inside WSL (/proc/version).\n' +
+      die('transatlantic: detected Windows Node.js running inside WSL (/proc/version).\n' +
           '         Install Linux-native Node inside your WSL distro and re-run there.');
     }
   } catch (_) { /* /proc/version absent on real Windows — fine */ }
@@ -192,7 +192,7 @@ function checkWslWindowsNode() {
 
 function checkNodeVersion() {
   const major = parseInt(process.versions.node.split('.')[0], 10);
-  if (major < 18) die(`caveman: Node ${process.versions.node} too old. Need Node ≥18. https://nodejs.org`);
+  if (major < 18) die(`transatlantic: Node ${process.versions.node} too old. Need Node ≥18. https://nodejs.org`);
 }
 
 // ── Provider matrix ────────────────────────────────────────────────────────
@@ -502,7 +502,7 @@ async function installClaude(ctx) {
     if (settings) {
       const pruned = SETTINGS.pruneOrphanedManagedHooks(settings, configDir);
       if (pruned > 0) {
-        note(`  removed ${pruned} orphaned caveman hook entr${pruned === 1 ? 'y' : 'ies'} from settings.json (target script missing)`);
+        note(`  removed ${pruned} orphaned transatlantic hook entr${pruned === 1 ? 'y' : 'ies'} from settings.json (target script missing)`);
         if (!opts.dryRun) {
           SETTINGS.validateHookFields(settings);
           SETTINGS.writeSettings(settingsPath, settings);
@@ -566,7 +566,7 @@ function installGemini(ctx) {
   if (!opts.force) {
     const r = captureSpawn('gemini', ['extensions', 'list']);
     if (r.status === 0 && /caveman/i.test(r.stdout || '')) {
-      note('  caveman extension already installed (use --force to reinstall)');
+      note('  transatlantic extension already installed (use --force to reinstall)');
       results.skipped.push(['gemini', 'extension already installed']);
       process.stdout.write('\n');
       return;
@@ -600,7 +600,7 @@ function installViaSkills(ctx, prov) {
 }
 
 // ── hermes native install ──────────────────────────────────────────────────
-// Drops the caveman skills into ~/.hermes/skills/productivity/ (or HERMES_HOME if set).
+// Drops the transatlantic skills into ~/.hermes/skills/productivity/ (or HERMES_HOME if set).
 const HERMES_SKILL_DIRS = ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
 
 function hermesConfigDir() {
@@ -615,7 +615,7 @@ function installHermes(ctx) {
   say('→ Hermes Agent detected');
 
   if (!repoRoot) {
-    warn('  Hermes native install requires a local clone of the caveman repo.');
+    warn('  Hermes native install requires a local clone of the transatlantic repo.');
     note('  Re-run from a clone: git clone https://github.com/' + REPO + ' && cd transatlantic && node bin/install.js --only hermes');
     results.failed.push(['hermes', 'native install requires local repo clone']);
     process.stdout.write('\n');
@@ -680,8 +680,12 @@ const OPENCODE_AGENTS_MD_SENTINELS = ['Speak in the transatlantic register', 'Re
 // Marker fence for the opencode AGENTS.md ruleset block. Same convention as
 // bin/lib/openclaw.js for SOUL.md — lets us strip our block cleanly even when
 // the user has authored content above AND below it.
-const OPENCODE_AGENTS_MD_BEGIN = '<!-- caveman-begin -->';
-const OPENCODE_AGENTS_MD_END = '<!-- caveman-end -->';
+const OPENCODE_AGENTS_MD_BEGIN = '<!-- transatlantic-begin -->';
+const OPENCODE_AGENTS_MD_END = '<!-- transatlantic-end -->';
+// Fences written by caveman-era installs — recognized so upgrades replace
+// them and uninstall strips them.
+const OPENCODE_AGENTS_MD_BEGIN_LEGACY = '<!-- caveman-begin -->';
+const OPENCODE_AGENTS_MD_END_LEGACY = '<!-- caveman-end -->';
 
 function opencodeConfigDir() {
   // opencode uses ~/.config/opencode on every platform (on Windows that's
@@ -706,7 +710,7 @@ function installOpencode(ctx) {
   say('→ opencode detected');
 
   if (!repoRoot) {
-    warn('  opencode native install requires a local clone of the caveman repo.');
+    warn('  opencode native install requires a local clone of the transatlantic repo.');
     note('  Re-run from a clone: git clone https://github.com/' + REPO + ' && cd transatlantic && node bin/install.js --only opencode');
     results.failed.push(['opencode', 'native install requires local repo clone']);
     process.stdout.write('\n');
@@ -723,7 +727,7 @@ function installOpencode(ctx) {
 
   if (opts.dryRun) {
     note(`  would mkdir ${pluginDir}/, ${commandsDir}/, ${agentsDir}/, ${skillsDir}/`);
-    note(`  would copy plugin.js + package.json + caveman-config.cjs into ${pluginDir}/`);
+    note(`  would copy plugin.js + package.json + ta-config.cjs into ${pluginDir}/`);
     note(`  would copy ${opencodeCommandFiles(repoRoot).length} command files into ${commandsDir}/`);
     note(`  would copy ${OPENCODE_AGENT_FILES.length} crew agents into ${agentsDir}/`);
     note(`  would copy ${OPENCODE_SKILL_DIRS.length} skill dirs into ${skillsDir}/`);
@@ -735,7 +739,7 @@ function installOpencode(ctx) {
   }
 
   try {
-    // 1. Plugin dir — copy plugin.js, package.json, caveman-config.js (sibling).
+    // 1. Plugin dir — copy plugin.js, package.json, ta-config.js (sibling).
     //    Same `--force` semantic as commands/agents/skills below: re-runs leave
     //    user edits to plugin.js alone unless --force is passed.
     fs.mkdirSync(pluginDir, { recursive: true });
@@ -745,8 +749,8 @@ function installOpencode(ctx) {
       [path.join(pluginSrc, 'package.json'), path.join(pluginDir, 'package.json')],
       // Renamed to .cjs because the plugin dir is "type": "module" — a bare .js
       // sibling would be loaded as ESM and break the plugin's require() bridge.
-      [path.join(repoRoot, 'src', 'hooks', 'caveman-config.js'),
-       path.join(pluginDir, 'caveman-config.cjs')],
+      [path.join(repoRoot, 'src', 'hooks', 'ta-config.js'),
+       path.join(pluginDir, 'ta-config.cjs')],
     ];
     for (const [src, dest] of pluginPayload) {
       if (fs.existsSync(dest) && !opts.force) {
@@ -801,16 +805,31 @@ function installOpencode(ctx) {
     //    a later --uninstall can strip our block cleanly even if the user has
     //    authored content above AND below it. Idempotency check uses the begin
     //    marker (the legacy sentinel still matches old installs).
-    const ruleBody = fs.readFileSync(path.join(repoRoot, 'src', 'rules', 'caveman-activate.md'), 'utf8').trimEnd() + '\n';
+    const ruleBody = fs.readFileSync(path.join(repoRoot, 'src', 'rules', 'transatlantic-activate.md'), 'utf8').trimEnd() + '\n';
     const fencedBlock = `${OPENCODE_AGENTS_MD_BEGIN}\n${ruleBody}${OPENCODE_AGENTS_MD_END}\n`;
     if (fs.existsSync(agentsMd)) {
       const existing = fs.readFileSync(agentsMd, 'utf8');
       const alreadyFenced = existing.includes(OPENCODE_AGENTS_MD_BEGIN)
         && existing.includes(OPENCODE_AGENTS_MD_END);
+      const legacyFenced = existing.includes(OPENCODE_AGENTS_MD_BEGIN_LEGACY)
+        && existing.includes(OPENCODE_AGENTS_MD_END_LEGACY);
+      let upgradedFence = false;
+      if (!alreadyFenced && legacyFenced) {
+        // Upgrade in place: swap the caveman-era fence for the current block,
+        // then continue to opencode.json registration below.
+        const b = existing.indexOf(OPENCODE_AGENTS_MD_BEGIN_LEGACY);
+        const e = existing.indexOf(OPENCODE_AGENTS_MD_END_LEGACY) + OPENCODE_AGENTS_MD_END_LEGACY.length;
+        const next = existing.slice(0, b) + fencedBlock.trimEnd() + existing.slice(e);
+        if (!opts.dryRun) fs.writeFileSync(agentsMd, next, { mode: 0o644 });
+        note(`  upgraded legacy fenced block in ${agentsMd}`);
+        upgradedFence = true;
+      }
       const matchedSentinel = OPENCODE_AGENTS_MD_SENTINELS.find(sn => existing.includes(sn));
       const alreadyByLegacySentinel = !alreadyFenced && Boolean(matchedSentinel);
-      if (alreadyFenced) {
-        note(`  ${agentsMd} already contains caveman ruleset`);
+      if (upgradedFence) {
+        // handled above
+      } else if (alreadyFenced) {
+        note(`  ${agentsMd} already contains the transatlantic ruleset`);
       } else if (alreadyByLegacySentinel) {
         if (!opts.force) {
           note(`  ${agentsMd} contains a legacy (un-fenced) caveman block — leaving as-is`);
@@ -846,7 +865,7 @@ function installOpencode(ctx) {
       } else {
         const sep = existing.endsWith('\n\n') ? '' : (existing.endsWith('\n') ? '\n' : '\n\n');
         fs.writeFileSync(agentsMd, existing + sep + fencedBlock, { mode: 0o644 });
-        process.stdout.write(`  appended caveman ruleset to ${agentsMd}\n`);
+        process.stdout.write(`  appended the transatlantic ruleset to ${agentsMd}\n`);
       }
     } else {
       fs.writeFileSync(agentsMd, fencedBlock, { mode: 0o644 });
@@ -976,7 +995,7 @@ async function installHooks(ctx) {
   }
 
   // chmod statusline (no-op on Windows)
-  try { fs.chmodSync(path.join(hooksDir, 'caveman-statusline.sh'), 0o755); } catch (_) {}
+  try { fs.chmodSync(path.join(hooksDir, 'ta-statusline.sh'), 0o755); } catch (_) {}
 
   // Merge into settings.json
   let settings = SETTINGS.readSettings(settingsPath);
@@ -993,25 +1012,25 @@ async function installHooks(ctx) {
   }
 
   const node = absoluteNodePath();
-  const activate = path.join(hooksDir, 'caveman-activate.js');
-  const tracker  = path.join(hooksDir, 'caveman-mode-tracker.js');
-  const statusline = path.join(hooksDir, 'caveman-statusline.sh');
+  const activate = path.join(hooksDir, 'ta-activate.js');
+  const tracker  = path.join(hooksDir, 'ta-mode-tracker.js');
+  const statusline = path.join(hooksDir, 'ta-statusline.sh');
 
   // Migrate any legacy bare-`node` invocations of our managed scripts.
   SETTINGS.rewriteLegacyManagedHookCommands(settings, node);
 
   SETTINGS.addCommandHook(settings, 'SessionStart', {
     command: `"${node}" "${activate}"`,
-    marker: 'caveman-activate',
+    marker: ['ta-activate.js', 'caveman-activate.js'],
     timeout: 5,
-    statusMessage: 'Loading caveman mode...',
+    statusMessage: 'Loading transatlantic mode...',
   });
 
   SETTINGS.addCommandHook(settings, 'UserPromptSubmit', {
     command: `"${node}" "${tracker}"`,
-    marker: 'caveman-mode-tracker',
+    marker: ['ta-mode-tracker.js', 'caveman-mode-tracker.js'],
     timeout: 5,
-    statusMessage: 'Tracking caveman mode...',
+    statusMessage: 'Tracking transatlantic mode...',
   });
 
   // Statusline — set if absent or already pointing at our script.
@@ -1020,7 +1039,7 @@ async function installHooks(ctx) {
   // Use -ExecutionPolicy Bypass so users without RemoteSigned policy can run.
   const psHost = IS_WIN && hasCmd('pwsh') ? 'pwsh' : (IS_WIN ? 'powershell' : null);
   const slCmd = IS_WIN
-    ? `${psHost} -NoProfile -ExecutionPolicy Bypass -File "${path.join(hooksDir, 'caveman-statusline.ps1')}"`
+    ? `${psHost} -NoProfile -ExecutionPolicy Bypass -File "${path.join(hooksDir, 'ta-statusline.ps1')}"`
     : `bash "${statusline}"`;
   if (!settings.statusLine) {
     settings.statusLine = { type: 'command', command: slCmd };
@@ -1029,10 +1048,10 @@ async function installHooks(ctx) {
     const existing = typeof settings.statusLine === 'string'
       ? settings.statusLine
       : (settings.statusLine.command || '');
-    if (existing.includes(statusline) || existing.includes('caveman-statusline')) {
+    if (existing.includes(statusline) || existing.includes('ta-statusline') || existing.includes('caveman-statusline')) {
       process.stdout.write('  statusline badge already configured.\n');
     } else {
-      process.stdout.write('  NOTE: existing statusline detected — caveman badge NOT added.\n');
+      process.stdout.write('  NOTE: existing statusline detected — transatlantic badge NOT added.\n');
       process.stdout.write('        See src/hooks/README.md to add the badge to your existing statusline.\n');
     }
   }
@@ -1076,7 +1095,7 @@ function installMcpShrink(ctx) {
     note(`    registered, wrapping: ${upstream.join(' ')}`);
     note(`    Edit ~/.claude.json mcpServers["caveman-shrink"] to change the upstream,`);
     note('    or `claude mcp remove caveman-shrink` to drop it.');
-    note(`    Docs: https://github.com/${REPO}/tree/main/src/mcp-servers/caveman-shrink`);
+    note(`    Docs: https://github.com/${REPO}/tree/main/src/mcp-servers/ta-shrink`);
     return { kind: 'ok' };
   }
   return { kind: 'fail', why: 'claude mcp add failed' };
@@ -1085,7 +1104,7 @@ function installMcpShrink(ctx) {
 // ── Init writers (per-repo rule files) ────────────────────────────────────
 async function runInit(ctx) {
   const { note, warn, opts, repoRoot } = ctx;
-  const local = repoRoot && path.join(repoRoot, 'src/tools/caveman-init.js');
+  const local = repoRoot && path.join(repoRoot, 'src/tools/ta-init.js');
   const args = [process.cwd()];
   if (opts.dryRun) args.push('--dry-run');
   if (opts.force)  args.push('--force');
@@ -1099,7 +1118,7 @@ async function runInit(ctx) {
     return true;
   }
   try {
-    const tmp = path.join(os.tmpdir(), `caveman-init-${process.pid}.js`);
+    const tmp = path.join(os.tmpdir(), `ta-init-${process.pid}.js`);
     await downloadTo(INIT_SCRIPT_URL, tmp);
     const r = child_process.spawnSync(absoluteNodePath(), [tmp, ...args], { stdio: 'inherit' });
     try { fs.unlinkSync(tmp); } catch (_) {}
@@ -1148,7 +1167,7 @@ function sha256File(p) {
 // the standard `sha256sum` text format: "<64-hex>  <path>" (two spaces, or
 // " *<path>" binary marker).
 async function loadRemoteHookChecksums() {
-  const tmp = path.join(os.tmpdir(), `caveman-checksums-${process.pid}-${Date.now()}.sha256`);
+  const tmp = path.join(os.tmpdir(), `ta-checksums-${process.pid}-${Date.now()}.sha256`);
   try {
     await downloadTo(`${HOOKS_REMOTE}/checksums.sha256`, tmp);
     const txt = fs.readFileSync(tmp, 'utf8');
@@ -1182,11 +1201,11 @@ function uninstall(ctx) {
       // Drop our statusline if it points at our script
       if (settings.statusLine) {
         const cmd = typeof settings.statusLine === 'string' ? settings.statusLine : (settings.statusLine.command || '');
-        if (cmd.includes('caveman-statusline')) delete settings.statusLine;
+        if (cmd.includes('ta-statusline') || cmd.includes('caveman-statusline')) delete settings.statusLine;
       }
       SETTINGS.validateHookFields(settings);
       if (!opts.dryRun) SETTINGS.writeSettings(settingsPath, settings);
-      ok(`  removed ${removed} caveman hook entr${removed === 1 ? 'y' : 'ies'} from settings.json`);
+      ok(`  removed ${removed} transatlantic hook entr${removed === 1 ? 'y' : 'ies'} from settings.json`);
     }
   }
 
@@ -1201,7 +1220,7 @@ function uninstall(ctx) {
   }
 
   // Plugin uninstall on Claude. Probe `plugin list` first so a re-run on a
-  // machine where caveman was never installed (or was already removed) doesn't
+  // machine where transatlantic was never installed (or was already removed) doesn't
   // print "Plugin not installed" stderr noise.
   if (hasCmd('claude')) {
     const probe = captureSpawn('claude', ['plugin', 'list']);
@@ -1248,7 +1267,7 @@ function uninstall(ctx) {
           if (Object.keys(cfg.mcp).length === 0) delete cfg.mcp;
         }
         if (!opts.dryRun) SETTINGS.writeSettings(ocJson, cfg);
-        ok(`  pruned caveman entries from ${ocJson}`);
+        ok(`  pruned transatlantic entries from ${ocJson}`);
       }
     }
     if (!opts.dryRun) { try { fs.rmSync(ocPluginDir, { recursive: true, force: true }); } catch (_) {} }
@@ -1279,11 +1298,15 @@ function uninstall(ctx) {
     const ocAgentsMd = path.join(ocDir, 'AGENTS.md');
     if (fs.existsSync(ocAgentsMd)) {
       const body = fs.readFileSync(ocAgentsMd, 'utf8');
-      const begin = body.indexOf(OPENCODE_AGENTS_MD_BEGIN);
-      const end = body.indexOf(OPENCODE_AGENTS_MD_END);
+      let BEG = OPENCODE_AGENTS_MD_BEGIN, FIN = OPENCODE_AGENTS_MD_END;
+      if (body.indexOf(BEG) === -1 && body.indexOf(OPENCODE_AGENTS_MD_BEGIN_LEGACY) !== -1) {
+        BEG = OPENCODE_AGENTS_MD_BEGIN_LEGACY; FIN = OPENCODE_AGENTS_MD_END_LEGACY;
+      }
+      const begin = body.indexOf(BEG);
+      const end = body.indexOf(FIN);
       if (begin !== -1 && end !== -1 && end > begin) {
         const before = body.slice(0, begin).replace(/\n+$/, '\n');
-        const after = body.slice(end + OPENCODE_AGENTS_MD_END.length).replace(/^\n+/, '\n');
+        const after = body.slice(end + FIN.length).replace(/^\n+/, '\n');
         let next = (before + after).trimEnd();
         next = next ? next + '\n' : '';
         if (!opts.dryRun) {
@@ -1305,7 +1328,7 @@ function uninstall(ctx) {
       }
     }
     // opencode flag file
-    const ocFlag = path.join(ocDir, '.caveman-active');
+    const ocFlag = path.join(ocDir, '.ta-active');
     if (fs.existsSync(ocFlag) && !opts.dryRun) { try { fs.unlinkSync(ocFlag); } catch (_) {} }
   }
 
@@ -1319,7 +1342,7 @@ function uninstall(ctx) {
       warn: (s) => warn(s),
     };
     const r = OPENCLAW.uninstallOpenclaw({ workspace: ocwWs, dryRun: opts.dryRun, log });
-    if (r.touched) ok('  pruned caveman entries from OpenClaw workspace');
+    if (r.touched) ok('  pruned transatlantic entries from OpenClaw workspace');
   }
 
   // Hermes native install — remove the skill folders installHermes copied.
@@ -1339,7 +1362,7 @@ function uninstall(ctx) {
   }
 
   // Flag file
-  const flag = path.join(configDir, '.caveman-active');
+  const flag = path.join(configDir, '.ta-active');
   if (fs.existsSync(flag) && !opts.dryRun) { try { fs.unlinkSync(flag); } catch (_) {} }
 
   process.stdout.write('\n');
@@ -1512,7 +1535,7 @@ async function main() {
   if (opts.withInit) {
     ctx.say(`→ writing per-repo IDE rule files into ${process.cwd()} (--with-init)`);
     if (await runInit(ctx)) ctx.results.installed.push(`caveman-init (${process.cwd()})`);
-    else                    ctx.results.failed.push(['caveman-init', 'src/tools/caveman-init.js failed']);
+    else                    ctx.results.failed.push(['caveman-init', 'src/tools/ta-init.js failed']);
     process.stdout.write('\n');
   } else if (ctx.results.installed.length || ctx.results.skipped.length) {
     ctx.note('  tip: re-run inside a repo with --all (or --with-init) to also write per-repo');

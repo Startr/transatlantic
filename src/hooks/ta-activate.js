@@ -2,17 +2,17 @@
 // caveman — Claude Code SessionStart activation hook
 //
 // Runs on every session start:
-//   1. Writes flag file at $CLAUDE_CONFIG_DIR/.caveman-active (statusline reads this)
+//   1. Writes flag file at $CLAUDE_CONFIG_DIR/.ta-active (statusline reads this)
 //   2. Emits caveman ruleset as hidden SessionStart context
 //   3. Detects missing statusline config and emits setup nudge
 
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { getDefaultMode, safeWriteFlag, recordModeChange, INDEPENDENT_MODES: INDEPENDENT_LIST } = require('./caveman-config');
+const { getDefaultMode, safeWriteFlag, recordModeChange, migrateLegacyState, INDEPENDENT_MODES: INDEPENDENT_LIST } = require('./ta-config');
 
 const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
-const flagPath = path.join(claudeDir, '.caveman-active');
+const flagPath = path.join(claudeDir, '.ta-active');
 const settingsPath = path.join(claudeDir, 'settings.json');
 
 // Apply per-agent model overrides from env vars before emitting rules.
@@ -21,6 +21,8 @@ try {
   const { applyOverrides, resolvePluginRoot } = require('./crew-model-overrides');
   applyOverrides(resolvePluginRoot(__dirname));
 } catch (e) {}
+
+migrateLegacyState(claudeDir);
 
 const mode = getDefaultMode();
 
@@ -206,7 +208,7 @@ try {
 
   if (!hasStatusline) {
     const isWindows = process.platform === 'win32';
-    const scriptName = isWindows ? 'caveman-statusline.ps1' : 'caveman-statusline.sh';
+    const scriptName = isWindows ? 'ta-statusline.ps1' : 'ta-statusline.sh';
     const scriptPath = path.join(__dirname, scriptName);
     const command = isWindows
       ? `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`

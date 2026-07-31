@@ -2,7 +2,7 @@
 // caveman-stats — read the active Claude Code session log, print real token
 // usage plus an estimated savings figure from the benchmark in benchmarks/.
 //
-// Run directly:    node hooks/caveman-stats.js
+// Run directly:    node hooks/ta-stats.js
 // Inside Claude:   /caveman-stats triggers this via the UserPromptSubmit hook.
 // Hook integration passes --session-file <transcript_path> so we always read
 // the active session, not whichever JSONL was modified most recently.
@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { readFlag, appendFlag, readHistory, safeWriteFlag, VALID_MODES, MODE_LOG_BASENAME, normalizeMode } = require('./caveman-config');
+const { readFlag, appendFlag, readHistory, safeWriteFlag, VALID_MODES, MODE_LOG_BASENAME, normalizeMode } = require('./ta-config');
 
 // Mean per-task savings from benchmarks/results/*.json (avg_savings: 65 across
 // 10 tasks, sonnet-4-20250514). Measured against the legacy caveman 'full'
@@ -151,7 +151,7 @@ function summarizeCompressed(pairs) {
 // happens to hold at stats time — a mid-session mode change would inflate the
 // estimate (verbose tokens counted as compressed) or zero it (caveman tokens
 // counted as uncompressed). The mode tracker + SessionStart hook append
-// {ts, mode, prev} rows to .caveman-mode-log.jsonl on every actual transition;
+// {ts, mode, prev} rows to .ta-mode-log.jsonl on every actual transition;
 // stats joins those timestamps against the session JSONL message timestamps.
 
 // Read + validate the transition log. Returns rows sorted by ts.
@@ -457,7 +457,7 @@ function main() {
   const sinceArg = sinceIdx !== -1 ? args[sinceIdx + 1] : null;
 
   const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
-  const historyPath = path.join(claudeDir, '.caveman-history.jsonl');
+  const historyPath = path.join(claudeDir, '.ta-history.jsonl');
 
   // Lifetime aggregation paths short-circuit before we need a live session.
   if (all || sinceArg) {
@@ -479,7 +479,7 @@ function main() {
   }
 
   const parsed = parseSession(sessionFile);
-  const flagPath = path.join(claudeDir, '.caveman-active');
+  const flagPath = path.join(claudeDir, '.ta-active');
   const mode = readFlag(flagPath);
 
   // #601: attribute tokens to the mode active when each message happened,
@@ -515,10 +515,10 @@ function main() {
     // Statusline suffix: tiny pre-rendered string the shell statusline can
     // cat without parsing JSONL. Updated on every /caveman-stats run.
     // Routed through safeWriteFlag — the suffix path is predictable and
-    // user-owned, same symlink-clobber surface as the .caveman-active flag.
+    // user-owned, same symlink-clobber surface as the .ta-active flag.
     const agg = aggregateHistory(historyPath, null);
     const suffix = agg.estSavedTokens > 0 ? `⛏  ${humanizeTokens(agg.estSavedTokens)}` : '';
-    safeWriteFlag(path.join(claudeDir, '.caveman-statusline-suffix'), suffix);
+    safeWriteFlag(path.join(claudeDir, '.ta-statusline-suffix'), suffix);
   }
 
   if (share) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Tests for the stdin 'error' handler in caveman-mode-tracker.js.
+// Tests for the stdin 'error' handler in ta-mode-tracker.js.
 // Covers issue #538: an abnormal stdin close (broken pipe, parent crash) emits
 // an 'error' event on process.stdin; without a listener Node throws it as an
 // uncaught exception and the hook exits non-zero — a spurious hook failure.
@@ -12,7 +12,7 @@ const fs = require('fs');
 const assert = require('assert');
 const { spawnSync } = require('child_process');
 
-const HOOK_PATH = path.resolve(__dirname, '..', 'src', 'hooks', 'caveman-mode-tracker.js');
+const HOOK_PATH = path.resolve(__dirname, '..', 'src', 'hooks', 'ta-mode-tracker.js');
 const CLEAN_EXIT = 0;
 
 let passed = 0;

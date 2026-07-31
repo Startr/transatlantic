@@ -46,11 +46,11 @@ Q: "where symlink-safe flag write?"
 
 ```
 Defs:
-- hooks/caveman-config.js:81 — `safeWriteFlag` — atomic write w/ O_NOFOLLOW
-- hooks/caveman-config.js:160 — `readFlag` — paired reader
+- hooks/ta-config.js:81 — `safeWriteFlag` — atomic write w/ O_NOFOLLOW
+- hooks/ta-config.js:160 — `readFlag` — paired reader
 Callers:
-- hooks/caveman-mode-tracker.js:33,87
-- hooks/caveman-activate.js:40
+- hooks/ta-mode-tracker.js:33,87
+- hooks/ta-activate.js:40
 Tests:
 - tests/test_symlink_flag.js — 12 cases
 2 defs, 3 callers, 1 test file.

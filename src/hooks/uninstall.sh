@@ -8,9 +8,9 @@ set -e
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 HOOKS_DIR="$CLAUDE_DIR/hooks"
 SETTINGS="$CLAUDE_DIR/settings.json"
-FLAG_FILE="$CLAUDE_DIR/.caveman-active"
+FLAG_FILE="$CLAUDE_DIR/.ta-active"
 
-HOOK_FILES=("package.json" "caveman-config.js" "caveman-activate.js" "caveman-mode-tracker.js" "caveman-stats.js" "caveman-statusline.sh" "crew-model-overrides.js")
+HOOK_FILES=("package.json" "ta-config.js" "ta-activate.js" "ta-mode-tracker.js" "ta-stats.js" "ta-statusline.sh" "crew-model-overrides.js")
 
 # Detect if caveman is installed as a plugin (check plugin cache)
 PLUGIN_INSTALLED=0
@@ -63,7 +63,7 @@ if [ -f "$SETTINGS" ]; then
       const fs = require('fs');
       const settingsPath = process.env.CAVEMAN_SETTINGS;
       const hooksDir = process.env.CAVEMAN_HOOKS_DIR;
-      const managedStatusLinePath = hooksDir + '/caveman-statusline.sh';
+      const managedStatusLinePath = hooksDir + '/ta-statusline.sh';
       const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
 
       const isCavemanEntry = (entry) =>

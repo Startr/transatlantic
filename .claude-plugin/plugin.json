@@ -11,7 +11,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/caveman-activate.js\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/ta-activate.js\"",
             "timeout": 5,
             "statusMessage": "Loading transatlantic mode..."
           }
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/caveman-mode-tracker.js\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/src/hooks/ta-mode-tracker.js\"",
             "timeout": 5,
             "statusMessage": "Tracking transatlantic mode..."
           }

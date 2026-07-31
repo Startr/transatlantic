@@ -167,21 +167,21 @@ def verify_manifests_and_syntax() -> None:
     for path in manifest_paths:
         read_json(path)
 
-    run(["node", "--check", "src/hooks/caveman-config.js"])
-    run(["node", "--check", "src/hooks/caveman-activate.js"])
-    run(["node", "--check", "src/hooks/caveman-mode-tracker.js"])
+    run(["node", "--check", "src/hooks/ta-config.js"])
+    run(["node", "--check", "src/hooks/ta-activate.js"])
+    run(["node", "--check", "src/hooks/ta-mode-tracker.js"])
     run(["node", "--check", "src/hooks/cavecrew-model-overrides.js"])
     run(["node", "--check", "bin/install.js"])
     run(["node", "--check", "bin/lib/settings.js"])
     run(["bash", "-n", "src/hooks/install.sh"])
     run(["bash", "-n", "src/hooks/uninstall.sh"])
-    run(["bash", "-n", "src/hooks/caveman-statusline.sh"])
+    run(["bash", "-n", "src/hooks/ta-statusline.sh"])
 
-    # Ensure install/uninstall scripts include caveman-config.js
+    # Ensure install/uninstall scripts include ta-config.js
     install_sh = (ROOT / "src/hooks/install.sh").read_text(encoding="utf-8")
     uninstall_sh = (ROOT / "src/hooks/uninstall.sh").read_text(encoding="utf-8")
-    ensure("caveman-config.js" in install_sh, "install.sh missing caveman-config.js")
-    ensure("caveman-config.js" in uninstall_sh, "uninstall.sh missing caveman-config.js")
+    ensure("ta-config.js" in install_sh, "install.sh missing ta-config.js")
+    ensure("ta-config.js" in uninstall_sh, "uninstall.sh missing ta-config.js")
 
     print("JSON manifests and JS/bash syntax OK")
 
@@ -190,18 +190,18 @@ def verify_powershell_static() -> None:
     section("PowerShell Static Checks")
     install_text = (ROOT / "src/hooks/install.ps1").read_text(encoding="utf-8")
     uninstall_text = (ROOT / "src/hooks/uninstall.ps1").read_text(encoding="utf-8")
-    statusline_text = (ROOT / "src/hooks/caveman-statusline.ps1").read_text(encoding="utf-8")
+    statusline_text = (ROOT / "src/hooks/ta-statusline.ps1").read_text(encoding="utf-8")
 
-    ensure("caveman-config.js" in install_text, "install.ps1 missing caveman-config.js")
-    ensure("caveman-config.js" in uninstall_text, "uninstall.ps1 missing caveman-config.js")
-    ensure("caveman-statusline.ps1" in install_text, "install.ps1 missing statusline.ps1")
-    ensure("caveman-statusline.ps1" in uninstall_text, "uninstall.ps1 missing statusline.ps1")
+    ensure("ta-config.js" in install_text, "install.ps1 missing ta-config.js")
+    ensure("ta-config.js" in uninstall_text, "uninstall.ps1 missing ta-config.js")
+    ensure("ta-statusline.ps1" in install_text, "install.ps1 missing statusline.ps1")
+    ensure("ta-statusline.ps1" in uninstall_text, "uninstall.ps1 missing statusline.ps1")
     ensure("-AsHashtable" not in install_text, "install.ps1 should stay compatible with Windows PowerShell 5.1")
     ensure(
         "powershell -ExecutionPolicy Bypass -File" in install_text,
         "install.ps1 missing PowerShell statusline command",
     )
-    ensure("[CAVEMAN" in statusline_text, "caveman-statusline.ps1 missing badge output")
+    ensure("[CAVEMAN" in statusline_text, "ta-statusline.ps1 missing badge output")
 
     print("Windows install path statically wired")
 
@@ -288,34 +288,34 @@ def verify_hook_install_flow() -> None:
         ensure("UserPromptSubmit" in hooks, "UserPromptSubmit hook missing after install")
 
         activate = run(
-            ["node", "src/hooks/caveman-activate.js"],
+            ["node", "src/hooks/ta-activate.js"],
             env=hook_env,
         )
         ensure("CAVEMAN MODE ACTIVE" in activate.stdout, "activation output missing caveman banner")
         ensure("STATUSLINE SETUP NEEDED" not in activate.stdout, "activation should stay quiet when custom statusline exists")
-        ensure((claude_dir / ".caveman-active").read_text(encoding="utf-8") == "full", "activation flag should default to full")
+        ensure((claude_dir / ".ta-active").read_text(encoding="utf-8") == "full", "activation flag should default to full")
 
         # Test configurable default mode via CAVEMAN_DEFAULT_MODE env var
         activate_custom = run(
-            ["node", "src/hooks/caveman-activate.js"],
+            ["node", "src/hooks/ta-activate.js"],
             env={**hook_env, "CAVEMAN_DEFAULT_MODE": "ultra"},
         )
         ensure("CAVEMAN MODE ACTIVE" in activate_custom.stdout, "activation with custom default missing banner")
         ensure(
-            (claude_dir / ".caveman-active").read_text(encoding="utf-8") == "ultra",
+            (claude_dir / ".ta-active").read_text(encoding="utf-8") == "ultra",
             "CAVEMAN_DEFAULT_MODE=ultra should set flag to ultra",
         )
         # Test "off" mode — activation skipped, flag removed
         activate_off = run(
-            ["node", "src/hooks/caveman-activate.js"],
+            ["node", "src/hooks/ta-activate.js"],
             env={**hook_env, "CAVEMAN_DEFAULT_MODE": "off"},
         )
         ensure("CAVEMAN MODE ACTIVE" not in activate_off.stdout, "off mode should not emit caveman banner")
-        ensure(not (claude_dir / ".caveman-active").exists(), "off mode should remove flag file")
+        ensure(not (claude_dir / ".ta-active").exists(), "off mode should remove flag file")
 
         # Test mode tracker with /caveman when default is off — should NOT write flag
         subprocess.run(
-            ["node", "src/hooks/caveman-mode-tracker.js"],
+            ["node", "src/hooks/ta-mode-tracker.js"],
             cwd=ROOT,
             env={**os.environ, **hook_env, "CAVEMAN_DEFAULT_MODE": "off"},
             text=True,
@@ -324,19 +324,19 @@ def verify_hook_install_flow() -> None:
             capture_output=True,
             check=True,
         )
-        ensure(not (claude_dir / ".caveman-active").exists(), "/caveman with off default should not write flag")
+        ensure(not (claude_dir / ".ta-active").exists(), "/caveman with off default should not write flag")
 
         # Reset back to full for subsequent tests
-        (claude_dir / ".caveman-active").write_text("full")
+        (claude_dir / ".ta-active").write_text("full")
 
         run(
-            ["node", "src/hooks/caveman-mode-tracker.js"],
+            ["node", "src/hooks/ta-mode-tracker.js"],
             env=hook_env,
             check=True,
         )
 
         ultra_prompt = subprocess.run(
-            ["node", "src/hooks/caveman-mode-tracker.js"],
+            ["node", "src/hooks/ta-mode-tracker.js"],
             cwd=ROOT,
             env={**os.environ, **hook_env},
             text=True,
@@ -349,10 +349,10 @@ def verify_hook_install_flow() -> None:
             "CAVEMAN MODE ACTIVE (ultra)" in ultra_prompt.stdout,
             "mode tracker should emit active-mode reinforcement",
         )
-        ensure((claude_dir / ".caveman-active").read_text(encoding="utf-8") == "ultra", "mode tracker did not record ultra")
+        ensure((claude_dir / ".ta-active").read_text(encoding="utf-8") == "ultra", "mode tracker did not record ultra")
 
         subprocess.run(
-            ["node", "src/hooks/caveman-mode-tracker.js"],
+            ["node", "src/hooks/ta-mode-tracker.js"],
             cwd=ROOT,
             env={**os.environ, **hook_env},
             text=True,
@@ -361,11 +361,11 @@ def verify_hook_install_flow() -> None:
             capture_output=True,
             check=True,
         )
-        ensure(not (claude_dir / ".caveman-active").exists(), "normal mode should remove flag file")
+        ensure(not (claude_dir / ".ta-active").exists(), "normal mode should remove flag file")
 
-        (claude_dir / ".caveman-active").write_text("wenyan-ultra")
+        (claude_dir / ".ta-active").write_text("wenyan-ultra")
         statusline = run(
-            ["bash", "src/hooks/caveman-statusline.sh"],
+            ["bash", "src/hooks/ta-statusline.sh"],
             env=hook_env,
         )
         ensure("[CAVEMAN:WENYAN-ULTRA]" in statusline.stdout, "statusline badge output mismatch")
@@ -376,7 +376,7 @@ def verify_hook_install_flow() -> None:
         run(["bash", "src/hooks/uninstall.sh"], env=hook_env)
         settings_after = read_json(claude_dir / "settings.json")
         ensure(settings_after == existing_settings, "uninstall.sh did not restore non-caveman settings")
-        ensure(not (claude_dir / ".caveman-active").exists(), "uninstall.sh should remove flag file")
+        ensure(not (claude_dir / ".ta-active").exists(), "uninstall.sh should remove flag file")
 
     with tempfile.TemporaryDirectory(prefix="caveman-verify-fresh-") as temp_root:
         home = Path(temp_root) / "home"
@@ -385,7 +385,7 @@ def verify_hook_install_flow() -> None:
         run(["bash", "src/hooks/install.sh"], env=hook_env)
         settings = read_json(claude_dir / "settings.json")
         ensure("statusLine" in settings, "fresh install should configure statusline")
-        activate = run(["node", "src/hooks/caveman-activate.js"], env=hook_env)
+        activate = run(["node", "src/hooks/ta-activate.js"], env=hook_env)
         ensure("STATUSLINE SETUP NEEDED" not in activate.stdout, "fresh install should not nudge for statusline")
         run(["bash", "src/hooks/uninstall.sh"], env=hook_env)
         ensure(read_json(claude_dir / "settings.json") == {}, "fresh uninstall should leave empty settings")

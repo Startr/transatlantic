@@ -18,7 +18,7 @@ const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'caveman-userhome-'));
 process.env.XDG_CONFIG_HOME = tmpHome;
 delete process.env.CAVEMAN_DEFAULT_MODE;
 
-const { getDefaultMode, findRepoConfigPath } = require('../src/hooks/caveman-config');
+const { getDefaultMode, findRepoConfigPath } = require('../src/hooks/ta-config');
 
 let passed = 0;
 let failed = 0;

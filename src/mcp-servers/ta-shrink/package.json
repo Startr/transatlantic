@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/JuliusBrussee/caveman.git",
-    "directory": "src/mcp-servers/caveman-shrink"
+    "directory": "src/mcp-servers/ta-shrink"
   },
   "author": "Julius Brussee",
   "keywords": [

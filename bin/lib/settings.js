@@ -1,7 +1,7 @@
 // caveman — JSONC-tolerant settings.json read/write + defensive hook validation.
 //
 // Lifted in spirit from gsd-build/get-shit-done's stripJsonComments + readSettings.
-// Reused by bin/install.js and (optionally) by hooks/caveman-activate.js so a
+// Reused by bin/install.js and (optionally) by hooks/ta-activate.js so a
 // commented settings.json no longer crashes the installer or the runtime hooks.
 //
 // Public API:
@@ -154,11 +154,12 @@ function validateHookFields(settings) {
 
 // ── Idempotency probe ──────────────────────────────────────────────────────
 function hasCavemanHook(settings, event, marker = 'caveman') {
+  const markers = Array.isArray(marker) ? marker : [marker];
   const arr = settings && settings.hooks && settings.hooks[event];
   if (!Array.isArray(arr)) return false;
   return arr.some(e =>
     e && Array.isArray(e.hooks) &&
-    e.hooks.some(h => h && typeof h.command === 'string' && h.command.includes(marker))
+    e.hooks.some(h => h && typeof h.command === 'string' && markers.some(m => h.command.includes(m)))
   );
 }
 
@@ -184,6 +185,12 @@ function addCommandHook(settings, event, opts) {
 // against a bare "caveman" substring, which also matches user-authored hooks
 // that merely mention the word in a path (issue #593).
 const MANAGED_HOOK_BASENAMES = new Set([
+  'ta-activate.js',
+  'ta-mode-tracker.js',
+  'ta-stats.js',
+  'ta-statusline.sh',
+  'ta-statusline.ps1',
+  // caveman-era basenames — recognized so upgrade/uninstall strips old installs
   'caveman-activate.js',
   'caveman-mode-tracker.js',
   'caveman-stats.js',
@@ -204,7 +211,7 @@ function tokenizeCommand(command) {
 }
 
 // True iff some token's BASENAME exactly equals a managed script name. Exact
-// match — not substring — so `mycaveman-activate.js` or a user hook living
+// match — not substring — so `myta-activate.js` or a user hook living
 // under a `caveman-notes/` directory is never treated as ours. win32.basename
 // splits on both / and \ so a settings.json written on Windows still matches
 // when processed elsewhere.
@@ -278,7 +285,7 @@ function rewriteLegacyManagedHookCommands(settings, absoluteNode) {
 // scripts but leaves the settings.json entries pointing at the now-missing
 // file. Claude Code then runs `node <missing>` every SessionStart /
 // UserPromptSubmit and crashes with `node:…/loader:1478 — Cannot find module
-// …caveman-activate.js` (issue #471). rewriteLegacyManagedHookCommands can't
+// …ta-activate.js` (issue #471). rewriteLegacyManagedHookCommands can't
 // help — it only matches the bare-node shape and these orphans are usually
 // absolute-node — and removeCavemanHooks runs only on uninstall.
 //
@@ -294,7 +301,7 @@ function pruneOrphanedManagedHooks(settings, configDir) {
 
   // A command is a missing managed target iff some token's BASENAME exactly
   // equals a managed script (exact match — not substring — so a user hook like
-  // `mycaveman-activate.js` is never touched) and that resolved path is absent.
+  // `myta-activate.js` is never touched) and that resolved path is absent.
   // Relative paths resolve against configDir; honors CLAUDE_CONFIG_DIR. Wrapped
   // so a malformed command or fs error never throws out of the prune pass.
   const targetMissing = (command) => {

@@ -145,11 +145,11 @@ For agents without a hook system (Cursor, Windsurf, Cline, Copilot, and friends)
 node bin/install.js --with-init
 
 # Or pull the rule body straight in (manual)
-curl -fsSL https://raw.githubusercontent.com/Startr/transatlantic/master/src/rules/caveman-activate.md \
+curl -fsSL https://raw.githubusercontent.com/Startr/transatlantic/master/src/rules/transatlantic-activate.md \
   > .cursor/rules/caveman.mdc   # or .windsurf/rules/caveman.md, .clinerules/caveman.md, .github/copilot-instructions.md
 ```
 
-`--with-init` writes the rule into every supported per-agent location it can detect (`.cursor/rules/`, `.windsurf/rules/`, `.clinerules/`, `.github/copilot-instructions.md`, `.opencode/AGENTS.md`, `AGENTS.md`). It also installs the OpenClaw workspace bootstrap (skill folder + SOUL.md marker block) when `~/.openclaw/workspace/` exists. Single source: [`src/rules/caveman-activate.md`](src/rules/caveman-activate.md).
+`--with-init` writes the rule into every supported per-agent location it can detect (`.cursor/rules/`, `.windsurf/rules/`, `.clinerules/`, `.github/copilot-instructions.md`, `.opencode/AGENTS.md`, `AGENTS.md`). It also installs the OpenClaw workspace bootstrap (skill folder + SOUL.md marker block) when `~/.openclaw/workspace/` exists. Single source: [`src/rules/transatlantic-activate.md`](src/rules/transatlantic-activate.md).
 
 ## Verify
 
@@ -170,7 +170,7 @@ Open Claude Code, type `/caveman`. Response should be terse fragments — "Got i
 **3. Check the flag file.**
 
 ```bash
-cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.caveman-active"
+cat "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.ta-active"
 # expected output: full
 ```
 
@@ -187,11 +187,11 @@ npx -y github:Startr/transatlantic -- --uninstall
 What it removes:
 
 - Caveman hook entries from `$CLAUDE_CONFIG_DIR/settings.json` (default `~/.claude/`; matched by the substring `caveman`).
-- Hook files in `$CLAUDE_CONFIG_DIR/hooks/` (`caveman-activate.js`, `caveman-mode-tracker.js`, `caveman-stats.js`, `caveman-config.js`, `caveman-statusline.{sh,ps1}`, plus the dir's `package.json` marker).
+- Hook files in `$CLAUDE_CONFIG_DIR/hooks/` (`ta-activate.js`, `ta-mode-tracker.js`, `ta-stats.js`, `ta-config.js`, `caveman-statusline.{sh,ps1}`, plus the dir's `package.json` marker).
 - The Claude Code plugin and the Gemini CLI extension (if installed).
 - The opencode native plugin (`~/.config/opencode/plugins/caveman/`, the `plugin` and `mcp.caveman-shrink` entries from `opencode.json`, our skill/agent/command files, the caveman block from `AGENTS.md`, and the opencode flag file).
 - The OpenClaw workspace skill folder and the marker-fenced block from `~/.openclaw/workspace/SOUL.md` (when present).
-- The `.caveman-active` flag file.
+- The `.ta-active` flag file.
 
 What it does **not** remove:
 
@@ -213,13 +213,13 @@ Still broken? [Open an issue](https://github.com/Startr/transatlantic/issues).
 **"I ran the installer but Claude Code isn't talking caveman."**
 
 1. Run `node bin/install.js --list` — confirm `claude` is on the detected list. If not, `claude` isn't on `PATH`. Fix that first.
-2. Open `$CLAUDE_CONFIG_DIR/settings.json` (default `~/.claude/settings.json`) and look for `"hooks"` containing `caveman-activate.js` and `caveman-mode-tracker.js`. If missing, re-run with `--force`.
-3. Check `$CLAUDE_CONFIG_DIR/.caveman-active` exists with content `transatlantic`. If not, the SessionStart hook silent-failed — check `$CLAUDE_CONFIG_DIR/hooks/` for the JS files and try `node $CLAUDE_CONFIG_DIR/hooks/caveman-activate.js < /dev/null` to see if it errors.
+2. Open `$CLAUDE_CONFIG_DIR/settings.json` (default `~/.claude/settings.json`) and look for `"hooks"` containing `ta-activate.js` and `ta-mode-tracker.js`. If missing, re-run with `--force`.
+3. Check `$CLAUDE_CONFIG_DIR/.ta-active` exists with content `transatlantic`. If not, the SessionStart hook silent-failed — check `$CLAUDE_CONFIG_DIR/hooks/` for the JS files and try `node $CLAUDE_CONFIG_DIR/hooks/ta-activate.js < /dev/null` to see if it errors.
 4. Restart Claude Code. The SessionStart hook only fires on session start, not mid-session.
 
 **"Hooks failing on Windows."**
 
-- Use `install.ps1`, not `install.sh`. Git Bash works for the shell version, but the hook side wires PowerShell counterparts (`caveman-statusline.ps1`).
+- Use `install.ps1`, not `install.sh`. Git Bash works for the shell version, but the hook side wires PowerShell counterparts (`ta-statusline.ps1`).
 - PowerShell 5.1 minimum. Check with `$PSVersionTable.PSVersion`.
 - If `irm | iex` blocks on execution policy: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` for the install session, then re-run.
 - Long-running issues: see `docs/install-windows.md` in the repo for manual fallback.

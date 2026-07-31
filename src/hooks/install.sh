@@ -37,7 +37,7 @@ HOOKS_DIR="$CLAUDE_DIR/hooks"
 SETTINGS="$CLAUDE_DIR/settings.json"
 REPO_URL="https://raw.githubusercontent.com/JuliusBrussee/caveman/main/hooks"
 
-HOOK_FILES=("package.json" "caveman-config.js" "caveman-activate.js" "caveman-mode-tracker.js" "caveman-stats.js" "caveman-statusline.sh" "caveman-statusline.ps1" "crew-model-overrides.js")
+HOOK_FILES=("package.json" "ta-config.js" "ta-activate.js" "ta-mode-tracker.js" "ta-stats.js" "ta-statusline.sh" "ta-statusline.ps1" "crew-model-overrides.js")
 
 # Resolve source — works from repo clone or curl pipe
 SCRIPT_DIR=""
@@ -95,7 +95,7 @@ if [ "$ALREADY_INSTALLED" -eq 1 ] && [ "$FORCE" -eq 0 ]; then
   exit 0
 fi
 
-if [ "$FORCE" -eq 1 ] && [ -f "$HOOKS_DIR/caveman-activate.js" ]; then
+if [ "$FORCE" -eq 1 ] && [ -f "$HOOKS_DIR/ta-activate.js" ]; then
   echo "Reinstalling caveman hooks (--force)..."
 else
   echo "Installing caveman hooks..."
@@ -115,7 +115,7 @@ for hook in "${HOOK_FILES[@]}"; do
 done
 
 # Make statusline script executable
-chmod +x "$HOOKS_DIR/caveman-statusline.sh"
+chmod +x "$HOOKS_DIR/ta-statusline.sh"
 
 # 3. Wire hooks + statusline into settings.json (idempotent)
 if [ ! -f "$SETTINGS" ]; then
@@ -130,7 +130,7 @@ CAVEMAN_SETTINGS="$SETTINGS" CAVEMAN_HOOKS_DIR="$HOOKS_DIR" node -e "
   const fs = require('fs');
   const settingsPath = process.env.CAVEMAN_SETTINGS;
   const hooksDir = process.env.CAVEMAN_HOOKS_DIR;
-  const managedStatusLinePath = hooksDir + '/caveman-statusline.sh';
+  const managedStatusLinePath = hooksDir + '/ta-statusline.sh';
   const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
   if (!settings.hooks) settings.hooks = {};
 
@@ -143,7 +143,7 @@ CAVEMAN_SETTINGS="$SETTINGS" CAVEMAN_HOOKS_DIR="$HOOKS_DIR" node -e "
     settings.hooks.SessionStart.push({
       hooks: [{
         type: 'command',
-        command: 'node \"' + hooksDir + '/caveman-activate.js\"',
+        command: 'node \"' + hooksDir + '/ta-activate.js\"',
         timeout: 5,
         statusMessage: 'Loading caveman mode...'
       }]
@@ -159,7 +159,7 @@ CAVEMAN_SETTINGS="$SETTINGS" CAVEMAN_HOOKS_DIR="$HOOKS_DIR" node -e "
     settings.hooks.UserPromptSubmit.push({
       hooks: [{
         type: 'command',
-        command: 'node \"' + hooksDir + '/caveman-mode-tracker.js\"',
+        command: 'node \"' + hooksDir + '/ta-mode-tracker.js\"',
         timeout: 5,
         statusMessage: 'Tracking caveman mode...'
       }]

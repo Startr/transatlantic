@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Tests for src/tools/caveman-init.js — fixture-based.
+// Tests for src/tools/ta-init.js — fixture-based.
 // Run: node tests/test_caveman_init.js
 
 const fs = require('fs');
@@ -9,7 +9,7 @@ const assert = require('assert');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const INIT = path.join(ROOT, 'src', 'tools', 'caveman-init.js');
+const INIT = path.join(ROOT, 'src', 'tools', 'ta-init.js');
 
 let passed = 0;
 let failed = 0;
@@ -123,7 +123,7 @@ test('detects sentinel and skips files that already have transatlantic content',
 });
 
 test('upgrades a byte-intact legacy caveman install in place', (tmp) => {
-  const { LEGACY_RULE_BODY, SENTINEL } = require('../src/tools/caveman-init.js');
+  const { LEGACY_RULE_BODY, SENTINEL } = require('../src/tools/ta-init.js');
   const dir = path.join(tmp, '.clinerules');
   fs.mkdirSync(dir, { recursive: true });
   const legacyFile = path.join(dir, 'caveman.md');

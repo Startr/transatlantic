@@ -24,7 +24,7 @@ $HooksDir = Join-Path $ClaudeDir "hooks"
 $Settings = Join-Path $ClaudeDir "settings.json"
 $RepoUrl = "https://raw.githubusercontent.com/JuliusBrussee/caveman/main/hooks"
 
-$HookFiles = @("package.json", "caveman-config.js", "caveman-activate.js", "caveman-mode-tracker.js", "caveman-stats.js", "caveman-statusline.sh", "caveman-statusline.ps1", "cavecrew-model-overrides.js")
+$HookFiles = @("package.json", "ta-config.js", "ta-activate.js", "ta-mode-tracker.js", "ta-stats.js", "ta-statusline.sh", "ta-statusline.ps1", "cavecrew-model-overrides.js")
 
 # Resolve source — works from repo clone or remote
 $ScriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { $null }
@@ -79,7 +79,7 @@ if (-not $Force) {
     }
 }
 
-if ($Force -and (Test-Path (Join-Path $HooksDir "caveman-activate.js"))) {
+if ($Force -and (Test-Path (Join-Path $HooksDir "ta-activate.js"))) {
     Write-Host "Reinstalling caveman hooks (-Force)..."
 } else {
     Write-Host "Installing caveman hooks..."
@@ -121,7 +121,7 @@ $nodeScript = @'
 const fs = require('fs');
 const settingsPath = process.env.CAVEMAN_SETTINGS;
 const hooksDir = process.env.CAVEMAN_HOOKS_DIR;
-const managedStatusLinePath = hooksDir + '/caveman-statusline.ps1';
+const managedStatusLinePath = hooksDir + '/ta-statusline.ps1';
 const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
 if (!settings.hooks) settings.hooks = {};
 
@@ -134,7 +134,7 @@ if (!hasStart) {
   settings.hooks.SessionStart.push({
     hooks: [{
       type: 'command',
-      command: 'node "' + hooksDir + '/caveman-activate.js"',
+      command: 'node "' + hooksDir + '/ta-activate.js"',
       timeout: 5,
       statusMessage: 'Loading caveman mode...'
     }]
@@ -150,7 +150,7 @@ if (!hasPrompt) {
   settings.hooks.UserPromptSubmit.push({
     hooks: [{
       type: 'command',
-      command: 'node "' + hooksDir + '/caveman-mode-tracker.js"',
+      command: 'node "' + hooksDir + '/ta-mode-tracker.js"',
       timeout: 5,
       statusMessage: 'Tracking caveman mode...'
     }]

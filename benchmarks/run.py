@@ -55,7 +55,7 @@ LEVELS = ["liner", "plain", "transatlantic", "aviation", "telegraph", "morse"]
 
 
 def filter_skill(body, level):
-    """Mirror caveman-activate.js: keep only the chosen level's intensity
+    """Mirror ta-activate.js: keep only the chosen level's intensity
     table row and example lines; everything else passes through."""
     out = []
     for line in body.splitlines():

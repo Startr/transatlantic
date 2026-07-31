@@ -9,8 +9,8 @@ const assert = require('assert');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const STATS = path.join(ROOT, 'src', 'hooks', 'caveman-stats.js');
-const TRACKER = path.join(ROOT, 'src', 'hooks', 'caveman-mode-tracker.js');
+const STATS = path.join(ROOT, 'src', 'hooks', 'ta-stats.js');
+const TRACKER = path.join(ROOT, 'src', 'hooks', 'ta-mode-tracker.js');
 
 let passed = 0;
 let failed = 0;
@@ -59,7 +59,7 @@ test('shows full-mode savings estimate when flag is full', (tmp) => {
     { type: 'assistant', message: { usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -74,7 +74,7 @@ test('skips estimate for non-full modes', (tmp) => {
     { type: 'assistant', message: { usage: { output_tokens: 100 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'morse');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'morse');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -100,7 +100,7 @@ test('mode tracker handles /caveman-stats with decision block', (tmp) => {
     { type: 'assistant', message: { usage: { output_tokens: 100 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [TRACKER], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, HOME: tmp },
@@ -117,14 +117,14 @@ test('mode tracker preserves caveman flag when /caveman-stats fires', (tmp) => {
     { type: 'assistant', message: { usage: { output_tokens: 50 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   execFileSync(process.execPath, [TRACKER], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, HOME: tmp },
     input: JSON.stringify({ prompt: '/caveman-stats', transcript_path: sess }),
   });
   // The flag must still say 'full' — the stats command must not change mode.
-  assert.strictEqual(fs.readFileSync(path.join(claudeDir, '.caveman-active'), 'utf8'), 'full');
+  assert.strictEqual(fs.readFileSync(path.join(claudeDir, '.ta-active'), 'utf8'), 'full');
 });
 
 test('shows USD savings when model is a known sonnet variant', (tmp) => {
@@ -133,7 +133,7 @@ test('shows USD savings when model is a known sonnet variant', (tmp) => {
     { type: 'assistant', message: { model: 'claude-sonnet-4-20250514', usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -148,7 +148,7 @@ test('omits USD line when model is unknown', (tmp) => {
     { type: 'assistant', message: { model: 'some-future-model-xyz', usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -159,7 +159,7 @@ test('omits USD line when model is unknown', (tmp) => {
 });
 
 test('priceForModel matches by prefix across point releases', () => {
-  const { priceForModel } = require(path.join(ROOT, 'src', 'hooks', 'caveman-stats.js'));
+  const { priceForModel } = require(path.join(ROOT, 'src', 'hooks', 'ta-stats.js'));
   assert.strictEqual(priceForModel('claude-opus-4-7'), 25.00);
   assert.strictEqual(priceForModel('claude-opus-4-8'), 25.00);
   assert.strictEqual(priceForModel('claude-opus-4-20250101'), 75.00);
@@ -172,7 +172,7 @@ test('priceForModel matches by prefix across point releases', () => {
 });
 
 test('formatStats handles empty session gracefully', () => {
-  const { formatStats } = require(path.join(ROOT, 'src', 'hooks', 'caveman-stats.js'));
+  const { formatStats } = require(path.join(ROOT, 'src', 'hooks', 'ta-stats.js'));
   const out = formatStats({ outputTokens: 0, cacheReadTokens: 0, turns: 0, mode: 'full', model: null });
   assert.match(out, /No conversation yet/);
 });
@@ -182,7 +182,7 @@ test('--share prints single-line tweetable summary', (tmp) => {
     { type: 'assistant', message: { model: 'claude-sonnet-4-7', usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess, '--share'], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -196,7 +196,7 @@ test('--share works with no benchmark ratio (lite mode)', (tmp) => {
     { type: 'assistant', message: { usage: { output_tokens: 200 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'lite');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'lite');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess, '--share'], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -209,12 +209,12 @@ test('appends to lifetime history on each run', (tmp) => {
     { type: 'assistant', message: { model: 'claude-sonnet-4-7', usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
   });
-  const histPath = path.join(claudeDir, '.caveman-history.jsonl');
+  const histPath = path.join(claudeDir, '.ta-history.jsonl');
   assert.ok(fs.existsSync(histPath), 'history file should be created');
   const lines = fs.readFileSync(histPath, 'utf8').split('\n').filter(Boolean);
   assert.strictEqual(lines.length, 1);
@@ -229,7 +229,7 @@ test('appends to lifetime history on each run', (tmp) => {
 test('--all aggregates latest entry per session', (tmp) => {
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  const histPath = path.join(claudeDir, '.caveman-history.jsonl');
+  const histPath = path.join(claudeDir, '.ta-history.jsonl');
   // Two sessions, second one has two snapshots — only latest counts.
   fs.writeFileSync(histPath, [
     { ts: 1000, session_id: 'a', mode: 'full', output_tokens: 100, est_saved_tokens: 185, est_saved_usd: 0.0028 },
@@ -250,7 +250,7 @@ test('--all aggregates latest entry per session', (tmp) => {
 test('--since filters by time window', (tmp) => {
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  const histPath = path.join(claudeDir, '.caveman-history.jsonl');
+  const histPath = path.join(claudeDir, '.ta-history.jsonl');
   const now = Date.now();
   const twoDaysAgo = now - 2 * 86_400_000;
   const tenMinAgo = now - 10 * 60_000;
@@ -301,7 +301,7 @@ test('detects compressed memory pairs and reports approx token savings', (tmp) =
   const sess = makeSession(tmp, [
     { type: 'assistant', message: { usage: { output_tokens: 100 } } },
   ]);
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -316,7 +316,7 @@ test('omits memory line when no compressed pairs exist', (tmp) => {
   const sess = makeSession(tmp, [
     { type: 'assistant', message: { usage: { output_tokens: 100 } } },
   ]);
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -325,7 +325,7 @@ test('omits memory line when no compressed pairs exist', (tmp) => {
 });
 
 test('skips pairs where compressed is not actually smaller', (tmp) => {
-  const { findCompressedPairs } = require(path.join(ROOT, 'src', 'hooks', 'caveman-stats.js'));
+  const { findCompressedPairs } = require(path.join(ROOT, 'src', 'hooks', 'ta-stats.js'));
   fs.writeFileSync(path.join(tmp, 'foo.original.md'), 'small');
   fs.writeFileSync(path.join(tmp, 'foo.md'), 'this is actually larger somehow');
   const pairs = findCompressedPairs([tmp]);
@@ -337,12 +337,12 @@ test('writes statusline suffix file after a stats run', (tmp) => {
     { type: 'assistant', message: { model: 'claude-sonnet-4-7', usage: { output_tokens: 1500 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
   });
-  const suffixPath = path.join(claudeDir, '.caveman-statusline-suffix');
+  const suffixPath = path.join(claudeDir, '.ta-statusline-suffix');
   assert.ok(fs.existsSync(suffixPath));
   // 1500 / 0.35 = 4286, saved = 2786 → "⛏  2.8k" (two spaces after ⛏, #459)
   const suffix = fs.readFileSync(suffixPath, 'utf8');
@@ -350,7 +350,7 @@ test('writes statusline suffix file after a stats run', (tmp) => {
 });
 
 test('humanizeTokens formats small/medium/large correctly', () => {
-  const { humanizeTokens } = require(path.join(ROOT, 'src', 'hooks', 'caveman-stats.js'));
+  const { humanizeTokens } = require(path.join(ROOT, 'src', 'hooks', 'ta-stats.js'));
   assert.strictEqual(humanizeTokens(0), '0');
   assert.strictEqual(humanizeTokens(42), '42');
   assert.strictEqual(humanizeTokens(2786), '2.8k');
@@ -361,9 +361,9 @@ test('statusline.sh appends savings when CAVEMAN_STATUSLINE_SAVINGS=1', (tmp) =>
   if (process.platform === 'win32') return; // bash test
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-statusline-suffix'), '⛏ 2.8k');
-  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'caveman-statusline.sh')], {
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-statusline-suffix'), '⛏ 2.8k');
+  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'ta-statusline.sh')], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, CAVEMAN_STATUSLINE_SAVINGS: '1' },
   });
@@ -375,11 +375,11 @@ test('statusline.sh renders savings by default when env var is unset', (tmp) => 
   if (process.platform === 'win32') return;
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-statusline-suffix'), '⛏ 2.8k');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-statusline-suffix'), '⛏ 2.8k');
   const env = { ...process.env, CLAUDE_CONFIG_DIR: claudeDir };
   delete env.CAVEMAN_STATUSLINE_SAVINGS;
-  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'caveman-statusline.sh')], {
+  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'ta-statusline.sh')], {
     encoding: 'utf8', env,
   });
   assert.match(out, /\[TRANSATLANTIC/);
@@ -390,9 +390,9 @@ test('statusline.sh omits savings when CAVEMAN_STATUSLINE_SAVINGS=0', (tmp) => {
   if (process.platform === 'win32') return;
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-statusline-suffix'), '⛏ 2.8k');
-  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'caveman-statusline.sh')], {
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-statusline-suffix'), '⛏ 2.8k');
+  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'ta-statusline.sh')], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, CAVEMAN_STATUSLINE_SAVINGS: '0' },
   });
@@ -404,12 +404,12 @@ test('statusline.sh omits savings when suffix file is missing (fresh install)', 
   if (process.platform === 'win32') return;
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   // No suffix file written — simulates the moment after install but before
   // /caveman-stats has run. Default-on must NOT fabricate a number.
   const env = { ...process.env, CLAUDE_CONFIG_DIR: claudeDir };
   delete env.CAVEMAN_STATUSLINE_SAVINGS;
-  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'caveman-statusline.sh')], {
+  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'ta-statusline.sh')], {
     encoding: 'utf8', env,
   });
   assert.match(out, /\[TRANSATLANTIC/);
@@ -420,10 +420,10 @@ test('statusline.sh strips control bytes from suffix', (tmp) => {
   if (process.platform === 'win32') return;
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   // Plant a malicious suffix with ANSI escape (control byte \x1b).
-  fs.writeFileSync(path.join(claudeDir, '.caveman-statusline-suffix'), '\x1b[31mEVIL');
-  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'caveman-statusline.sh')], {
+  fs.writeFileSync(path.join(claudeDir, '.ta-statusline-suffix'), '\x1b[31mEVIL');
+  const out = execFileSync('bash', [path.join(ROOT, 'src', 'hooks', 'ta-statusline.sh')], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, CAVEMAN_STATUSLINE_SAVINGS: '1' },
   });
@@ -434,7 +434,7 @@ test('statusline.sh strips control bytes from suffix', (tmp) => {
 
 test('appendFlag is symlink-safe (refuses symlinked target)', (tmp) => {
   if (process.platform === 'win32') return; // symlink semantics differ
-  const { appendFlag } = require(path.join(ROOT, 'src', 'hooks', 'caveman-config.js'));
+  const { appendFlag } = require(path.join(ROOT, 'src', 'hooks', 'ta-config.js'));
   const target = path.join(tmp, 'real-target');
   fs.writeFileSync(target, 'do-not-clobber\n');
   const linkPath = path.join(tmp, 'history.jsonl');
@@ -449,7 +449,7 @@ test('mode tracker forwards --share to stats script', (tmp) => {
     { type: 'assistant', message: { model: 'claude-sonnet-4-7', usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [TRACKER], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, HOME: tmp },
@@ -481,7 +481,7 @@ test('session view never claims a % of usage/budget — only output reduction', 
     { type: 'assistant', message: { model: 'claude-sonnet-4-7', usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -505,7 +505,7 @@ test('--all lifetime output labels the % as output reduction, not usage', (tmp) 
     { ts: Date.now(), session_id: 'b', output_tokens: 650, est_saved_tokens: 350, est_saved_usd: 0.005 },
   ];
   fs.writeFileSync(
-    path.join(claudeDir, '.caveman-history.jsonl'),
+    path.join(claudeDir, '.ta-history.jsonl'),
     history.map(h => JSON.stringify(h)).join('\n') + '\n',
   );
   const out = execFileSync(process.execPath, [STATS, '--all'], {
@@ -522,7 +522,7 @@ test('--all lifetime output omits reduction line when nothing saved', (tmp) => {
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
   fs.writeFileSync(
-    path.join(claudeDir, '.caveman-history.jsonl'),
+    path.join(claudeDir, '.ta-history.jsonl'),
     JSON.stringify({ ts: Date.now(), session_id: 'a', output_tokens: 350, est_saved_tokens: 0, est_saved_usd: 0 }) + '\n',
   );
   const out = execFileSync(process.execPath, [STATS, '--all'], {
@@ -534,7 +534,7 @@ test('--all lifetime output omits reduction line when nothing saved', (tmp) => {
 
 // ── Mid-session mode-change attribution (#601) ─────────────────────────────
 // Tokens must be attributed to the mode active WHEN each message happened,
-// via the .caveman-mode-log.jsonl transition log — never to whatever mode the
+// via the .ta-mode-log.jsonl transition log — never to whatever mode the
 // flag holds at stats time (which inflated savings after a late activation,
 // and zeroed them after a late deactivation).
 
@@ -547,9 +547,9 @@ test('attributes tokens to the mode active when each message happened (#601)', (
     { type: 'assistant', timestamp: iso(10), message: { model: 'claude-sonnet-4-7', usage: { output_tokens: 350 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-mode-log.jsonl'),
+  fs.writeFileSync(path.join(claudeDir, '.ta-mode-log.jsonl'),
     JSON.stringify({ ts: now - 30 * 60_000, mode: 'full', prev: null }) + '\n');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },
@@ -562,7 +562,7 @@ test('attributes tokens to the mode active when each message happened (#601)', (
   assert.match(out, /caveman off:\s+300 tokens \(no benchmark estimate\)/);
   assert.match(out, /telegraph:\s+350 tokens \(est\. 650 saved\)/);
   // The lifetime history row records the attributed figure, not the inflated one.
-  const hist = fs.readFileSync(path.join(claudeDir, '.caveman-history.jsonl'), 'utf8')
+  const hist = fs.readFileSync(path.join(claudeDir, '.ta-history.jsonl'), 'utf8')
     .split('\n').filter(Boolean).map(l => JSON.parse(l));
   assert.strictEqual(hist[hist.length - 1].est_saved_tokens, 650);
 });
@@ -575,10 +575,10 @@ test('credits caveman spans even after mode is turned off mid-session (#601)', (
     { type: 'assistant', timestamp: iso(10), message: { model: 'claude-sonnet-4-7', usage: { output_tokens: 200 } } },
   ]);
   const claudeDir = path.join(tmp, '.claude');
-  fs.writeFileSync(path.join(claudeDir, '.caveman-mode-log.jsonl'),
+  fs.writeFileSync(path.join(claudeDir, '.ta-mode-log.jsonl'),
     JSON.stringify({ ts: now - 90 * 60_000, mode: 'full', prev: null }) + '\n' +
     JSON.stringify({ ts: now - 30 * 60_000, mode: null, prev: 'full' }) + '\n');
-  // No .caveman-active flag — caveman is off at stats time. The old behavior
+  // No .ta-active flag — caveman is off at stats time. The old behavior
   // printed "Caveman not active this session." and logged zero savings.
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
@@ -592,13 +592,13 @@ test('credits caveman spans even after mode is turned off mid-session (#601)', (
 test('mode tracker logs timestamped transitions, deduping unchanged modes (#601)', (tmp) => {
   const claudeDir = path.join(tmp, '.claude');
   fs.mkdirSync(claudeDir, { recursive: true });
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const run = (prompt) => execFileSync(process.execPath, [TRACKER], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir, HOME: tmp },
     input: JSON.stringify({ prompt }),
   });
-  const logPath = path.join(claudeDir, '.caveman-mode-log.jsonl');
+  const logPath = path.join(claudeDir, '.ta-mode-log.jsonl');
   const rows = () => fs.readFileSync(logPath, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l));
 
   run('/caveman ultra');
@@ -624,7 +624,7 @@ test('excludes tokens that predate a mid-session flag write with no log (#601)',
   const claudeDir = path.join(tmp, '.claude');
   // Flag written NOW (after the message), no transition log: the mode during
   // the message is unknown. The honest number is zero — say so, don't guess.
-  fs.writeFileSync(path.join(claudeDir, '.caveman-active'), 'full');
+  fs.writeFileSync(path.join(claudeDir, '.ta-active'), 'full');
   const out = execFileSync(process.execPath, [STATS, '--session-file', sess], {
     encoding: 'utf8',
     env: { ...process.env, CLAUDE_CONFIG_DIR: claudeDir },

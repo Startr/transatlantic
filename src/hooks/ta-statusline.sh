@@ -3,12 +3,14 @@
 # Reads the caveman mode flag file and outputs a colored badge.
 #
 # Usage in ~/.claude/settings.json:
-#   "statusLine": { "type": "command", "command": "bash /path/to/caveman-statusline.sh" }
+#   "statusLine": { "type": "command", "command": "bash /path/to/ta-statusline.sh" }
 #
 # Plugin users: Claude will offer to set this up on first session.
 # Standalone users: install.sh wires this automatically.
 
-FLAG="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.caveman-active"
+FLAG="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.ta-active"
+# Pre-rename installs write the caveman-era name until their next session start.
+[ ! -f "$FLAG" ] && FLAG="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.caveman-active"
 
 # Refuse symlinks — a local attacker could point the flag at ~/.ssh/id_rsa and
 # have the statusline render its bytes (including ANSI escape sequences) to
@@ -24,7 +26,7 @@ MODE=$(printf '%s' "$MODE" | tr -cd 'a-z0-9-')
 # Whitelist. Anything else → render nothing rather than echo attacker bytes.
 # Legacy caveman names stay accepted (an old hook may still write them) and
 # are collapsed onto the canonical ladder, mirroring normalizeMode() in
-# caveman-config.js.
+# ta-config.js.
 case "$MODE" in
   off|liner|plain|transatlantic|aviation|telegraph|morse|wenyan-lite|wenyan|wenyan-ultra|commit|review|compress) ;;
   lite) MODE=transatlantic ;;
@@ -41,15 +43,15 @@ else
   printf '\033[38;5;74m[TRANSATLANTIC:%s]\033[0m' "$SUFFIX"
 fi
 
-# Savings suffix: on by default. Opt out via CAVEMAN_STATUSLINE_SAVINGS=0.
-# Reads a pre-rendered string written by caveman-stats.js so we don't shell out
+# Savings suffix: on by default. Opt out via TRANSATLANTIC_STATUSLINE_SAVINGS=0 (legacy CAVEMAN_STATUSLINE_SAVINGS honored).
+# Reads a pre-rendered string written by ta-stats.js so we don't shell out
 # to node on every keystroke. Refuses symlinks and strips control bytes —
 # same hardening as the flag file (a local attacker could plant a file with
 # ANSI escape codes otherwise). Until /caveman-stats has run at least once,
 # the suffix file is absent and nothing is rendered — so the default is safe
 # for fresh installs (no fake number, no crash).
-if [ "${CAVEMAN_STATUSLINE_SAVINGS:-1}" != "0" ]; then
-  SAVINGS_FILE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.caveman-statusline-suffix"
+if [ "${TRANSATLANTIC_STATUSLINE_SAVINGS:-${CAVEMAN_STATUSLINE_SAVINGS:-1}}" != "0" ]; then
+  SAVINGS_FILE="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.ta-statusline-suffix"
   if [ -f "$SAVINGS_FILE" ] && [ ! -L "$SAVINGS_FILE" ]; then
     SAVINGS=$(head -c 64 "$SAVINGS_FILE" 2>/dev/null | tr -d '\000-\037')
     [ -n "$SAVINGS" ] && printf ' \033[38;5;74m%s\033[0m' "$SAVINGS"

@@ -36,7 +36,7 @@ LEVELS = ["liner", "plain", "transatlantic", "aviation", "telegraph", "morse"]
 
 
 def filter_skill(body: str, level: str) -> str:
-    """Mirror caveman-activate.js: keep only the active level's intensity
+    """Mirror ta-activate.js: keep only the active level's intensity
     table row and example lines; everything else passes through."""
     out: list[str] = []
     for line in body.splitlines():
@@ -58,7 +58,7 @@ def run_claude(prompt: str, system: str | None = None) -> str:
     cmd = ["claude", "-p"]
     if system:
         cmd += ["--system-prompt", system]
-    if model := os.environ.get("CAVEMAN_EVAL_MODEL"):
+    if model := os.environ.get("TA_EVAL_MODEL") or os.environ.get("CAVEMAN_EVAL_MODEL"):
         cmd += ["--model", model]
     cmd.append(prompt)
     out = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=300)
@@ -85,7 +85,7 @@ def main() -> None:
         "metadata": {
             "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
             "claude_cli_version": claude_version(),
-            "model": os.environ.get("CAVEMAN_EVAL_MODEL", "default"),
+            "model": (os.environ.get("TA_EVAL_MODEL") or os.environ.get("CAVEMAN_EVAL_MODEL", "default")),
             "n_prompts": len(prompts),
             "terse_prefix": TERSE_PREFIX,
             "skill_file": str(SKILL_MD.relative_to(EVALS.parent)),

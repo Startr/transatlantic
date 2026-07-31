@@ -6,17 +6,17 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execFileSync } = require('child_process');
-const { getDefaultMode, safeWriteFlag, readFlag, recordModeChange, normalizeMode, INDEPENDENT_MODES: INDEPENDENT_LIST, REINFORCEMENT } = require('./caveman-config');
+const { getDefaultMode, safeWriteFlag, readFlag, recordModeChange, normalizeMode, INDEPENDENT_MODES: INDEPENDENT_LIST, REINFORCEMENT } = require('./ta-config');
 
 // Modes handled by their own slash commands (/caveman-commit, etc.) — not
 // selectable via /caveman <arg>.
 const INDEPENDENT_MODES = new Set(INDEPENDENT_LIST);
 
 const claudeDir = process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
-const flagPath = path.join(claudeDir, '.caveman-active');
+const flagPath = path.join(claudeDir, '.ta-active');
 // Remembers the prose mode active before a one-shot independent mode
 // (/caveman-commit etc.) so the next ordinary prompt can restore it (#599).
-const prevPath = path.join(claudeDir, '.caveman-active.prev');
+const prevPath = path.join(claudeDir, '.ta-active.prev');
 
 let input = '';
 process.stdin.on('data', chunk => { input += chunk; });
@@ -77,7 +77,7 @@ process.stdin.on('end', () => {
     if (statsMatch) {
       const tailArgs = (statsMatch[1] || '').trim().split(/\s+/).filter(Boolean);
       try {
-        const statsPath = path.join(__dirname, 'caveman-stats.js');
+        const statsPath = path.join(__dirname, 'ta-stats.js');
         const argv = [statsPath];
         if (data.transcript_path) argv.push('--session-file', data.transcript_path);
         if (tailArgs.includes('--share')) argv.push('--share');
@@ -91,7 +91,7 @@ process.stdin.on('end', () => {
       } catch (e) {
         process.stdout.write(JSON.stringify({
           decision: 'block',
-          reason: 'caveman-stats: could not run stats script.\nTry manually: node hooks/caveman-stats.js'
+          reason: 'caveman-stats: could not run stats script.\nTry manually: node hooks/ta-stats.js'
         }));
       }
       return;
@@ -209,7 +209,7 @@ process.stdin.on('end', () => {
       }
     }
 
-    // Per-level attention anchor lives in caveman-config.js (shared with the
+    // Per-level attention anchor lives in ta-config.js (shared with the
     // opencode plugin) — the full ruleset comes from SessionStart.
     if (activeMode && !INDEPENDENT_MODES.has(activeMode)) {
       const anchor = REINFORCEMENT[activeMode] ||

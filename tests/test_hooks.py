@@ -33,12 +33,12 @@ class HookScriptTests(unittest.TestCase):
             hooks_dir = home / ".claude" / "hooks"
             hooks_dir.mkdir(parents=True)
             (home / ".claude" / "settings.json").write_text("{}\n")
-            (hooks_dir / "caveman-activate.js").write_text("")
-            (hooks_dir / "caveman-mode-tracker.js").write_text("")
+            (hooks_dir / "ta-activate.js").write_text("")
+            (hooks_dir / "ta-mode-tracker.js").write_text("")
 
             self.run_cmd(["bash", "src/hooks/install.sh"], home)
 
-            statusline = hooks_dir / "caveman-statusline.sh"
+            statusline = hooks_dir / "ta-statusline.sh"
             self.assertTrue(statusline.exists(), "upgrade should install statusline script")
 
             settings = json.loads((home / ".claude" / "settings.json").read_text())
@@ -52,7 +52,7 @@ class HookScriptTests(unittest.TestCase):
             hooks_dir = claude_dir / "hooks"
             hooks_dir.mkdir(parents=True)
 
-            for name in ("caveman-activate.js", "caveman-mode-tracker.js", "caveman-statusline.sh"):
+            for name in ("ta-activate.js", "ta-mode-tracker.js", "ta-statusline.sh"):
                 (hooks_dir / name).write_text("")
 
             settings = {
@@ -62,7 +62,7 @@ class HookScriptTests(unittest.TestCase):
                             "hooks": [
                                 {
                                     "type": "command",
-                                    "command": f'node "{hooks_dir / "caveman-activate.js"}"',
+                                    "command": f'node "{hooks_dir / "ta-activate.js"}"',
                                 }
                             ]
                         }
@@ -72,7 +72,7 @@ class HookScriptTests(unittest.TestCase):
                             "hooks": [
                                 {
                                     "type": "command",
-                                    "command": f'node "{hooks_dir / "caveman-mode-tracker.js"}"',
+                                    "command": f'node "{hooks_dir / "ta-mode-tracker.js"}"',
                                 }
                             ]
                         }
@@ -87,7 +87,7 @@ class HookScriptTests(unittest.TestCase):
 
             updated = json.loads((claude_dir / "settings.json").read_text())
             self.assertIn("statusLine", updated)
-            self.assertIn(str(hooks_dir / "caveman-statusline.sh"), updated["statusLine"]["command"])
+            self.assertIn(str(hooks_dir / "ta-statusline.sh"), updated["statusLine"]["command"])
 
     def test_uninstall_preserves_custom_statusline(self):
         with tempfile.TemporaryDirectory(prefix="caveman-hooks-uninstall-") as tmp:
@@ -96,7 +96,7 @@ class HookScriptTests(unittest.TestCase):
             hooks_dir = claude_dir / "hooks"
             hooks_dir.mkdir(parents=True)
 
-            for name in ("caveman-activate.js", "caveman-mode-tracker.js", "caveman-statusline.sh"):
+            for name in ("ta-activate.js", "ta-mode-tracker.js", "ta-statusline.sh"):
                 (hooks_dir / name).write_text("")
 
             settings = {
@@ -110,7 +110,7 @@ class HookScriptTests(unittest.TestCase):
                             "hooks": [
                                 {
                                     "type": "command",
-                                    "command": f'node "{hooks_dir / "caveman-activate.js"}"',
+                                    "command": f'node "{hooks_dir / "ta-activate.js"}"',
                                 }
                             ]
                         }
@@ -120,7 +120,7 @@ class HookScriptTests(unittest.TestCase):
                             "hooks": [
                                 {
                                     "type": "command",
-                                    "command": f'node "{hooks_dir / "caveman-mode-tracker.js"}"',
+                                    "command": f'node "{hooks_dir / "ta-mode-tracker.js"}"',
                                 }
                             ]
                         }
@@ -155,10 +155,10 @@ class HookScriptTests(unittest.TestCase):
                 + "\n"
             )
 
-            result = self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
+            result = self.run_cmd(["node", "src/hooks/ta-activate.js"], home)
 
             self.assertNotIn("STATUSLINE SETUP NEEDED", result.stdout)
-            self.assertEqual((claude_dir / ".caveman-active").read_text(), "transatlantic")
+            self.assertEqual((claude_dir / ".ta-active").read_text(), "transatlantic")
 
     # Docs promise bare commands (/transatlantic, /ta, /caveman-commit, ...).
     # Claude Code only gives bare names to user-scope commands, so the
@@ -169,7 +169,7 @@ class HookScriptTests(unittest.TestCase):
             claude_dir = home / ".claude"
             claude_dir.mkdir(parents=True)
 
-            self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
+            self.run_cmd(["node", "src/hooks/ta-activate.js"], home)
 
             cmds = claude_dir / "commands"
             for name in ["transatlantic.md", "ta.md",
@@ -182,7 +182,7 @@ class HookScriptTests(unittest.TestCase):
             # A user-authored file (no marker) must survive a re-run untouched.
             own = cmds / "ta.md"
             own.write_text("my own ta command\n")
-            self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
+            self.run_cmd(["node", "src/hooks/ta-activate.js"], home)
             self.assertEqual(own.read_text(), "my own ta command\n")
 
     # Regression for #587/#589 — hook at <root>/src/hooks/ must resolve SKILL.md
@@ -192,7 +192,7 @@ class HookScriptTests(unittest.TestCase):
             home = Path(tmp)
             (home / ".claude").mkdir(parents=True)
 
-            result = self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
+            result = self.run_cmd(["node", "src/hooks/ta-activate.js"], home)
 
             # Intensity table exists only in SKILL.md, never in the fallback
             self.assertIn("## Levels", result.stdout)
@@ -208,7 +208,7 @@ class HookScriptTests(unittest.TestCase):
             claude_dir = home / ".claude"
             hooks_dir = claude_dir / "hooks"
             hooks_dir.mkdir(parents=True)
-            for name in ("caveman-activate.js", "caveman-config.js", "package.json"):
+            for name in ("ta-activate.js", "ta-config.js", "package.json"):
                 shutil.copy(REPO_ROOT / "src" / "hooks" / name, hooks_dir / name)
             skill_dir = claude_dir / "skills" / "transatlantic"
             skill_dir.mkdir(parents=True)
@@ -216,7 +216,7 @@ class HookScriptTests(unittest.TestCase):
                 "---\nname: caveman\n---\nSTANDALONE MARKER RULESET\n"
             )
 
-            result = self.run_cmd(["node", str(hooks_dir / "caveman-activate.js")], home)
+            result = self.run_cmd(["node", str(hooks_dir / "ta-activate.js")], home)
 
             self.assertIn("STANDALONE MARKER RULESET", result.stdout)
 
@@ -232,7 +232,7 @@ class HookScriptTests(unittest.TestCase):
             )
 
             result = self.run_cmd(
-                ["node", "src/hooks/caveman-activate.js"],
+                ["node", "src/hooks/ta-activate.js"],
                 home,
                 extra_env={"CLAUDE_PLUGIN_ROOT": str(plugin_root)},
             )

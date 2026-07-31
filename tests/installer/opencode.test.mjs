@@ -67,7 +67,7 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
     const ocDir = path.join(xdg, 'opencode');
     assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic', 'plugin.js')), 'plugin.js missing');
     assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic', 'package.json')), 'plugin package.json missing');
-    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic', 'caveman-config.cjs')), 'caveman-config.cjs sibling missing');
+    assert.ok(fs.existsSync(path.join(ocDir, 'plugins', 'transatlantic', 'ta-config.cjs')), 'ta-config.cjs sibling missing');
 
     for (const f of ['transatlantic.md', 'ta-commit.md', 'ta-review.md', 'ta-compress.md', 'ta-stats.md', 'ta-help.md']) {
       assert.ok(fs.existsSync(path.join(ocDir, 'commands', f)), `command ${f} missing`);
@@ -83,8 +83,8 @@ test('opencode fresh install drops plugin, commands, agents, skills, AGENTS.md, 
     assert.match(agentsBody, /Speak in the transatlantic register/);
     // Block must be wrapped in begin/end markers so uninstall can isolate it
     // from user-authored content above and below.
-    assert.match(agentsBody, /<!-- caveman-begin -->/);
-    assert.match(agentsBody, /<!-- caveman-end -->/);
+    assert.match(agentsBody, /<!-- transatlantic-begin -->/);
+    assert.match(agentsBody, /<!-- transatlantic-end -->/);
 
     const cfgPath = path.join(ocDir, 'opencode.json');
     assert.ok(fs.existsSync(cfgPath), 'opencode.json missing');
@@ -174,8 +174,8 @@ test('opencode uninstall strips fenced AGENTS.md block, preserving user prefix a
     assert.notEqual(r2.status, 2);
 
     const after = fs.readFileSync(agentsMd, 'utf8');
-    assert.doesNotMatch(after, /<!-- caveman-begin -->/, 'caveman block should be stripped');
-    assert.doesNotMatch(after, /<!-- caveman-end -->/, 'caveman end marker should be stripped');
+    assert.doesNotMatch(after, /<!-- transatlantic-begin -->/, 'caveman block should be stripped');
+    assert.doesNotMatch(after, /<!-- transatlantic-end -->/, 'caveman end marker should be stripped');
     assert.doesNotMatch(after, /Speak in the transatlantic register/, 'caveman body should be stripped');
     assert.match(after, /# my project/, 'user prefix should survive');
     assert.match(after, /use 2-space indent/, 'user prefix body should survive');
@@ -263,7 +263,7 @@ test('opencode plugin handles /caveman ultra, stop caveman, and session init via
     assert.notEqual(r.status, 2);
 
     const pluginPath = path.join(xdg, 'opencode', 'plugins', 'transatlantic', 'plugin.js');
-    const flagPath = path.join(xdg, 'opencode', '.caveman-active');
+    const flagPath = path.join(xdg, 'opencode', '.ta-active');
 
     // Set XDG_CONFIG_HOME so the plugin's flagPath resolves to our temp dir,
     // and pin the default mode so session-init is deterministic regardless of

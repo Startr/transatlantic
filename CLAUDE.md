@@ -8,7 +8,7 @@ several identities have moved; where they conflict, this section wins:
 
 - **Six-level ladder** replaces caveman intensity levels: `liner`, `plain`,
   `transatlantic` (default), `aviation`, `telegraph`, `morse`. Legacy names
-  normalize via `normalizeMode()` in `src/hooks/caveman-config.js`
+  normalize via `normalizeMode()` in `src/hooks/ta-config.js`
   (lite→transatlantic, full→telegraph, ultra→morse; wenyan levels stay first-class,
   `wenyan-full` spelled `wenyan`).
   Research basis and citations: `docs/research/level-ladder.md`. Every level
@@ -23,7 +23,7 @@ several identities have moved; where they conflict, this section wins:
   `CAVEMAN_DEFAULT_MODE` legacy; user config `~/.config/transatlantic/` primary
   with `~/.config/caveman/` fallback; repo-local `.transatlantic{/config.json,.json}`
   before `.caveman*`.
-- **Flag file stays `.caveman-active`** until 1.0 — five readers share the path
+- **Flag file stays `.ta-active`** until 1.0 — five readers share the path
   (both statuslines, both hooks, opencode plugin); renaming pre-release buys
   nothing and risks split-brain. Revisit at the repo move.
 - **Voice**: user-facing docs are written in the `liner` register (see the level
@@ -102,7 +102,7 @@ transatlantic/           # repo root (dir currently named caveman until the org 
 ├── src/                         # Internal source — not auto-discovered by plugin
 │   ├── hooks/                   # Claude Code hooks (installer reads here)
 │   ├── rules/                   # Auto-activation rule body (single source)
-│   ├── tools/                   # caveman-init.js (per-repo rule writer)
+│   ├── tools/                   # ta-init.js (per-repo rule writer)
 │   └── mcp-servers/             # caveman-shrink npm-published MCP middleware
 │
 ├── .claude-plugin/              # Claude Code plugin manifest (REQUIRED at root)
@@ -129,9 +129,9 @@ transatlantic/           # repo root (dir currently named caveman until the org 
 | File | What it controls |
 |------|-----------------|
 | `skills/transatlantic/SKILL.md` | Caveman behavior: intensity levels, rules, wenyan mode, auto-clarity, persistence. Only file to edit for behavior changes. |
-| `src/rules/caveman-activate.md` | Always-on auto-activation rule body. Consumed by `src/tools/caveman-init.js` when a user runs `npx caveman --with-init` (per-repo IDE rule files). Edit here, not in any per-agent rule copy. |
-| `src/rules/caveman-openclaw-bootstrap.md` | Marker-fenced bootstrap snippet appended to `~/.openclaw/workspace/SOUL.md` by `bin/lib/openclaw.js`. Drives always-on caveman through the OpenClaw gateway. Must include the SENTINEL `Respond terse like smart caveman` and stay well under OpenClaw's 12K-per-bootstrap-file cap. |
-| `bin/lib/openclaw.js` | OpenClaw install/uninstall helper. Frontmatter merge (`version`, `always: true`), SOUL.md marker append/strip, idempotent. Shared by `bin/install.js` and `src/tools/caveman-init.js`. |
+| `src/rules/transatlantic-activate.md` | Always-on auto-activation rule body. Consumed by `src/tools/ta-init.js` when a user runs `npx caveman --with-init` (per-repo IDE rule files). Edit here, not in any per-agent rule copy. |
+| `src/rules/transatlantic-openclaw-bootstrap.md` | Marker-fenced bootstrap snippet appended to `~/.openclaw/workspace/SOUL.md` by `bin/lib/openclaw.js`. Drives always-on caveman through the OpenClaw gateway. Must include the SENTINEL `Respond terse like smart caveman` and stay well under OpenClaw's 12K-per-bootstrap-file cap. |
+| `bin/lib/openclaw.js` | OpenClaw install/uninstall helper. Frontmatter merge (`version`, `always: true`), SOUL.md marker append/strip, idempotent. Shared by `bin/install.js` and `src/tools/ta-init.js`. |
 | `skills/ta-commit/SKILL.md` | Caveman commit message behavior. Fully independent skill. |
 | `skills/ta-review/SKILL.md` | Caveman code review behavior. Fully independent skill. |
 | `skills/ta-help/SKILL.md` | Quick-reference card. One-shot display, not a persistent mode. |
@@ -140,12 +140,12 @@ transatlantic/           # repo root (dir currently named caveman until the org 
 | `agents/crew-locator.md` | Read-only locator subagent (haiku). Output contract: `path:line — symbol — note`. |
 | `agents/crew-editor.md` | Surgical 1-2 file editor subagent. Refuses 3+ file scope. |
 | `agents/crew-reviewer.md` | Diff/file reviewer subagent (haiku). One-line findings with severity emoji. |
-| `src/plugins/opencode/plugin.js` | opencode native plugin. ESM Bun module — `session.created` writes flag, `tui.prompt.append` parses slash/natural-language activation and appends per-prompt reinforcement. Reuses `caveman-config.js` via `createRequire`. |
+| `src/plugins/opencode/plugin.js` | opencode native plugin. ESM Bun module — `session.created` writes flag, `tui.prompt.append` parses slash/natural-language activation and appends per-prompt reinforcement. Reuses `ta-config.js` via `createRequire`. |
 | `src/plugins/opencode/commands/*.md` | Six opencode slash-command prompt templates (`/transatlantic`, `/ta-{commit,review,compress,stats,help}`). |
 
 ### Auto-generated / auto-synced — do not edit directly
 
-We removed the agent-specific dotdir mirrors at the repo root (`.cursor/`, `.windsurf/`, `.clinerules/`, `.github/copilot-instructions.md`, root `caveman/SKILL.md`). They were never read by the installer — only used to self-apply caveman to this repo when a maintainer opened it in Cursor/Windsurf/Cline. Devs who want caveman in their editor while editing this repo should run `npx caveman --with-init` once (writes per-repo rule files from `src/rules/caveman-activate.md` via `src/tools/caveman-init.js`). For per-user installs through the upstream skills CLI, `npx caveman --only <agent>` runs `npx skills add ... -a <profile>`.
+We removed the agent-specific dotdir mirrors at the repo root (`.cursor/`, `.windsurf/`, `.clinerules/`, `.github/copilot-instructions.md`, root `caveman/SKILL.md`). They were never read by the installer — only used to self-apply caveman to this repo when a maintainer opened it in Cursor/Windsurf/Cline. Devs who want caveman in their editor while editing this repo should run `npx caveman --with-init` once (writes per-repo rule files from `src/rules/transatlantic-activate.md` via `src/tools/ta-init.js`). For per-user installs through the upstream skills CLI, `npx caveman --only <agent>` runs `npx skills add ... -a <profile>`.
 
 A handful of dotdir leftovers (`.junie/`, `.kiro/`, `.roo/`, `.agents/`) still hold a stale `crew/SKILL.md` mirror from before the cleanup. They aren't read by anything in the current install path; remove on sight, no migration needed.
 
@@ -182,14 +182,14 @@ The old steps that mirrored SKILL.md and rules into root dotdirs (`.cursor/`, `.
 
 ## Hook system (Claude Code)
 
-Three hooks in `src/hooks/` plus a `caveman-config.js` shared module and a `package.json` CommonJS marker. Communicate via flag file at `$CLAUDE_CONFIG_DIR/.caveman-active` (falls back to `~/.claude/.caveman-active`).
+Three hooks in `src/hooks/` plus a `ta-config.js` shared module and a `package.json` CommonJS marker. Communicate via flag file at `$CLAUDE_CONFIG_DIR/.ta-active` (falls back to `~/.claude/.ta-active`).
 
 ```
-SessionStart hook ──writes "full"──▶ $CLAUDE_CONFIG_DIR/.caveman-active ◀──writes mode── UserPromptSubmit hook
+SessionStart hook ──writes "full"──▶ $CLAUDE_CONFIG_DIR/.ta-active ◀──writes mode── UserPromptSubmit hook
                                                        │
                                                     reads
                                                        ▼
-                                              caveman-statusline.sh
+                                              ta-statusline.sh
                                             [CAVEMAN] / [CAVEMAN:ULTRA] / ...
 ```
 
@@ -197,28 +197,28 @@ SessionStart hook ──writes "full"──▶ $CLAUDE_CONFIG_DIR/.caveman-activ
 
 All hooks honor `CLAUDE_CONFIG_DIR` for non-default Claude Code config locations.
 
-### `src/hooks/caveman-config.js` — shared module
+### `src/hooks/ta-config.js` — shared module
 
 Exports:
 - `getDefaultMode()` — resolves default mode in order: `CAVEMAN_DEFAULT_MODE` env var → repo-local config (`<cwd>/.caveman/config.json` or `<cwd>/.caveman.json`, walking up to the filesystem root) → user config (`$XDG_CONFIG_HOME/caveman/config.json` / `~/.config/caveman/config.json` / `%APPDATA%\caveman\config.json`) → `'full'`. The env var short-circuits before any cwd walk. Repo-local config lets a team check in a per-project default without polluting every contributor's env or user config.
 - `findRepoConfigPath(start)` — walks up from `start` (default `process.cwd()`) looking for the first `.caveman/config.json` or `.caveman.json`. Bounded to 64 ancestors. Refuses symlinked files (symmetric with `safeWriteFlag` / `readFlag`).
 - `safeWriteFlag(flagPath, content)` — symlink-safe flag write. Refuses if flag target or its immediate parent is a symlink. Opens with `O_NOFOLLOW` where supported. Atomic temp + rename. Creates with `0600`. Protects against local attackers replacing the predictable flag path with a symlink to clobber files writable by the user. Used by both write hooks. Silent-fails on all filesystem errors.
 
-### `src/hooks/caveman-activate.js` — SessionStart hook
+### `src/hooks/ta-activate.js` — SessionStart hook
 
 Runs once per Claude Code session start. Three things:
-1. Writes the active mode to `$CLAUDE_CONFIG_DIR/.caveman-active` via `safeWriteFlag` (creates if missing)
+1. Writes the active mode to `$CLAUDE_CONFIG_DIR/.ta-active` via `safeWriteFlag` (creates if missing)
 2. Emits the transatlantic ruleset as hidden stdout — Claude Code injects SessionStart hook stdout as system context, invisible to user
 3. Checks `settings.json` for statusline config; if missing, appends nudge to offer setup on first interaction
 
 Silent-fails on all filesystem errors — never blocks session start.
 
-### `src/hooks/caveman-mode-tracker.js` — UserPromptSubmit hook
+### `src/hooks/ta-mode-tracker.js` — UserPromptSubmit hook
 
 Reads JSON from stdin. Three responsibilities:
 
 **1. Slash-command activation.** If the prompt starts with `/transatlantic`, `/ta`, or legacy `/caveman`, writes the mode to the flag file via `safeWriteFlag`:
-- `/transatlantic` or `/ta` → configured default (see `caveman-config.js`, defaults to `transatlantic`)
+- `/transatlantic` or `/ta` → configured default (see `ta-config.js`, defaults to `transatlantic`)
 - `/transatlantic <level>` → that level (liner/plain/transatlantic/aviation/telegraph/morse/wenyan-*)
 - legacy `/caveman lite|full|ultra` → `transatlantic`/`telegraph`/`morse` via `normalizeMode()`
 - `/ta-commit` → `commit`
@@ -230,15 +230,15 @@ Reads JSON from stdin. Three responsibilities:
 
 **3. Per-turn reinforcement.** When flag is set to a non-independent mode (i.e. not `commit`/`review`/`compress`), emits a small `hookSpecificOutput` JSON reminder so the model keeps caveman style after other plugins inject competing instructions mid-conversation. The full ruleset still comes from SessionStart — this is just an attention anchor.
 
-### `src/hooks/caveman-statusline.sh` — Statusline badge
+### `src/hooks/ta-statusline.sh` — Statusline badge
 
-Reads flag file at `$CLAUDE_CONFIG_DIR/.caveman-active`. Outputs colored badge string for Claude Code statusline:
+Reads flag file at `$CLAUDE_CONFIG_DIR/.ta-active`. Outputs colored badge string for Claude Code statusline:
 - `full` or empty → `[CAVEMAN]` (orange)
 - anything else → `[CAVEMAN:<MODE_UPPERCASED>]` (orange)
 
-Then appends the lifetime-savings suffix (`⛏ 12.4k`) read from `$CLAUDE_CONFIG_DIR/.caveman-statusline-suffix` — written by `caveman-stats.js` on every `/ta-stats` run. **Default on**; users opt out with `CAVEMAN_STATUSLINE_SAVINGS=0`. The suffix file is absent until `/ta-stats` runs at least once, so fresh installs render no fake number.
+Then appends the lifetime-savings suffix (`⛏ 12.4k`) read from `$CLAUDE_CONFIG_DIR/.ta-statusline-suffix` — written by `ta-stats.js` on every `/ta-stats` run. **Default on**; users opt out with `CAVEMAN_STATUSLINE_SAVINGS=0`. The suffix file is absent until `/ta-stats` runs at least once, so fresh installs render no fake number.
 
-Configured in `settings.json` under `statusLine.command`. PowerShell counterpart at `src/hooks/caveman-statusline.ps1` for Windows. Both scripts symlink-refuse and whitelist-validate the flag/suffix file contents — never echo arbitrary bytes.
+Configured in `settings.json` under `statusLine.command`. PowerShell counterpart at `src/hooks/ta-statusline.ps1` for Windows. Both scripts symlink-refuse and whitelist-validate the flag/suffix file contents — never echo arbitrary bytes.
 
 ### Hook installation
 
@@ -289,15 +289,15 @@ How caveman reaches each agent type:
 | Gemini CLI | Extension with `GEMINI.md` context file | Yes — context file loads every session |
 | opencode | Native plugin (`src/plugins/opencode/`) copied into `~/.config/opencode/plugins/transatlantic/` + `AGENTS.md` ruleset + skills/agents/commands directories. Plugin uses `session.created` and `tui.prompt.append` lifecycle hooks. No statusline (opencode TUI exposes no plugin-writable badge). | Yes — `session.created` writes flag, `AGENTS.md` carries always-on ruleset |
 | OpenClaw | Workspace skill at `~/.openclaw/workspace/skills/transatlantic/SKILL.md` (frontmatter merged with `version` + `always: true`) plus a marker-fenced bootstrap block in `~/.openclaw/workspace/SOUL.md`. Both writes go through `bin/lib/openclaw.js`; workspace path is overridable via `OPENCLAW_WORKSPACE`. | Yes — SOUL.md is auto-injected each turn under "Project Context" (subject to OpenClaw's 12K-per-file / 60K-total bootstrap caps) |
-| Cursor | `npx skills add ... -a cursor` (default via `--only cursor`) writes the upstream skill profile; per-repo `.cursor/rules/caveman.mdc` via `--with-init` (calls `src/tools/caveman-init.js`) | Yes — always-on rule |
+| Cursor | `npx skills add ... -a cursor` (default via `--only cursor`) writes the upstream skill profile; per-repo `.cursor/rules/caveman.mdc` via `--with-init` (calls `src/tools/ta-init.js`) | Yes — always-on rule |
 | Windsurf | `npx skills add ... -a windsurf` (default via `--only windsurf`); per-repo `.windsurf/rules/caveman.md` via `--with-init` | Yes — always-on rule |
 | Cline | `npx skills add ... -a cline` (default via `--only cline`); per-repo `.clinerules/caveman.md` via `--with-init` | Yes — Cline auto-discovers `.clinerules/` |
 | Copilot | `npx skills add ... -a github-copilot` (soft probe — pass `--only copilot`); per-repo `.github/copilot-instructions.md` + `AGENTS.md` via `--with-init` | Yes — repo-wide instructions |
 | Others (Junie, Trae, Warp, Tabnine, Mistral, Qwen, Devin, Droid, ForgeCode, Bob, Crush, iFlow, OpenHands, Qoder, Rovo Dev, Replit, Antigravity, …) | `npx skills add JuliusBrussee/caveman -a <profile>` | No — user must say `/caveman` each session |
 
-opencode reaches Tier 1 minus the statusline (opencode's TUI has no plugin-writable badge). Mode flag lives at `~/.config/opencode/.caveman-active` for any external tooling that wants to surface it.
+opencode reaches Tier 1 minus the statusline (opencode's TUI has no plugin-writable badge). Mode flag lives at `~/.config/opencode/.ta-active` for any external tooling that wants to surface it.
 
-For agents without hook systems, the always-on snippet lives in `INSTALL.md`'s "Want it always on?" section — keep current with `src/rules/caveman-activate.md`.
+For agents without hook systems, the always-on snippet lives in `INSTALL.md`'s "Want it always on?" section — keep current with `src/rules/transatlantic-activate.md`.
 
 **Adding a new agent.** Edit the `PROVIDERS` array in `bin/install.js` — single source of truth, no more bash/PS1 dual-source drift. Each entry has `id`, `label`, `mech`, `detect` (clause spec like `command:foo||dir:$HOME/x`), optional `profile` (vercel-labs/skills slug), optional `soft: true` (config-dir-only detection).
 
@@ -335,8 +335,8 @@ To reproduce: `uv run python benchmarks/run.py` (needs `ANTHROPIC_API_KEY` in `.
 ## Key rules for agents working here
 
 - Edit `skills/<name>/SKILL.md` for behavior changes. Never edit synced copies under `plugins/transatlantic/skills/`.
-- Edit `src/rules/caveman-activate.md` for auto-activation rule changes. Never edit any per-agent rule copy a user has on their machine.
-- Edit `src/rules/caveman-openclaw-bootstrap.md` for the OpenClaw SOUL.md bootstrap snippet. Keep the `<!-- caveman-begin -->` / `<!-- caveman-end -->` markers and the `Respond terse like smart caveman` sentinel — `bin/lib/openclaw.js` keys idempotency off both. If you change the embedded fallback in `bin/lib/openclaw.js`, keep it byte-equivalent to the file.
+- Edit `src/rules/transatlantic-activate.md` for auto-activation rule changes. Never edit any per-agent rule copy a user has on their machine.
+- Edit `src/rules/transatlantic-openclaw-bootstrap.md` for the OpenClaw SOUL.md bootstrap snippet. Keep the `<!-- caveman-begin -->` / `<!-- caveman-end -->` markers and the `Respond terse like smart caveman` sentinel — `bin/lib/openclaw.js` keys idempotency off both. If you change the embedded fallback in `bin/lib/openclaw.js`, keep it byte-equivalent to the file.
 - Per-skill human docs live in `skills/<name>/README.md`. The LLM-facing body is in `SKILL.md`. Don't merge them — different audiences.
 - Build artifacts go in `dist/`. Never check files into `dist/` manually — CI rebuilds them on push, and `dist/` is gitignored.
 - README most important file for user-facing impact. Optimize for non-technical readers. Preserve caveman voice.
@@ -344,7 +344,7 @@ To reproduce: `uv run python benchmarks/run.py` (needs `ANTHROPIC_API_KEY` in `.
 - Benchmark and eval numbers must be real. Never fabricate or estimate.
 - CI workflow commits back to main after merge. Account for when checking branch state.
 - Hook files must silent-fail on all filesystem errors. Never let hook crash block session start.
-- Any new flag file write must go through `safeWriteFlag()` in `caveman-config.js`. Direct `fs.writeFileSync` on predictable user-owned paths reopens the symlink-clobber attack surface.
+- Any new flag file write must go through `safeWriteFlag()` in `ta-config.js`. Direct `fs.writeFileSync` on predictable user-owned paths reopens the symlink-clobber attack surface.
 - Hooks must respect `CLAUDE_CONFIG_DIR` env var, not hardcode `~/.claude`. Same for `bin/install.js` / statusline scripts.
 - `bin/install.js` is the only installer source. `install.sh` / `install.ps1` at repo root are 30-line shims that delegate to it. Never re-add per-OS install logic to the shims — that's how we got the Windows quoting bug (#249).
 - Any settings.json read in installer or hooks must go through `bin/lib/settings.js` `readSettings()` so JSONC comments don't crash the merge. Any settings.json write must run through `validateHookFields()` first.

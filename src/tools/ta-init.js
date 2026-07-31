@@ -3,8 +3,8 @@
 // repo for every IDE agent we support. Idempotent. Safe to re-run.
 //
 // Usage:
-//   node src/tools/caveman-init.js [target-dir] [--dry-run] [--force] [--only <agent>]
-//   curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/tools/caveman-init.js | node - [args]
+//   node src/tools/ta-init.js [target-dir] [--dry-run] [--force] [--only <agent>]
+//   curl -fsSL https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/tools/ta-init.js | node - [args]
 //
 // Without args, runs in cwd. Generates the rule files for Cursor, Windsurf,
 // Cline, Copilot, and AGENTS.md. Does NOT modify CLAUDE.md or compress
@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Embedded so the tool works standalone (npx-style) without the src/rules/ dir.
-// Mirrors src/rules/caveman-activate.md verbatim — keep these in sync.
+// Mirrors src/rules/transatlantic-activate.md verbatim — keep these in sync.
 const RULE_BODY = `Speak in the transatlantic register: clear, measured, clipped. Every technical fact stays. Only noise dies.
 
 Rules (default level: transatlantic):
@@ -58,7 +58,7 @@ Boundaries: code/commits/PRs written normal.
 
 // OpenClaw is a global workspace tool (not per-repo) and needs two write
 // targets — a skill folder + a SOUL.md bootstrap block. The shared helper
-// lives at bin/lib/openclaw.js; we require it lazily so caveman-init.js
+// lives at bin/lib/openclaw.js; we require it lazily so ta-init.js
 // keeps working when run standalone (curl|node) without the helper on disk.
 function loadOpenclawHelper() {
   try {
@@ -98,7 +98,7 @@ const AGENTS = [
 function loadRuleBody() {
   // Prefer the in-repo source-of-truth when available.
   try {
-    const local = path.join(__dirname, '..', 'rules', 'caveman-activate.md');
+    const local = path.join(__dirname, '..', 'rules', 'transatlantic-activate.md');
     if (fs.existsSync(local)) return fs.readFileSync(local, 'utf8').trimEnd() + '\n';
   } catch (e) {}
   return RULE_BODY;
@@ -233,7 +233,7 @@ function parseArgs(argv) {
 function help() {
   console.log(`caveman init — drop always-on caveman rule into a target repo
 
-Usage: caveman-init.js [target-dir] [--dry-run] [--force] [--only <agent>]
+Usage: ta-init.js [target-dir] [--dry-run] [--force] [--only <agent>]
 
 Defaults to current working directory. Idempotent — safe to re-run.
 

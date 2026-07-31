@@ -1,4 +1,4 @@
-"""Tests for caveman-mode-tracker.js prompt parsing (issues #598, #599).
+"""Tests for ta-mode-tracker.js prompt parsing (issues #598, #599).
 
 Drives the UserPromptSubmit hook with real prompts over stdin against an
 isolated CLAUDE_CONFIG_DIR and asserts the flag-file state afterwards.
@@ -21,7 +21,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-TRACKER = REPO_ROOT / "src" / "hooks" / "caveman-mode-tracker.js"
+TRACKER = REPO_ROOT / "src" / "hooks" / "ta-mode-tracker.js"
 
 
 class ModeTrackerTests(unittest.TestCase):
@@ -29,8 +29,8 @@ class ModeTrackerTests(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory(prefix="caveman-tracker-")
         self.claude_dir = Path(self._tmp.name) / ".claude"
         self.claude_dir.mkdir(parents=True)
-        self.flag = self.claude_dir / ".caveman-active"
-        self.prev = self.claude_dir / ".caveman-active.prev"
+        self.flag = self.claude_dir / ".ta-active"
+        self.prev = self.claude_dir / ".ta-active.prev"
 
     def tearDown(self):
         self._tmp.cleanup()

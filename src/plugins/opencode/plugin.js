@@ -6,14 +6,14 @@
 // - Injects per-turn reinforcement into the system prompt
 //
 // Bun ESM module; loads the existing security-hardened helpers from
-// caveman-config.js via createRequire so the symlink-safe flag-write code
+// ta-config.js via createRequire so the symlink-safe flag-write code
 // lives in one place.
 //
 // Layout once installed:
 //   ~/.config/opencode/plugins/caveman/
 //   ├── package.json
 //   ├── plugin.js              ← this file
-//   └── caveman-config.cjs     ← copied sibling of src/hooks/caveman-config.js
+//   └── ta-config.cjs     ← copied sibling of src/hooks/ta-config.js
 //
 // The always-on caveman ruleset is provided separately via
 // ~/.config/opencode/AGENTS.md (Tier-3 base). This plugin handles dynamic
@@ -42,11 +42,11 @@ import path from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-// When installed: caveman-config.cjs sits next to plugin.js (copied by
+// When installed: ta-config.cjs sits next to plugin.js (copied by
 // bin/install.js, renamed to .cjs because this directory's package.json
 // declares "type": "module" — bare .js would be loaded as ESM). When loaded
 // from the source tree (tests, dev): fall back to the canonical
-// src/hooks/caveman-config.js, which lives in a directory whose own
+// src/hooks/ta-config.js, which lives in a directory whose own
 // package.json pins "type": "commonjs". One source of truth either way.
 //
 // Loaded by evaluating the file as CommonJS by hand, NOT via the module
@@ -57,8 +57,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 // resolves node BUILT-INS fine in the compiled binary, which is all
 // caveman-config needs (fs/path/os).
 function loadConfig() {
-  const installed = join(here, 'caveman-config.cjs');
-  const dev = join(here, '..', '..', 'hooks', 'caveman-config.js');
+  const installed = join(here, 'ta-config.cjs');
+  const dev = join(here, '..', '..', 'hooks', 'ta-config.js');
   const target = existsSync(installed) ? installed : dev;
   const code = readFileSync(target, 'utf8').replace(/^#![^\n]*\n/, '');
   const mod = { exports: {} };
@@ -87,10 +87,10 @@ function opencodeConfigDir() {
   return path.join(os.homedir(), '.config', 'opencode');
 }
 
-const flagPath = path.join(opencodeConfigDir(), '.caveman-active');
+const flagPath = path.join(opencodeConfigDir(), '.ta-active');
 
-// Per-level attention anchor — single definition in caveman-config.js
-// (falls back only if an old caveman-config.cjs copy predates the export).
+// Per-level attention anchor — single definition in ta-config.js
+// (falls back only if an old ta-config.cjs copy predates the export).
 const REINFORCEMENT = SHARED_REINFORCEMENT || {
   transatlantic: 'Newsreel voice. Full grammar, one idea per sentence. Cut filler/hedging/pleasantries/padding.'
 };
@@ -104,7 +104,7 @@ function reinforcementLine(mode) {
 
 // Parse a prompt for slash-command activation or natural-language toggles.
 // Returns the new mode to write, the literal string 'off' to deactivate, or
-// null when the prompt doesn't change state. Mirrors caveman-mode-tracker.js.
+// null when the prompt doesn't change state. Mirrors ta-mode-tracker.js.
 function parseModeChange(promptRaw) {
   let prompt = (promptRaw || '').trim();
   // opencode's non-interactive `run` path delivers the message wrapped in

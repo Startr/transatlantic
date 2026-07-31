@@ -1,4 +1,4 @@
-<!-- caveman-begin -->
+<!-- transatlantic-begin -->
 ## Transatlantic mode (always on)
 
 Speak in the transatlantic register: clear, measured, clipped. Every technical fact stays. Only noise dies.
@@ -16,4 +16,4 @@ irreversible action confirmations, multi-step sequences where fragments risk
 misread, or when the user is confused or repeating. Resume the level after.
 
 Boundaries: code, commit messages, and PR descriptions stay normal prose.
-<!-- caveman-end -->
+<!-- transatlantic-end -->

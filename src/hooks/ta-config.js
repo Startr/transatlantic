@@ -149,7 +149,7 @@ function getDefaultMode() {
 // Symlink-safe flag file write.
 // Uses O_NOFOLLOW where available, writes atomically via temp + rename with
 // 0600 permissions. Protects against local attackers replacing the predictable
-// flag path (~/.claude/.caveman-active) with a symlink to clobber other files.
+// flag path (~/.claude/.ta-active) with a symlink to clobber other files.
 //
 // When the parent directory is itself a symlink (legitimate pattern: ~/.claude
 // symlinked to another drive or shared config dir), resolves through to the
@@ -163,11 +163,11 @@ function getDefaultMode() {
 //
 // The flag file itself must never be a symlink (that's the actual clobber vector).
 //
-// Set CAVEMAN_DEBUG=1 to emit stderr diagnostics when flag writes are refused.
+// Set TA_DEBUG=1 (legacy CAVEMAN_DEBUG=1) to emit stderr diagnostics when flag writes are refused.
 //
 // Silent-fails on any filesystem error — the flag is best-effort.
 function safeWriteFlag(flagPath, content) {
-  const debug = process.env.CAVEMAN_DEBUG === '1';
+  const debug = process.env.TA_DEBUG === '1' || process.env.CAVEMAN_DEBUG === '1';
   try {
     const flagDir = path.dirname(flagPath);
     fs.mkdirSync(flagDir, { recursive: true });
@@ -215,7 +215,7 @@ function safeWriteFlag(flagPath, content) {
       if (e.code !== 'ENOENT') return;
     }
 
-    const tempPath = path.join(realFlagDir, `.caveman-active.${process.pid}.${Date.now()}`);
+    const tempPath = path.join(realFlagDir, `.ta-active.${process.pid}.${Date.now()}`);
     const O_NOFOLLOW = typeof fs.constants.O_NOFOLLOW === 'number' ? fs.constants.O_NOFOLLOW : 0;
     const flags = fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | O_NOFOLLOW;
     let fd;
@@ -281,11 +281,11 @@ function readFlag(flagPath) {
 // Symlink-safe append. Same parent-dir + symlink-target rules as safeWriteFlag,
 // but opens with O_APPEND so concurrent writers from different sessions don't
 // clobber each other. Used for the lifetime stats log
-// ($CLAUDE_CONFIG_DIR/.caveman-history.jsonl).
+// ($CLAUDE_CONFIG_DIR/.ta-history.jsonl).
 //
 // Silent-fails on any filesystem error.
 function appendFlag(filePath, line) {
-  const debug = process.env.CAVEMAN_DEBUG === '1';
+  const debug = process.env.TA_DEBUG === '1' || process.env.CAVEMAN_DEBUG === '1';
   try {
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
@@ -338,17 +338,17 @@ function appendFlag(filePath, line) {
 }
 
 // Mode-transition log (#601). Whenever the active-mode flag actually changes,
-// append {ts, mode, prev} to $CLAUDE_CONFIG_DIR/.caveman-mode-log.jsonl so
+// append {ts, mode, prev} to $CLAUDE_CONFIG_DIR/.ta-mode-log.jsonl so
 // caveman-stats can attribute output tokens to the mode that was active when
 // each message was generated, instead of whatever mode the flag holds at
 // stats time. mode/prev are a VALID_MODES string or null (null = caveman off).
 // prev lets stats attribute messages that predate the first logged transition
 // of a session. No-op when the mode is unchanged; best-effort like all flag IO.
-const MODE_LOG_BASENAME = '.caveman-mode-log.jsonl';
+const MODE_LOG_BASENAME = '.ta-mode-log.jsonl';
 
 function recordModeChange(claudeDir, newMode) {
   try {
-    const current = readFlag(path.join(claudeDir, '.caveman-active'));
+    const current = readFlag(path.join(claudeDir, '.ta-active'));
     const next = newMode || null;
     if ((current || null) === next) return;
     appendFlag(
@@ -397,4 +397,28 @@ const REINFORCEMENT = {
   morse: 'Bare keywords, minimal glue words. State each fact once.'
 };
 
-module.exports = { getDefaultMode, getConfigDir, getConfigPath, findRepoConfigPath, VALID_MODES, LEGACY_ALIASES, normalizeMode, INDEPENDENT_MODES, REINFORCEMENT, safeWriteFlag, readFlag, appendFlag, readHistory, recordModeChange, MODE_LOG_BASENAME };
+// One-time migration: rename caveman-era state files to their ta-era names.
+// Called at SessionStart; best-effort and silent like all flag IO. Never
+// overwrites an existing new-name file.
+const LEGACY_STATE_FILES = [
+  ['.caveman-active', '.ta-active'],
+  ['.caveman-active.prev', '.ta-active.prev'],
+  ['.caveman-statusline-suffix', '.ta-statusline-suffix'],
+  ['.caveman-history.jsonl', '.ta-history.jsonl'],
+  ['.caveman-mode-log.jsonl', '.ta-mode-log.jsonl'],
+];
+
+function migrateLegacyState(claudeDir) {
+  for (const [oldName, newName] of LEGACY_STATE_FILES) {
+    try {
+      const oldPath = path.join(claudeDir, oldName);
+      const newPath = path.join(claudeDir, newName);
+      const st = fs.lstatSync(oldPath);
+      if (st.isSymbolicLink() || !st.isFile()) continue;
+      if (fs.existsSync(newPath)) { fs.unlinkSync(oldPath); continue; }
+      fs.renameSync(oldPath, newPath);
+    } catch (e) { /* absent or unreadable — nothing to migrate */ }
+  }
+}
+
+module.exports = { migrateLegacyState, getDefaultMode, getConfigDir, getConfigPath, findRepoConfigPath, VALID_MODES, LEGACY_ALIASES, normalizeMode, INDEPENDENT_MODES, REINFORCEMENT, safeWriteFlag, readFlag, appendFlag, readHistory, recordModeChange, MODE_LOG_BASENAME };
