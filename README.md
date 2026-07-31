@@ -48,6 +48,8 @@ Needs Node ≥18. Safe to re-run. `node bin/install.js --uninstall` removes ever
 
 **Turn it on:** it's on by default from message one on Claude Code. Switch levels with `/transatlantic <level>` (or the short form `/ta <level>`). **Turn it off:** say "normal mode". The legacy `/caveman` commands still work and map onto the new ladder.
 
+A word on command names, because upstream got this wrong and we won't: Claude Code namespaces plugin commands, so a plugin alone only provides `/transatlantic:transatlantic`. This project's session hook therefore mirrors its commands into your user scope at session start, which is what makes the bare `/transatlantic` and `/ta` forms real. The mirror is polite — files you author yourself are never touched — and takes effect from your first session start after install (in the very first session, the namespaced form works immediately). Every command documented here is tested to resolve.
+
 ## The ladder
 
 Six levels, most readable to most compressed. Each maps to a real research tradition; the full citations live in [docs/research/level-ladder.md](./docs/research/level-ladder.md).

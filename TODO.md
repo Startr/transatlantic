@@ -54,8 +54,9 @@ to bare keywords (morse). Level ladder and citations:
   - [ ] Point marketplace source at the new repo
   - [ ] Update `enabledPlugins` key on user machines after plugin rename (`caveman@caveman` to new id)
 - [ ] **Installer Ships the Full Local Setup**: Everything hand-done on this machine, automated
-  - [ ] Install bare user-scope commands (`~/.claude/commands/transatlantic.md`, `ta.md`) — plugin commands are always namespaced, bare form needs user scope
+  - [x] Bare user-scope commands: SessionStart hook mirrors all plugin commands into `$CLAUDE_CONFIG_DIR/commands/` (marker-owned, idempotent, user files never touched, tested) — every documented bare form now resolves on every install path
   - [ ] Wire statusline into `settings.json` via `bin/lib/settings.js` (hand-added 2026-07-30)
+  - [ ] `--uninstall` removes marker-owned mirrored commands
   - [ ] Document the dev-mode install (installPath pointed at clone) and its marketplace-update revert risk
 
 ### Evidence Debt

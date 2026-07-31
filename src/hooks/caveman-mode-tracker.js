@@ -73,7 +73,7 @@ process.stdin.on('end', () => {
     // /caveman-stats [--share] — block the prompt and inject stats output as
     // the hook's reason. The script reads the active session log, so we pass
     // transcript_path through when Claude Code provides it.
-    const statsMatch = /^\/caveman(?::caveman)?-stats(?:\s+(.*))?$/.exec(prompt);
+    const statsMatch = /^\/(?:caveman(?::caveman)?|transatlantic:caveman)-stats(?:\s+(.*))?$/.exec(prompt);
     if (statsMatch) {
       const tailArgs = (statsMatch[1] || '').trim().split(/\s+/).filter(Boolean);
       try {
@@ -120,11 +120,11 @@ process.stdin.on('end', () => {
         '/transatlantic:caveman', '/caveman:transatlantic',
         '/caveman', '/caveman:caveman' // legacy
       ]);
-      if (cmd === '/caveman-commit' || cmd === '/caveman:caveman-commit') {
+      if (cmd === '/caveman-commit' || cmd === '/caveman:caveman-commit' || cmd === '/transatlantic:caveman-commit') {
         mode = 'commit';
-      } else if (cmd === '/caveman-review' || cmd === '/caveman:caveman-review') {
+      } else if (cmd === '/caveman-review' || cmd === '/caveman:caveman-review' || cmd === '/transatlantic:caveman-review') {
         mode = 'review';
-      } else if (cmd === '/caveman-compress' || cmd === '/caveman:caveman-compress') {
+      } else if (cmd === '/caveman-compress' || cmd === '/caveman:caveman-compress' || cmd === '/transatlantic:caveman-compress') {
         mode = 'compress';
       } else if (LEVEL_CMDS.has(cmd)) {
         // Bare command → activate at configured default

@@ -36,6 +36,51 @@ if (mode === 'off') {
 recordModeChange(claudeDir, mode); // #601
 safeWriteFlag(flagPath, mode);
 
+// 1b. Mirror plugin commands into user scope so the BARE forms the docs
+// promise (/transatlantic, /ta, /caveman-commit, ...) actually resolve.
+// Claude Code namespaces plugin commands as /<plugin>:<command>; only
+// user-scope commands get bare names. Upstream caveman documented /caveman
+// while reality demanded /caveman:caveman — this closes that gap for every
+// install path.
+//
+// Ownership marker keeps this idempotent and polite: files we wrote carry
+// the marker and get re-synced when the plugin's copy changes; files the
+// user authored (no marker) are never touched. Silent-fails like every hook.
+const COMMAND_MARKER = '<!-- managed-by-transatlantic -->';
+try {
+  const cmdSrcCandidates = [];
+  if (process.env.CLAUDE_PLUGIN_ROOT) {
+    cmdSrcCandidates.push(path.join(process.env.CLAUDE_PLUGIN_ROOT, 'commands'));
+  }
+  cmdSrcCandidates.push(
+    path.join(__dirname, '..', '..', 'commands'),
+    path.join(__dirname, '..', 'commands')
+  );
+  const cmdSrc = cmdSrcCandidates.find(d => {
+    try { return fs.statSync(d).isDirectory(); } catch (e) { return false; }
+  });
+  if (cmdSrc) {
+    const destDir = path.join(claudeDir, 'commands');
+    fs.mkdirSync(destDir, { recursive: true });
+    for (const name of fs.readdirSync(cmdSrc)) {
+      if (!name.endsWith('.md')) continue;
+      const desired = fs.readFileSync(path.join(cmdSrc, name), 'utf8')
+        .replace(/\n*$/, '\n') + '\n' + COMMAND_MARKER + '\n';
+      const dest = path.join(destDir, name);
+      let existing = null;
+      try { existing = fs.readFileSync(dest, 'utf8'); } catch (e) { /* absent */ }
+      if (existing === null) {
+        fs.writeFileSync(dest, desired, { mode: 0o644 });
+      } else if (existing.includes(COMMAND_MARKER) && existing !== desired) {
+        fs.writeFileSync(dest, desired, { mode: 0o644 });
+      }
+      // No marker → user's own file → never touched.
+    }
+  }
+} catch (e) {
+  // Silent fail — command mirroring must never block session start
+}
+
 // 2. Emit full caveman ruleset, filtered to the active intensity level.
 //    The old 2-sentence summary was too weak — models drifted back to verbose
 //    mid-conversation, especially after context compression pruned it away.

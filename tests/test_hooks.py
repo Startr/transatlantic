@@ -160,6 +160,31 @@ class HookScriptTests(unittest.TestCase):
             self.assertNotIn("STATUSLINE SETUP NEEDED", result.stdout)
             self.assertEqual((claude_dir / ".caveman-active").read_text(), "transatlantic")
 
+    # Docs promise bare commands (/transatlantic, /ta, /caveman-commit, ...).
+    # Claude Code only gives bare names to user-scope commands, so the
+    # SessionStart hook mirrors plugin commands into $CLAUDE_CONFIG_DIR/commands.
+    def test_activate_mirrors_commands_into_user_scope(self):
+        with tempfile.TemporaryDirectory(prefix="caveman-hooks-cmds-") as tmp:
+            home = Path(tmp)
+            claude_dir = home / ".claude"
+            claude_dir.mkdir(parents=True)
+
+            self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
+
+            cmds = claude_dir / "commands"
+            for name in ["transatlantic.md", "ta.md", "caveman.md",
+                         "caveman-commit.md", "caveman-review.md",
+                         "caveman-stats.md", "caveman-compress.md",
+                         "caveman-help.md"]:
+                self.assertTrue((cmds / name).exists(), f"{name} not mirrored")
+                self.assertIn("managed-by-transatlantic", (cmds / name).read_text())
+
+            # A user-authored file (no marker) must survive a re-run untouched.
+            own = cmds / "ta.md"
+            own.write_text("my own ta command\n")
+            self.run_cmd(["node", "src/hooks/caveman-activate.js"], home)
+            self.assertEqual(own.read_text(), "my own ta command\n")
+
     # Regression for #587/#589 — hook at <root>/src/hooks/ must resolve SKILL.md
     # at <root>/skills/caveman/, not the nonexistent <root>/src/skills/.
     def test_activate_emits_skill_md_not_fallback_from_repo_layout(self):
