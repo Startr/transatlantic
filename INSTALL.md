@@ -1,8 +1,22 @@
-# Install caveman
+# Install transatlantic
+
+> [!NOTE]
+> **Pre-release fork.** This is the transatlantic fork of caveman, in active
+> development. The one-liners below still point at the upstream caveman repo
+> and install the upstream version. Until the fork lands in its permanent
+> home, install transatlantic from a local clone:
+>
+> ```bash
+> git clone <this-repo> transatlantic && cd transatlantic
+> node bin/install.js
+> ```
+>
+> The per-agent matrix below describes the mechanism accurately for both
+> versions; only the source URLs change at release.
 
 One install. Works for every AI coding agent on your machine.
 
-If just want it to work, run the one-liner. If want to know what gets touched, scroll down.
+If you just want it to work, run the one-liner. If you want to know what gets touched, scroll down.
 
 ## One-liner
 

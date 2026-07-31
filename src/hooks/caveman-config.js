@@ -52,17 +52,26 @@ function normalizeMode(mode) {
   return LEGACY_ALIASES[m] || m;
 }
 
-function getConfigDir() {
+function getConfigBase() {
   if (process.env.XDG_CONFIG_HOME) {
-    return path.join(process.env.XDG_CONFIG_HOME, 'caveman');
+    return process.env.XDG_CONFIG_HOME;
   }
   if (process.platform === 'win32') {
-    return path.join(
-      process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'),
-      'caveman'
-    );
+    return process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
   }
-  return path.join(os.homedir(), '.config', 'caveman');
+  return path.join(os.homedir(), '.config');
+}
+
+// Primary name first, legacy fallback second. getConfigDir() keeps returning
+// the legacy dir when only it exists so existing user configs keep working.
+function getConfigDir() {
+  const primary = path.join(getConfigBase(), 'transatlantic');
+  const legacy = path.join(getConfigBase(), 'caveman');
+  try {
+    if (fs.existsSync(path.join(primary, 'config.json'))) return primary;
+    if (fs.existsSync(path.join(legacy, 'config.json'))) return legacy;
+  } catch (e) { /* fall through */ }
+  return primary;
 }
 
 function getConfigPath() {
@@ -77,7 +86,10 @@ function getConfigPath() {
 function findRepoConfigPath(start) {
   try {
     let dir = path.resolve(start || process.cwd());
-    const candidates = ['.caveman/config.json', '.caveman.json'];
+    const candidates = [
+      '.transatlantic/config.json', '.transatlantic.json',
+      '.caveman/config.json', '.caveman.json' // legacy
+    ];
     for (let i = 0; i < 64; i++) {
       for (const rel of candidates) {
         const p = path.join(dir, rel);
@@ -114,8 +126,10 @@ function readModeFromConfigFile(configPath) {
 }
 
 function getDefaultMode() {
-  // 1. Environment variable (highest priority)
-  const envMode = normalizeMode(process.env.CAVEMAN_DEFAULT_MODE);
+  // 1. Environment variable (highest priority). TRANSATLANTIC_DEFAULT_MODE is
+  // the primary name; CAVEMAN_DEFAULT_MODE stays accepted as a legacy alias.
+  const envMode = normalizeMode(process.env.TRANSATLANTIC_DEFAULT_MODE) ||
+    normalizeMode(process.env.CAVEMAN_DEFAULT_MODE);
   if (envMode) {
     return envMode;
   }

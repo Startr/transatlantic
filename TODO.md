@@ -24,14 +24,15 @@ to bare keywords (morse). Level ladder and citations:
   - [x] `.claude-plugin/plugin.json` + `marketplace.json` renamed — commands now `/transatlantic:*`
   - [x] Local machine rewired (`enabledPlugins` + `installed_plugins` keys, backups kept)
   - [x] Skill frontmatter name to `transatlantic`; tracker accepts every namespaced form
-  - [ ] Decide flag-file name: keep `.caveman-active` or migrate with fallback read
+  - [x] Flag-file name decided: keep `.caveman-active` until 1.0 — five readers share the path, renaming pre-release risks split-brain (recorded in CLAUDE.md fork banner)
 - [ ] **Docs Rewrite in Liner Voice**: README is the product front door
   - [x] README: liner voice, ladder table, research section with citations, honest pre-release install, benchmark table relabeled telegraph, upstream credits (original preserved at `docs/research/README-caveman-upstream.md`)
-  - [ ] INSTALL.md per-agent matrix
-  - [ ] AGENTS.md / GEMINI.md autodiscovery files
-  - [ ] `src/rules/caveman-activate.md` always-on rule body
-  - [ ] OpenClaw bootstrap snippet — sentinel string changes with rebrand, keep markers
-  - [ ] CLAUDE.md maintainer instructions updated for the fork
+  - [x] INSTALL.md: pre-release banner with local-clone install; per-agent matrix accurate for both versions
+  - [x] AGENTS.md / GEMINI.md — @-includes of SKILL.md, already serve the new ladder, no change needed
+  - [x] `src/rules/caveman-activate.md` rewritten to the transatlantic ruleset; `caveman-init.js` embedded copy byte-synced, new sentinel, legacy installs upgrade in place (tested)
+  - [x] OpenClaw bootstrap rewritten — markers kept, file and embedded fallback byte-equal (verified)
+  - [x] CLAUDE.md: fork-status banner supersedes conflicting upstream instructions
+  - [x] Env/config names: `TRANSATLANTIC_DEFAULT_MODE` primary + `CAVEMAN_DEFAULT_MODE` legacy; `~/.config/transatlantic/` + repo `.transatlantic*` configs with caveman fallbacks
 
 ## TODO
 

@@ -1,4 +1,40 @@
-# CLAUDE.md — caveman
+# CLAUDE.md — transatlantic (fork of caveman)
+
+## Fork status — read this first
+
+This repo is the **transatlantic** fork (branch `transatlantic`). The upstream
+maintainer instructions below still describe the architecture accurately, but
+several identities have moved; where they conflict, this section wins:
+
+- **Six-level ladder** replaces caveman intensity levels: `liner`, `plain`,
+  `transatlantic` (default), `aviation`, `telegraph`, `morse`. Legacy names
+  normalize via `normalizeMode()` in `src/hooks/caveman-config.js`
+  (lite→transatlantic, full→telegraph, ultra→morse, wenyan-*→transatlantic).
+  Research basis and citations: `docs/research/level-ladder.md`. Every level
+  must stay evidence-backed — no ad-hoc style rules.
+- **Plugin + package renamed**: `.claude-plugin/plugin.json`, `marketplace.json`,
+  and `package.json` say `transatlantic`. Commands namespace as `/transatlantic:*`;
+  `/ta` is the short alias. Legacy `/caveman*` forms stay accepted in the
+  mode-tracker.
+- **Env/config names**: `TRANSATLANTIC_DEFAULT_MODE` primary,
+  `CAVEMAN_DEFAULT_MODE` legacy; user config `~/.config/transatlantic/` primary
+  with `~/.config/caveman/` fallback; repo-local `.transatlantic{/config.json,.json}`
+  before `.caveman*`.
+- **Flag file stays `.caveman-active`** until 1.0 — five readers share the path
+  (both statuslines, both hooks, opencode plugin); renaming pre-release buys
+  nothing and risks split-brain. Revisit at the repo move.
+- **Voice**: user-facing docs are written in the `liner` register (see the level
+  table in `skills/caveman/SKILL.md`). The upstream "preserve caveman voice"
+  README rule is superseded — preserve the *transatlantic* voice instead.
+  Upstream README preserved at `docs/research/README-caveman-upstream.md`.
+- **Compression boundary**: never apply telegraph/morse registers to files an
+  LLM re-reads as context (memory files, CLAUDE.md) — measured harm, see
+  ladder doc S21.
+- **Numbers stay real**: per-level eval snapshot at `evals/snapshots/levels.json`;
+  API benchmarks accept community keys (`benchmarks/README.md`,
+  `run.py --level`). Never estimate.
+- Not yet done: org repo + remote move, npm publish, installer string sweep,
+  `plugins/caveman/` mirror rename, CI workflow path updates. See `TODO.md`.
 
 ## README is a product artifact
 

@@ -15,7 +15,31 @@ const path = require('path');
 
 // Embedded so the tool works standalone (npx-style) without the src/rules/ dir.
 // Mirrors src/rules/caveman-activate.md verbatim — keep these in sync.
-const RULE_BODY = `Respond terse like smart caveman. All technical substance stay. Only fluff die.
+const RULE_BODY = `Speak in the transatlantic register: clear, measured, clipped. Every technical fact stays. Only noise dies.
+
+Rules (default level: transatlantic):
+- Cut filler (just/really/basically), pleasantries, hedging, rhetorical padding
+- Keep full grammar and articles. One idea per sentence. Front-load the answer.
+- Never center-embed — split nested clauses into separate sentences
+- Prefer common words in expected positions. Technical terms exact. Code unchanged.
+- Not: "Sure! I'd be happy to help you with that."
+- Yes: "The bug is in the auth middleware. Fix:"
+
+Levels, most readable to most compressed: liner (classy humanized), plain (plain-language letter), transatlantic (default, newsreel voice), aviation (controlled technical English), telegraph (dropped articles, fragments), morse (bare keywords).
+Switch level: /transatlantic liner|plain|transatlantic|aviation|telegraph|morse (legacy /caveman lite|full|ultra maps onto the ladder)
+Stop: "stop transatlantic", "stop caveman", or "normal mode"
+
+Auto-Clarity: rise to plain full-grammar prose for security warnings, irreversible actions, or a confused user. Resume the active level after.
+
+Boundaries: code/commits/PRs written normal. Never apply telegraph/morse to files an LLM re-reads as context (memory files, CLAUDE.md).
+`;
+
+const SENTINEL = 'Speak in the transatlantic register';
+
+// The upstream caveman rule body, kept byte-for-byte so installs written by
+// the old tool can be upgraded in place rather than duplicated or skipped.
+const LEGACY_SENTINEL = 'Respond terse like smart caveman';
+const LEGACY_RULE_BODY = `Respond terse like smart caveman. All technical substance stay. Only fluff die.
 
 Rules:
 - Drop: articles (a/an/the), filler (just/really/basically), pleasantries, hedging
@@ -31,8 +55,6 @@ Auto-Clarity: drop caveman for security warnings, irreversible actions, user con
 
 Boundaries: code/commits/PRs written normal.
 `;
-
-const SENTINEL = 'Respond terse like smart caveman';
 
 // OpenClaw is a global workspace tool (not per-repo) and needs two write
 // targets — a skill folder + a SOUL.md bootstrap block. The shared helper
@@ -97,6 +119,25 @@ function processAgent(agent, targetDir, ruleBody, opts) {
   const existing = fs.readFileSync(fullPath, 'utf8');
   if (existing.includes(SENTINEL)) {
     return { status: 'skipped-already-installed', label: '=' };
+  }
+
+  // Upstream-caveman install detected: upgrade in place when the old body is
+  // byte-intact (replace it with the new ruleset); otherwise leave it alone
+  // and tell the user --force replaces the whole file.
+  if (existing.includes(LEGACY_SENTINEL)) {
+    if (existing.includes(LEGACY_RULE_BODY)) {
+      if (!opts.dryRun) {
+        fs.writeFileSync(fullPath, existing.replace(LEGACY_RULE_BODY, ruleBody), { mode: 0o644 });
+      }
+      return { status: 'upgraded', label: '^' };
+    }
+    if (opts.force && agent.mode !== 'append') {
+      if (!opts.dryRun) {
+        fs.writeFileSync(fullPath, agent.frontmatter + ruleBody, { mode: 0o644 });
+      }
+      return { status: 'overwritten', label: '!' };
+    }
+    return { status: 'skipped-legacy-edited', label: '?' };
   }
 
   if (agent.mode === 'append') {
@@ -192,7 +233,7 @@ function main() {
     console.log(`  ${result.label} ${target} (${result.status})`);
     if (result.status === 'added' || result.status === 'installed' || result.status === 'would-add') counts.added++;
     else if (result.status === 'appended') counts.appended++;
-    else if (result.status === 'overwritten') counts.overwritten++;
+    else if (result.status === 'overwritten' || result.status === 'upgraded') counts.overwritten++;
     else counts.skipped++;
   }
 
@@ -207,4 +248,4 @@ function main() {
 // no-ops with exit code 0 — the worst kind of failure.
 if (require.main === module || (!require.main && module.id === '[stdin]')) main();
 
-module.exports = { processAgent, loadRuleBody, AGENTS, SENTINEL, RULE_BODY };
+module.exports = { processAgent, loadRuleBody, AGENTS, SENTINEL, RULE_BODY, LEGACY_SENTINEL, LEGACY_RULE_BODY };

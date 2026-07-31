@@ -44,17 +44,17 @@ test('greenfield: creates all rule files with proper frontmatter', (tmp) => {
   runInit(tmp);
   const cursor = fs.readFileSync(path.join(tmp, '.cursor/rules/caveman.mdc'), 'utf8');
   assert.match(cursor, /alwaysApply: true/);
-  assert.match(cursor, /Respond terse like smart caveman/);
+  assert.match(cursor, /Speak in the transatlantic register/);
   const windsurf = fs.readFileSync(path.join(tmp, '.windsurf/rules/caveman.md'), 'utf8');
   assert.match(windsurf, /trigger: always_on/);
   const cline = fs.readFileSync(path.join(tmp, '.clinerules/caveman.md'), 'utf8');
-  assert.match(cline, /^Respond terse/);
+  assert.match(cline, /^Speak in the transatlantic/);
   const copilot = fs.readFileSync(path.join(tmp, '.github/copilot-instructions.md'), 'utf8');
-  assert.match(copilot, /Respond terse/);
+  assert.match(copilot, /Speak in the transatlantic/);
   const agents = fs.readFileSync(path.join(tmp, 'AGENTS.md'), 'utf8');
-  assert.match(agents, /Respond terse/);
+  assert.match(agents, /Speak in the transatlantic/);
   const opencode = fs.readFileSync(path.join(tmp, '.opencode/AGENTS.md'), 'utf8');
-  assert.match(opencode, /Respond terse/);
+  assert.match(opencode, /Speak in the transatlantic/);
 });
 
 test('idempotent: re-running on a clean install skips all', (tmp) => {
@@ -70,7 +70,7 @@ test('append mode: existing AGENTS.md gets caveman appended (not replaced)', (tm
   runInit(tmp);
   const agents = fs.readFileSync(path.join(tmp, 'AGENTS.md'), 'utf8');
   assert.match(agents, /Do not delete me/);
-  assert.match(agents, /Respond terse like smart caveman/);
+  assert.match(agents, /Speak in the transatlantic register/);
 });
 
 test('skip mode: existing .cursor rule is not overwritten without --force', (tmp) => {
@@ -90,7 +90,7 @@ test('--force overwrites existing rule files', (tmp) => {
   runInit(tmp, '--force');
   const after = fs.readFileSync(path.join(dir, 'caveman.mdc'), 'utf8');
   assert.match(after, /alwaysApply: true/);
-  assert.match(after, /Respond terse/);
+  assert.match(after, /Speak in the transatlantic/);
 });
 
 test('--dry-run: announces but writes nothing', (tmp) => {
@@ -112,14 +112,37 @@ test('--only filters to one target', (tmp) => {
   assert.ok(!fs.existsSync(path.join(tmp, '.cursor')));
 });
 
-test('detects sentinel and skips files that already have caveman content', (tmp) => {
+test('detects sentinel and skips files that already have transatlantic content', (tmp) => {
   // Hand-write a file that already contains the rule (simulating prior install).
   const dir = path.join(tmp, '.clinerules');
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'caveman.md'),
-    '# Existing\n\nRespond terse like smart caveman. Hello.\n');
+    '# Existing\n\nSpeak in the transatlantic register. Hello.\n');
   const out = runInit(tmp, '--only', 'cline');
   assert.match(out, /skipped-already-installed/);
+});
+
+test('upgrades a byte-intact legacy caveman install in place', (tmp) => {
+  const { LEGACY_RULE_BODY, SENTINEL } = require('../src/tools/caveman-init.js');
+  const dir = path.join(tmp, '.clinerules');
+  fs.mkdirSync(dir, { recursive: true });
+  const file = path.join(dir, 'caveman.md');
+  fs.writeFileSync(file, '# Prefix kept\n\n' + LEGACY_RULE_BODY);
+  const out = runInit(tmp, '--only', 'cline');
+  assert.match(out, /upgraded/);
+  const after = fs.readFileSync(file, 'utf8');
+  assert.ok(after.includes(SENTINEL), 'new ruleset present after upgrade');
+  assert.ok(after.startsWith('# Prefix kept'), 'surrounding content preserved');
+  assert.ok(!after.includes('Respond terse like smart caveman'), 'old body gone');
+});
+
+test('edited legacy install is left alone without --force', (tmp) => {
+  const dir = path.join(tmp, '.clinerules');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'caveman.md'),
+    '# Existing\n\nRespond terse like smart caveman. Hand-edited rules.\n');
+  const out = runInit(tmp, '--only', 'cline');
+  assert.match(out, /skipped-legacy-edited/);
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);
