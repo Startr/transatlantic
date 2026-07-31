@@ -13,7 +13,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test tests/installer/*.test.mjs"
+    "test": "node --test tests/installer/*.test.mjs",
+    "prepublishOnly": "npm test"
   },
   "files": [
     "bin/",

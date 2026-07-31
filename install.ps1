@@ -28,6 +28,7 @@ function Install-Caveman {
 
   $ErrorActionPreference = "Stop"
   $Repo = "Startr/transatlantic"
+  $PinnedRef = "v1.0.0"
 
   # Require Node ≥18.
   $node = Get-Command node -ErrorAction SilentlyContinue
@@ -69,7 +70,7 @@ caveman: Node.js (>=18) required. Install:
   # Do NOT pass `--` here — npm 7+ npx already forwards trailing args to the
   # package, and a literal `--` was tripping bin/install.js's parseArgs as an
   # unknown flag.
-  & npx -y "github:$Repo" @InstallerArgs
+  & npx -y "github:$Repo#$PinnedRef" @InstallerArgs
   exit $LASTEXITCODE
 }
 

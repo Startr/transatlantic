@@ -18,6 +18,7 @@
 set -euo pipefail
 
 REPO="Startr/transatlantic"
+PINNED_REF="v1.0.0"
 
 # Require Node ≥18. nvm is a common path; print a hint if missing.
 if ! command -v node >/dev/null 2>&1; then
@@ -51,4 +52,4 @@ if ! command -v npx >/dev/null 2>&1; then
   exit 1
 fi
 
-exec npx -y "github:$REPO" "$@"
+exec npx -y "github:$REPO#$PINNED_REF" "$@"

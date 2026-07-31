@@ -29,14 +29,13 @@ ladder and citations: `docs/research/level-ladder.md`.
 
 ### Poka-Yoke (pre-npm audit, 2026-07-31) — mistake-proof before publish
 
-- [ ] **Release-Ref Unification**: shim runs `npx github:Startr/transatlantic` off the default branch while hooks pin `PINNED_REF` and docs cite master — three refs agree by memory (bit us at launch: develop lagged one commit) #critical
-  - [ ] Pin the shim: `npx -y "github:$REPO#$PINNED_REF"` in `install.sh` + `install.ps1` (subtraction: zero moving refs)
+- [x] **Release-Ref Unification**: shims now pin `npx github:$REPO#$PINNED_REF` (v1.0.0) — zero floating refs; bump both shim pins + `bin/install.js` PINNED_REF together each release (covered by the pending version-equality test)
 - [ ] **Version Triplication** #critical
   - [x] Aligned at 1.0.0 (package.json, git tag via make release flow, `PINNED_REF`, `SKILL_VERSION`) — transatlantic's own versioning initialized 2026-07-31; upstream's inherited v1.x tags and the interim v2.0.0 removed
   - [ ] Add test: package version == latest tag == `PINNED_REF`
-- [ ] **Publish Gate**: add `"prepublishOnly": "npm test"` to package.json — one line, blocks publishing with a red suite #critical
+- [x] **Publish Gate**: `"prepublishOnly": "npm test"` in package.json
 - [ ] **Name-List Drift Devices**: five hand-maintained arrays drifted during the rename (`HOOK_FILES` ×2, `HERMES_SKILL_DIRS`, `OPENCODE_SKILL_DIRS`, `OPENCODE_COMMAND_FILES`)
-  - [ ] LIVE BUG found by this audit: `src/hooks/install.sh` HOOK_FILES is missing `caveman-statusline.ps1` — bash-installed roaming configs lack the Windows statusline
+  - [x] LIVE BUG fixed: `caveman-statusline.ps1` added to `src/hooks/install.sh` HOOK_FILES
   - [ ] Derive `OPENCODE_COMMAND_FILES` from `readdirSync('commands')` (subtraction); drift-test the rest against the filesystem
   - [ ] Drift test: `shasum -c src/hooks/checksums.sha256` in the suite
 - [ ] **Shell Normalization Drift Test**: both statuslines reimplement whitelist + alias map as case arms; a missed level renders no badge silently — test diffs case arms against `VALID_MODES`/`LEGACY_ALIASES`
