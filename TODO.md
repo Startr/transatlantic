@@ -27,6 +27,23 @@ ladder and citations: `docs/research/level-ladder.md`.
 
 ## TODO
 
+### Poka-Yoke (pre-npm audit, 2026-07-31) — mistake-proof before publish
+
+- [ ] **Release-Ref Unification**: shim runs `npx github:Startr/transatlantic` off the default branch while hooks pin `PINNED_REF` and docs cite master — three refs agree by memory (bit us at launch: develop lagged one commit) #critical
+  - [ ] Pin the shim: `npx -y "github:$REPO#$PINNED_REF"` in `install.sh` + `install.ps1` (subtraction: zero moving refs)
+- [ ] **Version Triplication**: `package.json` 0.2.0 vs git tag v2.0.0 vs `SKILL_VERSION` 1.0.0 in `bin/lib/openclaw.js` — first npm publish ships the wrong number #critical
+  - [ ] Align all three to 2.0.x; add test: package version == latest tag == `PINNED_REF`
+- [ ] **Publish Gate**: add `"prepublishOnly": "npm test"` to package.json — one line, blocks publishing with a red suite #critical
+- [ ] **Name-List Drift Devices**: five hand-maintained arrays drifted during the rename (`HOOK_FILES` ×2, `HERMES_SKILL_DIRS`, `OPENCODE_SKILL_DIRS`, `OPENCODE_COMMAND_FILES`)
+  - [ ] LIVE BUG found by this audit: `src/hooks/install.sh` HOOK_FILES is missing `caveman-statusline.ps1` — bash-installed roaming configs lack the Windows statusline
+  - [ ] Derive `OPENCODE_COMMAND_FILES` from `readdirSync('commands')` (subtraction); drift-test the rest against the filesystem
+  - [ ] Drift test: `shasum -c src/hooks/checksums.sha256` in the suite
+- [ ] **Shell Normalization Drift Test**: both statuslines reimplement whitelist + alias map as case arms; a missed level renders no badge silently — test diffs case arms against `VALID_MODES`/`LEGACY_ALIASES`
+- [ ] **SKILL Table Coupling Test**: activate.js picks ruleset rows by `| **level** |` string match; a typo'd row ships a level with no rules — test every level has a row + example lines
+- [ ] **Deduplicate Semantic Maps**: `INDEPENDENT_MODES` ×3, `REINFORCEMENT` ×2 — move both into `caveman-config.js`, net-negative lines
+- [ ] **Byte-Sync Tests**: three embedded copies verified by hand this session, never again automatically — exact-equality tests for `RULE_BODY`↔rule file, openclaw fallback↔bootstrap md, checksums↔hook files
+- [ ] **Low**: derive `transatlantic@transatlantic` from plugin.json name; delete stale local `dist/caveman.skill`; guard `files:` shipping stale `plugins/` mirrors on publish
+
 ### Rebrand Remainder
 
 - [ ] **Installer String Sweep**: `bin/install.js` PROVIDERS labels, uninstall marker, `install.sh` / `install.ps1` shim references — mechanism works, strings still say caveman
