@@ -31,8 +31,9 @@ ladder and citations: `docs/research/level-ladder.md`.
 
 - [ ] **Release-Ref Unification**: shim runs `npx github:Startr/transatlantic` off the default branch while hooks pin `PINNED_REF` and docs cite master — three refs agree by memory (bit us at launch: develop lagged one commit) #critical
   - [ ] Pin the shim: `npx -y "github:$REPO#$PINNED_REF"` in `install.sh` + `install.ps1` (subtraction: zero moving refs)
-- [ ] **Version Triplication**: `package.json` 0.2.0 vs git tag v2.0.0 vs `SKILL_VERSION` 1.0.0 in `bin/lib/openclaw.js` — first npm publish ships the wrong number #critical
-  - [ ] Align all three to 2.0.x; add test: package version == latest tag == `PINNED_REF`
+- [ ] **Version Triplication** #critical
+  - [x] Aligned at 1.0.0 (package.json, git tag via make release flow, `PINNED_REF`, `SKILL_VERSION`) — transatlantic's own versioning initialized 2026-07-31; upstream's inherited v1.x tags and the interim v2.0.0 removed
+  - [ ] Add test: package version == latest tag == `PINNED_REF`
 - [ ] **Publish Gate**: add `"prepublishOnly": "npm test"` to package.json — one line, blocks publishing with a red suite #critical
 - [ ] **Name-List Drift Devices**: five hand-maintained arrays drifted during the rename (`HOOK_FILES` ×2, `HERMES_SKILL_DIRS`, `OPENCODE_SKILL_DIRS`, `OPENCODE_COMMAND_FILES`)
   - [ ] LIVE BUG found by this audit: `src/hooks/install.sh` HOOK_FILES is missing `caveman-statusline.ps1` — bash-installed roaming configs lack the Windows statusline
