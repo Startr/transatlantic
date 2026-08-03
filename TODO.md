@@ -69,6 +69,7 @@ ladder and citations: `docs/research/level-ladder.md`.
 
 ## Backlog
 
+- [ ] **Navigate Skill Follow-ups**: `ta-navigate` shipped 2026-08-03 (chart = TodoScope TODO.md, decision cards, fog in Backlog, decision records in docs/decisions/) — follow-ups: TodoScope scanner treatment of `Blocked by [name]` lines (surface blocked-vs-frontier on the board), a worked example chart in docs, and per-level register guidance for decision records
 - [ ] **Liner Validation Eval**: Anti-AI-tell rules are convention, not experiment — build an eval that scores burstiness/tell-frequency so the level earns its citations
 - [ ] **Surprisal Tooling**: Explore scoring output with a small LM (surprisal beats Flesch as a readability predictor — open question S5 in the ladder doc)
 - [ ] **Wenyan Benchmarks**: The annex claims densest register per token — measure it (eval + API runs)

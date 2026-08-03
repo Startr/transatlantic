@@ -1,0 +1,2 @@
+description = "Chart or work a navigation plan — decision cards in a TodoScope TODO.md"
+prompt = "Run the ta-navigate skill with {{args}}. If the argument is a loose idea, chart it: interview to name the destination, lay out decision cards in a TodoScope-convention TODO.md, sketch the fog into Backlog, and stop. If it names an existing chart, work it: claim one card by moving it to In Progress, resolve that one decision, record it as a decision file linked from Done, advance the frontier, and stop. One card per session, research cards excepted."

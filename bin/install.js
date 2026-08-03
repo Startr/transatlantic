@@ -601,7 +601,7 @@ function installViaSkills(ctx, prov) {
 
 // ── hermes native install ──────────────────────────────────────────────────
 // Drops the transatlantic skills into ~/.hermes/skills/productivity/ (or HERMES_HOME if set).
-const HERMES_SKILL_DIRS = ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
+const HERMES_SKILL_DIRS = ['transatlantic', 'ta-commit', 'ta-navigate', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
 
 function hermesConfigDir() {
   // Hermes uses ~/.hermes by default, or HERMES_HOME env var.
@@ -662,7 +662,7 @@ function installHermes(ctx) {
 // opencode.json with a "plugin" array entry. Mirrors the Claude Code hook
 // architecture as closely as opencode allows — only the statusline is missing
 // (opencode's TUI exposes no plugin-writable badge).
-const OPENCODE_SKILL_DIRS  = ['transatlantic', 'ta-commit', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
+const OPENCODE_SKILL_DIRS = ['transatlantic', 'ta-commit', 'ta-navigate', 'ta-review', 'ta-help', 'ta-stats', 'ta-compress', 'crew'];
 const OPENCODE_AGENT_FILES = ['crew-locator.md', 'crew-editor.md', 'crew-reviewer.md'];
 // Derived from the filesystem so the list cannot drift from commands/
 // (poka-yoke: three hand-lists went stale during the 2.0 rename).
