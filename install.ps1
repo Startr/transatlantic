@@ -28,7 +28,7 @@ function Install-Caveman {
 
   $ErrorActionPreference = "Stop"
   $Repo = "Startr/transatlantic"
-  $PinnedRef = "v1.2.1"
+  $PinnedRef = "v1.2.2"
 
   # Require Node ≥18.
   $node = Get-Command node -ErrorAction SilentlyContinue
