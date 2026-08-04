@@ -1,7 +1,7 @@
-# caveman — uninstaller for the SessionStart + UserPromptSubmit hooks (Windows PowerShell)
+# transatlantic — uninstaller for the SessionStart + UserPromptSubmit hooks (Windows PowerShell)
 # Removes: hook files in ~/.claude/hooks, settings.json entries, and the flag file
 # Usage: powershell -ExecutionPolicy Bypass -File src\hooks\uninstall.ps1
-#   or:  irm https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks/uninstall.ps1 | iex
+#   or:  irm https://raw.githubusercontent.com/Startr/transatlantic/master/src/hooks/uninstall.ps1 | iex
 param()
 
 $ErrorActionPreference = "Stop"
@@ -13,7 +13,7 @@ $FlagFile = Join-Path $ClaudeDir ".ta-active"
 
 $HookFiles = @("package.json", "ta-config.js", "ta-activate.js", "ta-mode-tracker.js", "ta-stats.js", "ta-statusline.sh", "ta-statusline.ps1", "cavecrew-model-overrides.js")
 
-# Detect if caveman is installed as a plugin
+# Detect a plugin install (either name generation) as a plugin
 $PluginInstalled = $false
 $PluginsDir = Join-Path $ClaudeDir "plugins"
 if (Test-Path $PluginsDir) {
@@ -26,14 +26,14 @@ if ($PluginInstalled) {
     Write-Host "Caveman appears to be installed as a Claude Code plugin." -ForegroundColor Yellow
     Write-Host "To uninstall the plugin, run:"
     Write-Host ""
-    Write-Host "  claude plugin disable caveman" -ForegroundColor Cyan
+    Write-Host "  claude plugin disable transatlantic" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "This script removes standalone hooks (installed via install.ps1)."
     Write-Host "Continuing with standalone hook removal..."
     Write-Host ""
 }
 
-Write-Host "Uninstalling caveman hooks..."
+Write-Host "Uninstalling transatlantic hooks..."
 
 # 1. Remove hook files
 $RemovedFiles = 0
@@ -50,11 +50,11 @@ if ($RemovedFiles -eq 0) {
     Write-Host "  No hook files found in $HooksDir"
 }
 
-# 2. Remove caveman entries from settings.json (idempotent)
+# 2. Remove our entries from settings.json (idempotent)
 if (Test-Path $Settings) {
     if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
         Write-Host "WARNING: 'node' not found - cannot safely edit settings.json." -ForegroundColor Yellow
-        Write-Host "         Remove the caveman SessionStart and UserPromptSubmit"
+        Write-Host "         Remove the transatlantic SessionStart and UserPromptSubmit"
         Write-Host "         entries from $Settings manually."
     } else {
         # Back up before editing
@@ -74,7 +74,7 @@ const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
 
 const isCavemanEntry = (entry) =>
   entry && entry.hooks && entry.hooks.some(h =>
-    h.command && h.command.includes('caveman')
+    h.command && (h.command.includes('transatlantic') || h.command.includes('ta-') || h.command.includes('caveman'))
   );
 
 let removed = 0;
@@ -100,12 +100,12 @@ if (settings.statusLine) {
     : (settings.statusLine.command || '');
   if (cmd.includes(managedStatusLinePath)) {
     delete settings.statusLine;
-    console.log('  Removed caveman statusLine from settings.json');
+    console.log('  Removed transatlantic statusLine from settings.json');
   }
 }
 
 fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
-console.log('  Removed ' + removed + ' caveman hook entries from settings.json');
+console.log('  Removed ' + removed + ' transatlantic hook entries from settings.json');
 '@
 
         node -e $nodeScript
@@ -131,5 +131,5 @@ Write-Host "Done! Restart Claude Code to complete the uninstall." -ForegroundCol
 Write-Host ""
 Write-Host "Other agents:"
 Write-Host "  npx skills remove caveman      # Cursor, Windsurf, Cline, Copilot, etc."
-Write-Host "  claude plugin disable caveman   # Claude Code plugin"
+Write-Host "  claude plugin disable transatlantic   # Claude Code plugin"
 Write-Host "  gemini extensions uninstall caveman  # Gemini CLI"

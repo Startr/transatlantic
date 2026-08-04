@@ -1,8 +1,8 @@
 #!/bin/bash
-# caveman — uninstaller for the SessionStart + UserPromptSubmit hooks
+# transatlantic — uninstaller for the SessionStart + UserPromptSubmit hooks
 # Removes: hook files in ~/.claude/hooks, settings.json entries, and the flag file
 # Usage: bash src/hooks/uninstall.sh
-#   or:  bash <(curl -s https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks/uninstall.sh)
+#   or:  bash <(curl -s https://raw.githubusercontent.com/Startr/transatlantic/master/src/hooks/uninstall.sh)
 set -e
 
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
@@ -12,10 +12,10 @@ FLAG_FILE="$CLAUDE_DIR/.ta-active"
 
 HOOK_FILES=("package.json" "ta-config.js" "ta-activate.js" "ta-mode-tracker.js" "ta-stats.js" "ta-statusline.sh" "crew-model-overrides.js")
 
-# Detect if caveman is installed as a plugin (check plugin cache)
+# Detect a plugin install (either name generation) as a plugin (check plugin cache)
 PLUGIN_INSTALLED=0
 if [ -d "$CLAUDE_DIR/plugins" ]; then
-  if find "$CLAUDE_DIR/plugins" -path "*/caveman*" -name "plugin.json" -print -quit 2>/dev/null | grep -q .; then
+  if find "$CLAUDE_DIR/plugins" \( -path "*/transatlantic*" -o -path "*/caveman*" \) -name "plugin.json" -print -quit 2>/dev/null | grep -q .; then
     PLUGIN_INSTALLED=1
   fi
 fi
@@ -24,14 +24,14 @@ if [ "$PLUGIN_INSTALLED" -eq 1 ]; then
   echo "Caveman appears to be installed as a Claude Code plugin."
   echo "To uninstall the plugin, run:"
   echo ""
-  echo "  claude plugin disable caveman"
+  echo "  claude plugin disable transatlantic"
   echo ""
   echo "This script removes standalone hooks (installed via install.sh)."
   echo "Continuing with standalone hook removal..."
   echo ""
 fi
 
-echo "Uninstalling caveman hooks..."
+echo "Uninstalling transatlantic hooks..."
 
 # 1. Remove hook files
 REMOVED_FILES=0
@@ -47,12 +47,12 @@ if [ "$REMOVED_FILES" -eq 0 ]; then
   echo "  No hook files found in $HOOKS_DIR"
 fi
 
-# 2. Remove caveman entries from settings.json (idempotent)
+# 2. Remove our entries from settings.json (idempotent)
 if [ -f "$SETTINGS" ]; then
   # Require node for the same reason install.sh does — safe JSON editing
   if ! command -v node >/dev/null 2>&1; then
     echo "WARNING: 'node' not found — cannot safely edit settings.json."
-    echo "         Remove the caveman SessionStart and UserPromptSubmit"
+    echo "         Remove the transatlantic SessionStart and UserPromptSubmit"
     echo "         entries from $SETTINGS manually."
   else
     # Back up before editing, same policy as install.sh
@@ -68,7 +68,7 @@ if [ -f "$SETTINGS" ]; then
 
       const isCavemanEntry = (entry) =>
         entry && entry.hooks && entry.hooks.some(h =>
-          h.command && h.command.includes('caveman')
+          h.command && (h.command.includes('transatlantic') || h.command.includes('ta-') || h.command.includes('caveman'))
         );
 
       let removed = 0;
@@ -97,12 +97,12 @@ if [ -f "$SETTINGS" ]; then
           : (settings.statusLine.command || '');
         if (cmd.includes(managedStatusLinePath)) {
           delete settings.statusLine;
-          console.log('  Removed caveman statusLine from settings.json');
+          console.log('  Removed transatlantic statusLine from settings.json');
         }
       }
 
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
-      console.log('  Removed ' + removed + ' caveman hook entries from settings.json');
+      console.log('  Removed ' + removed + ' transatlantic hook entries from settings.json');
     "
   fi
 fi
@@ -126,5 +126,5 @@ echo "Done! Restart Claude Code to complete the uninstall."
 echo ""
 echo "Other agents:"
 echo "  npx skills remove caveman    # Cursor, Windsurf, Cline, Copilot, etc."
-echo "  claude plugin disable caveman  # Claude Code plugin"
+echo "  claude plugin disable transatlantic  # Claude Code plugin"
 echo "  gemini extensions uninstall caveman  # Gemini CLI"

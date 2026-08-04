@@ -1,8 +1,8 @@
 #!/bin/bash
-# caveman — one-command hook installer for Claude Code
+# transatlantic — one-command hook installer for Claude Code
 # Installs: SessionStart hook (auto-load rules) + UserPromptSubmit hook (mode tracking)
 # Usage: bash src/hooks/install.sh
-#   or:  bash <(curl -s https://raw.githubusercontent.com/JuliusBrussee/caveman/main/src/hooks/install.sh)
+#   or:  bash <(curl -s https://raw.githubusercontent.com/Startr/transatlantic/master/src/hooks/install.sh)
 #   or:  bash src/hooks/install.sh --force   (re-install over existing hooks)
 set -e
 
@@ -35,7 +35,7 @@ fi
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 HOOKS_DIR="$CLAUDE_DIR/hooks"
 SETTINGS="$CLAUDE_DIR/settings.json"
-REPO_URL="https://raw.githubusercontent.com/JuliusBrussee/caveman/main/hooks"
+REPO_URL="https://raw.githubusercontent.com/Startr/transatlantic/master/hooks"
 
 HOOK_FILES=("package.json" "ta-config.js" "ta-activate.js" "ta-mode-tracker.js" "ta-stats.js" "ta-statusline.sh" "ta-statusline.ps1" "crew-model-overrides.js")
 
@@ -67,7 +67,7 @@ if [ "$FORCE" -eq 0 ]; then
       const hasCavemanHook = (event) =>
         Array.isArray(settings.hooks?.[event]) &&
         settings.hooks[event].some(e =>
-          e.hooks && e.hooks.some(h => h.command && h.command.includes('caveman'))
+          e.hooks && e.hooks.some(h => h.command && (h.command.includes('transatlantic') || h.command.includes('ta-') || h.command.includes('caveman')))
         );
       process.exit(
         hasCavemanHook('SessionStart') &&
@@ -137,7 +137,7 @@ CAVEMAN_SETTINGS="$SETTINGS" CAVEMAN_HOOKS_DIR="$HOOKS_DIR" node -e "
   // SessionStart — auto-load caveman rules
   if (!settings.hooks.SessionStart) settings.hooks.SessionStart = [];
   const hasStart = settings.hooks.SessionStart.some(e =>
-    e.hooks && e.hooks.some(h => h.command && h.command.includes('caveman'))
+    e.hooks && e.hooks.some(h => h.command && (h.command.includes('transatlantic') || h.command.includes('ta-') || h.command.includes('caveman')))
   );
   if (!hasStart) {
     settings.hooks.SessionStart.push({
@@ -153,7 +153,7 @@ CAVEMAN_SETTINGS="$SETTINGS" CAVEMAN_HOOKS_DIR="$HOOKS_DIR" node -e "
   // UserPromptSubmit — track mode changes when user types /caveman commands
   if (!settings.hooks.UserPromptSubmit) settings.hooks.UserPromptSubmit = [];
   const hasPrompt = settings.hooks.UserPromptSubmit.some(e =>
-    e.hooks && e.hooks.some(h => h.command && h.command.includes('caveman'))
+    e.hooks && e.hooks.some(h => h.command && (h.command.includes('transatlantic') || h.command.includes('ta-') || h.command.includes('caveman')))
   );
   if (!hasPrompt) {
     settings.hooks.UserPromptSubmit.push({

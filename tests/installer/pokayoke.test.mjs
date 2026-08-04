@@ -177,10 +177,20 @@ test('poka-yoke: every prose level has a SKILL.md table row and example lines', 
 // ── No upstream marketing in user-facing installer output ──
 
 test('poka-yoke: installer never shows caveman-era strings or upstream URLs to users', () => {
-  const src = read('bin', 'install.js');
-  for (const banned of ['caveman.so', "say 'caveman", 'run /caveman ', '/caveman-stats', '🪨']) {
-    assert.ok(!src.includes(banned),
-      `bin/install.js still contains user-facing caveman string: ${banned}`);
+  const sources = [
+    ['bin/install.js', read('bin', 'install.js')],
+    ['install.sh', read('install.sh')],
+    ['install.ps1', read('install.ps1')],
+    ['src/hooks/install.sh', read('src', 'hooks', 'install.sh')],
+    ['src/hooks/uninstall.sh', read('src', 'hooks', 'uninstall.sh')],
+  ];
+  for (const [name, src] of sources) {
+    for (const banned of ['caveman.so', "say 'caveman", 'run /caveman ', '/caveman-stats', '🪨',
+                          'caveman — installer', 'caveman: Node', 'Uninstalling caveman',
+                          'JuliusBrussee/caveman/main']) {
+      assert.ok(!src.includes(banned),
+        `${name} still contains user-facing caveman string: ${banned}`);
+    }
   }
 });
 
