@@ -1544,7 +1544,7 @@ async function main() {
 
   // Summary
   process.stdout.write('\n');
-  ctx.say('🪨 done');
+  ctx.say('🌊 done');
   if (ctx.results.installed.length) {
     ctx.ok('  installed:');
     for (const a of ctx.results.installed) process.stdout.write(`    • ${a}\n`);
@@ -1562,10 +1562,9 @@ async function main() {
     process.stdout.write('  or pass --only <agent> to force a specific target.\n');
   }
   process.stdout.write('\n');
-  ctx.note("  start any session and say 'caveman mode', or run /caveman in Claude Code");
-  ctx.note('  measure what caveman save you: run /caveman-stats (numbers are estimates)');
-  ctx.note('  verified team savings coming soon — join waitlist: https://caveman.so');
-  ctx.note(`  uninstall: npx -y github:${REPO} -- --uninstall`);
+  ctx.note("  start any session and say 'transatlantic mode', or run /transatlantic in Claude Code");
+  ctx.note('  measure what it saves you: run /ta-stats (numbers are estimates)');
+    ctx.note(`  uninstall: npx -y github:${REPO} -- --uninstall`);
 
   // Exit code: nonzero only if every detected agent failed
   if (ctx.results.detected > 0 && !ctx.results.installed.length && !ctx.results.skipped.length) return 1;

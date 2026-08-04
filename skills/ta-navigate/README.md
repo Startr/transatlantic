@@ -16,6 +16,7 @@ Because the chart is a TODO.md, TodoScope boards it automatically alongside ever
 /navigate <a loose idea>          # charting: name the destination, lay the cards
 /navigate <path to TODO.md>       # working: claim the next card, resolve it, advance
 /navigate <path> <card name>      # working: resolve a specific card
+/navigate help                    # usage card only — no argument does the same
 ```
 
 `/transatlantic:navigate` is the same command through the plugin namespace.

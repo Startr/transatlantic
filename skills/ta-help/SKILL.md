@@ -31,11 +31,13 @@ Most readable to most compressed. Full research basis: `docs/research/level-ladd
 
 | Skill | Trigger | What it does |
 |-------|---------|--------------|
-| **caveman-commit** | `/caveman-commit` | Terse commit messages. Conventional Commits, ≤50-char subject. |
-| **caveman-review** | `/caveman-review` | One-line PR comments: `L42: bug: user null. Add guard.` |
-| **caveman-compress** | `/caveman-compress <file>` | Compress a memory file for LLM context. Never uses telegraph/morse — stopword removal harms model reading. |
-| **caveman-stats** | `/caveman-stats` | Real session token usage and lifetime savings. |
-| **caveman-help** | `/ta-help` | This card. |
+| **ta-commit** | `/ta-commit` | Terse commit messages. Conventional Commits, ≤50-char subject. |
+| **ta-review** | `/ta-review` | One-line PR comments: `L42: bug: user null. Add guard.` |
+| **ta-compress** | `/ta-compress <file>` | Compress a memory file for LLM context. Never uses telegraph/morse — stopword removal harms model reading. |
+| **ta-navigate** | `/navigate <idea\|chart>` | Chart work too big for one session as decision cards in a TodoScope `TODO.md`, then resolve them one per session. `/navigate help` for the usage card. |
+| **ta-stats** | `/ta-stats` | Real session token usage and lifetime savings. |
+| **crew** | (model-invoked) | When to delegate to `crew-locator`, `crew-editor`, or `crew-reviewer` instead of working inline. Subagent output comes back compressed. |
+| **ta-help** | `/ta-help` | This card. |
 
 ## Deactivate
 

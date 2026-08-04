@@ -97,6 +97,8 @@ One more, for the machines: stripping articles and stopwords from an agent's *in
 | `/ta-review` | One-line PR comments: `L42: 🔴 bug: user null. Add guard.` |
 | `/ta-stats` | Real session token usage and lifetime savings. |
 | `/ta-compress <file>` | Rewrite a memory file into the compact register that's safe for LLM context. |
+| `/navigate <idea\|chart>` | Chart work too big for one session as decision cards in a TodoScope `TODO.md`, then resolve one per session. `/navigate help` for the usage card. |
+| `/ta-help` | The quick-reference card: levels, commands, how to switch off. |
 
 On Claude Code the statusline shows the active level: `[TRANSATLANTIC]`, or `[TRANSATLANTIC:MORSE]` when you've gone down the wire.
 

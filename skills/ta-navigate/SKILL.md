@@ -110,7 +110,24 @@ Out-of-scope work never graduates. It returns only if the destination is redrawn
 
 ## Invocation
 
-Two modes. Either way, never resolve more than one card per session, research cards excepted.
+Three modes: help, charting, working. In either working mode, never resolve more than one card per session, research cards excepted.
+
+### Help
+
+The user invokes with no argument, or with `help`, `--help`, or `?`. Print the card below and stop. Do not chart, do not open a `TODO.md`, do not ask what they meant.
+
+```
+/navigate <a loose idea>              chart it — name the destination, lay the cards, sketch the fog
+/navigate <path/TODO.md>              work it — claim the next frontier card, resolve it, advance
+/navigate <path/TODO.md> <card name>  work a named card
+/navigate help                        this card
+
+Card types   #research (agent alone) · #interview #prototype #task (with the human)
+Chart        Destination · Notes · In Progress · TODO · Backlog (the fog) · Out of scope · Done
+Rule         one card per session, research excepted. It plans; it does not build.
+
+/transatlantic:navigate is the same command through the plugin namespace.
+```
 
 ### Charting
 
