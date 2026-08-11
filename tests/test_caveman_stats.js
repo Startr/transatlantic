@@ -108,8 +108,10 @@ test('mode tracker handles /caveman-stats with decision block', (tmp) => {
   });
   const parsed = JSON.parse(out);
   assert.strictEqual(parsed.decision, 'block');
-  assert.match(parsed.reason, /Caveman Stats/);
-  assert.match(parsed.reason, /Output tokens:\s+100/);
+  // Stats ride in systemMessage — the only block field current Claude Code
+  // shows to the user (reason is not rendered for UserPromptSubmit).
+  assert.match(parsed.systemMessage, /Caveman Stats/);
+  assert.match(parsed.systemMessage, /Output tokens:\s+100/);
 });
 
 test('mode tracker preserves caveman flag when /caveman-stats fires', (tmp) => {
@@ -457,7 +459,7 @@ test('mode tracker forwards --share to stats script', (tmp) => {
   });
   const parsed = JSON.parse(out);
   assert.strictEqual(parsed.decision, 'block');
-  assert.match(parsed.reason, /^🪨 Saved 650 output tokens/);
+  assert.match(parsed.systemMessage, /^🪨 Saved 650 output tokens/);
 });
 
 // ── Output-reduction share (never a "usage"/"budget" claim) ────────────────

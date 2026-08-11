@@ -21,6 +21,12 @@ Navigation is planning by default. Each card resolves a decision, and the chart 
 
 Every card has a name: its bold title. In everything the human reads, refer to a card by that name, never by a bare number or slug. A wall of ids is illegible; names read at a glance. When a card links to a decision record, the name wraps the link.
 
+## Voice
+
+Chat output honors the active transatlantic level. The interview questions, the summaries, and the gist you speak to the human all follow whatever level is set (liner through morse) — the reinforcement line names it each turn. Front-load, one idea per sentence, cut filler; the level governs how tight. Do not pad replies with blank lines, and do not restate the chart back at the human. One question at a time for interview cards; the answer's gist in a line.
+
+The chart file and the decision records are the exception. They are written artifacts an agent re-reads as context across sessions, so they stay full-grammar markdown at every level — never telegraph or morse a `TODO.md` or a decision record (see the compression boundary in the transatlantic skill). Compress your speech, not the chart.
+
 ## The chart
 
 The chart is a `TODO.md` file following the TodoScope convention: sections map to kanban columns, checkbox items are cards, and the scanner renders the board. For a repo-wide effort it is the repo's own `TODO.md`; for a scoped effort it lives in the effort's directory (the scanner finds subdirectory TODO.md files and boards them too). Never hand-edit `KANBAN.canvas`; it regenerates from the chart.

@@ -70,9 +70,11 @@ process.stdin.on('end', () => {
       }
     }
 
-    // /caveman-stats [--share] — block the prompt and inject stats output as
-    // the hook's reason. The script reads the active session log, so we pass
-    // transcript_path through when Claude Code provides it.
+    // /caveman-stats [--share] — block the prompt and surface stats output via
+    // `systemMessage`, the only field current Claude Code reliably shows to the
+    // user for a UserPromptSubmit block (`reason` is not rendered). The script
+    // reads the active session log, so we pass transcript_path through when
+    // Claude Code provides it.
     const statsMatch = /^\/(?:ta-stats|transatlantic:ta-stats|caveman(?::caveman)?-stats|transatlantic:caveman-stats)(?:\s+(.*))?$/.exec(prompt);
     if (statsMatch) {
       const tailArgs = (statsMatch[1] || '').trim().split(/\s+/).filter(Boolean);
@@ -87,11 +89,11 @@ process.stdin.on('end', () => {
           argv.push('--since', tailArgs[sinceIdx + 1]);
         }
         const out = execFileSync(process.execPath, argv, { encoding: 'utf8', timeout: 5000 });
-        process.stdout.write(JSON.stringify({ decision: 'block', reason: out.trim() }));
+        process.stdout.write(JSON.stringify({ decision: 'block', systemMessage: out.trim() }));
       } catch (e) {
         process.stdout.write(JSON.stringify({
           decision: 'block',
-          reason: 'caveman-stats: could not run stats script.\nTry manually: node hooks/ta-stats.js'
+          systemMessage: 'caveman-stats: could not run stats script.\nTry manually: node hooks/ta-stats.js'
         }));
       }
       return;
