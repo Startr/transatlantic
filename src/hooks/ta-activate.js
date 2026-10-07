@@ -66,8 +66,14 @@ try {
     fs.mkdirSync(destDir, { recursive: true });
     for (const name of fs.readdirSync(cmdSrc)) {
       if (!name.endsWith('.md')) continue;
-      const desired = fs.readFileSync(path.join(cmdSrc, name), 'utf8')
-        .replace(/\n*$/, '\n') + '\n' + COMMAND_MARKER + '\n';
+      // The plugin already lists /transatlantic:<name> to the model, so the
+      // bare mirror opts out of model invocation: it stays in the / menu, and
+      // its description stops loading a second time into every session.
+      let body = fs.readFileSync(path.join(cmdSrc, name), 'utf8');
+      if (body.startsWith('---\n') && !/^disable-model-invocation:/m.test(body)) {
+        body = '---\ndisable-model-invocation: true\n' + body.slice(4);
+      }
+      const desired = body.replace(/\n*$/, '\n') + '\n' + COMMAND_MARKER + '\n';
       const dest = path.join(destDir, name);
       let existing = null;
       try { existing = fs.readFileSync(dest, 'utf8'); } catch (e) { /* absent */ }

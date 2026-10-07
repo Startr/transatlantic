@@ -177,7 +177,13 @@ class HookScriptTests(unittest.TestCase):
                          "ta-stats.md", "ta-compress.md",
                          "ta-help.md", "ta-init.md"]:
                 self.assertTrue((cmds / name).exists(), f"{name} not mirrored")
-                self.assertIn("managed-by-transatlantic", (cmds / name).read_text())
+                text = (cmds / name).read_text()
+                self.assertIn("managed-by-transatlantic", text)
+                # The plugin already lists /transatlantic:<name>; the bare
+                # mirror must not load its description a second time.
+                self.assertTrue(text.startswith("---\ndisable-model-invocation: true\n"),
+                                f"{name} mirror missing disable-model-invocation")
+                self.assertEqual(text.count("disable-model-invocation"), 1)
 
             # A user-authored file (no marker) must survive a re-run untouched.
             own = cmds / "ta.md"
