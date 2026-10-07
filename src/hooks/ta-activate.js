@@ -173,7 +173,20 @@ if (skillContent) {
     return acc;
   }, []);
 
-  output = 'TRANSATLANTIC MODE ACTIVE — level: ' + modeLabel + '\n\n' + filtered.join('\n');
+  let bodyText = filtered.join('\n');
+
+  // Non-wenyan sessions never need the wenyan annex or the legacy name
+  // mappings (the mode-tracker normalizes legacy spellings before the model
+  // ever sees them) — dropping both saves ~500 chars of context per session.
+  if (!modeLabel.startsWith('wenyan')) {
+    const SKIP_SECTIONS = new Set(['Wenyan annex', 'Legacy levels']);
+    bodyText = bodyText.split(/^(?=## )/m).filter(sec => {
+      const m = sec.match(/^## (.+)/);
+      return !(m && SKIP_SECTIONS.has(m[1].trim()));
+    }).join('');
+  }
+
+  output = 'TRANSATLANTIC MODE ACTIVE — level: ' + modeLabel + '\n\n' + bodyText;
 } else {
   // Fallback when SKILL.md is not found (standalone hook install without skills dir).
   // This is the minimum viable ruleset — better than nothing.
@@ -210,17 +223,23 @@ try {
     const isWindows = process.platform === 'win32';
     const scriptName = isWindows ? 'ta-statusline.ps1' : 'ta-statusline.sh';
     const scriptPath = path.join(__dirname, scriptName);
-    const command = isWindows
-      ? `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`
-      : `bash "${scriptPath}"`;
+    // Plugin installs live under a version-hashed cache dir, so a hardcoded
+    // path breaks on every plugin update. Resolve the newest cached copy at
+    // statusline runtime instead. Standalone installs keep the direct path.
+    const inPluginCache = scriptPath.includes(path.join('plugins', 'cache'));
+    let command;
+    if (isWindows) {
+      command = `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`;
+    } else if (inPluginCache) {
+      const cacheGlob = path.join(claudeDir, 'plugins', 'cache', 'transatlantic', 'transatlantic') + '/*/src/hooks/' + scriptName;
+      command = `bash "$(ls -td ${cacheGlob} 2>/dev/null | head -1)"`;
+    } else {
+      command = `bash "${scriptPath}"`;
+    }
     const statusLineSnippet =
       '"statusLine": { "type": "command", "command": ' + JSON.stringify(command) + ' }';
     output += "\n\n" +
-      "STATUSLINE SETUP NEEDED: The transatlantic plugin includes a statusline badge showing the active level " +
-      "(e.g. [TRANSATLANTIC], [TRANSATLANTIC:MORSE]). It is not configured yet. " +
-      "To enable, add this to " + path.join(claudeDir, 'settings.json') + ": " +
-      statusLineSnippet + " " +
-      "Proactively offer to set this up for the user on first interaction.";
+      "Statusline badge not configured. If the user asks, add to " + settingsPath + ": " + statusLineSnippet;
   }
 } catch (e) {
   // Silent fail — don't block session start over statusline detection
